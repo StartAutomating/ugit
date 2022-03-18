@@ -17,11 +17,11 @@
     .LINK
         Invoke-Git
     .EXAMPLE
-        git log              # Log entries are returned as objects.
+        git log | Get-Member  # Log entries are returned as objects, and extended  
     .Example
-        git status
+        git status | Select-Object -ExpandProperty Untracked # Display untracked files.
     .EXAMPLE
-
+        git branch # Display the list of branches, as objects.
     #>
     [CmdletBinding(PositionalBinding=$false)]
     param(
