@@ -1,0 +1,1 @@
+git branch '-d' $this.BranchName @args
