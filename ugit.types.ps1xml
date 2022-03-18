@@ -2,6 +2,17 @@
 <!-- Generated with EZOut 1.8.4: Install-Module EZOut or https://github.com/StartAutomating/EZOut -->
 <Types>
   <Type>
+    <Name>git.branch</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>Delete</Name>
+        <Script>
+                        git branch '-d' $this.BranchName @args
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
     <Name>git.log</Name>
     <Members>
       <ScriptMethod>
