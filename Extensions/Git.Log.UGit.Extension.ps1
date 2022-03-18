@@ -1,0 +1,94 @@
+﻿<#
+.Synopsis
+    Log Extension
+.Description
+    Outputs git log entries as objects
+#>
+# It's an extension
+[Runtime.CompilerServices.Extension()]
+# that extends Out-Git
+[Management.Automation.Cmdlet("Out","Git")]
+# when the pattern is "git log"
+[ValidatePattern("^git log",Options='IgnoreCase')]
+param(
+)
+
+begin {
+    $Git_Log = [Regex]::new(@'
+(?m)^commit                                                             # Commits start with 'commit'
+\s+(?<CommitHash>(?<HexDigits>
+[0-9abcdef]+
+)
+)                                                                       # The CommitHash is all hex digits after whitespace
+\s+                                                                     # More whitespace (includes the newline)
+(?:(?:Merge:                                                            # Next is the optional merge
+\s+(?:(?<MergeHash>(?<HexDigits>
+[0-9abcdef]+
+)
+)[\s-[\n\r]]{0,}                                                        # Which is hex digits, followed by optional whitespace
+){2,} [\n\r]+                                                           # followed by a newline
+))?Author:                                                              # New is the author line
+\s+(?<GitUserName>(?:.|\s){0,}?(?=\z|\s\<))                             # The username comes before whitespace and a <
+\s+\<                                                                   # The email is enclosed in <>
+(?<GitUserEmail>(?:.|\s){0,}?(?=\z|>))\>(?:.|\s){0,}?(?=\z|^date:)Date: # Next comes the Date line
+\s+(?<CommitDate>(?:.|\s){0,}?(?=\z|\n))                                # Since dates can come in many formats, capture the line
+\n(?<CommitMessage>(?:.|\s){0,}?(?=\z|(?>\r\n|\n){2,2}))                # Anything until two newlines is the commit message
+
+'@, 'IgnoreCase,IgnorePatternWhitespace', '00:00:05')
+
+    $lines = @()
+}
+
+
+process {
+    
+    if ("$gitOut" -like 'Commit*' -and $lines) {
+        
+        $gitLogMatch = $Git_Log.Match($lines -join [Environment]::NewLine)
+        if (-not $gitLogMatch.Success) { return }
+        
+        $gitLogOut = [Ordered]@{PSTypeName='git.log'}
+        if ($gitCommand -like '*--merges*') {
+            $gitLogOut.PSTypeName = 'git.merge.log'
+        }
+        foreach ($group in $gitLogMatch.Groups) {
+            if ($group.Name -as [int] -ne $null) { continue }
+            if (-not $gitLogOut.Contains($group.Name)) {
+                $gitLogOut[$group.Name]  = $group.Value
+            } else {
+                $gitLogOut[$group.Name]  = @( $gitLogOut[$group.Name] ) + $group.Value
+            }            
+        }
+        $gitLogOut.Remove("HexDigits")
+        if ($gitLogOut.CommitDate) {
+            $gitLogOut.CommitDate = [datetime]::ParseExact($gitLogOut.CommitDate.Trim(), "ddd MMM d HH:mm:ss yyyy K", [cultureinfo]::InvariantCulture)
+        }
+        if ($gitLogOut.CommitMessage) {
+            $gitLogOut.CommitMessage = $gitLogOut.CommitMessage.Trim()
+        }
+        
+        [PSCustomObject]$gitLogOut
+        $lines = @()
+    }
+    $lines += "$gitOut"
+}
+
+end {
+    $gitLogMatch = $Git_Log.Match($lines -join [Environment]::NewLine)
+    if (-not $gitLogMatch.Success) { return }
+    
+    $gitLogOut = [Ordered]@{PSTypeName='git.log'}
+    if ($gitCommand -like '*--merges*') {
+        $gitLogOut.PSTypeName = 'git.merge.log'
+    }
+    foreach ($group in $gitLogMatch.Groups) {
+        if ($group.Name -as [int] -ne $null) { continue}
+        $gitLogOut[$group.Name]  = $group.Value
+    }
+    $gitLogOut.Remove("HexDigits")
+    if ($gitLogOut.CommitDate) {
+        $gitLogOut.CommitDate = [datetime]::ParseExact($gitLogOut.CommitDate.Trim(), "ddd MMM d HH:mm:ss yyyy K", [cultureinfo]::InvariantCulture)
+    }
+    [PSCustomObject]$gitLogOut
+}
+

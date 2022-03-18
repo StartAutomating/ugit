@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-16"?>
+<!-- Generated with EZOut 1.8.4: Install-Module EZOut or https://github.com/StartAutomating/EZOut -->
+<Configuration>
+  <ViewDefinitions>
+    <View>
+      <Name>git</Name>
+      <ViewSelectedBy>
+        <TypeName>git</TypeName>
+      </ViewSelectedBy>
+      <CustomControl>
+        <CustomEntries>
+          <CustomEntry>
+            <CustomItem>
+              <ExpressionBinding>
+                <PropertyName>GitOutput</PropertyName>
+              </ExpressionBinding>
+            </CustomItem>
+          </CustomEntry>
+        </CustomEntries>
+      </CustomControl>
+    </View>
+    <View>
+      <Name>Git.Log</Name>
+      <ViewSelectedBy>
+        <TypeName>Git.Log</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <Wrap />
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>GitUserName</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CommitDate</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CommitMessage</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+    <View>
+      <Name>IncludeCommitHash</Name>
+      <ViewSelectedBy>
+        <TypeName>Git.Log</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <Wrap />
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>GitUserName</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CommitDate</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CommitHash</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CommitMessage</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+    <View>
+      <Name>Git.Merge.Log</Name>
+      <ViewSelectedBy>
+        <TypeName>Git.Merge.Log</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <Wrap />
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>GitUserName</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CommitDate</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>MergeHash</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CommitMessage</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+    <View>
+      <Name>Git.Status</Name>
+      <ViewSelectedBy>
+        <TypeName>Git.Status</TypeName>
+      </ViewSelectedBy>
+      <CustomControl>
+        <CustomEntries>
+          <CustomEntry>
+            <CustomItem>
+              <Text>On Branch: </Text>
+              <ExpressionBinding>
+                <ScriptBlock> $_.BranchName </ScriptBlock>
+              </ExpressionBinding>
+              <NewLine />
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Status </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock> $_.Status + [Environment]::NewLine </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Staged </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock> 
+        "Changes Staged For Commit:
+  (use git commit -m to commit)" + [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Staged </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        (@(foreach ($line in $($_.Staged | Select-Object ChangeType, Path | Out-String -Width ($host.UI.RawUI.BufferSize.Width - 8)) -split '(?&gt;\r\n|\n)') {
+            (" " * 4) + $line
+        }) -join [Environment]::NewLine) + [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Unstaged </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock> 
+        "Changes Not Staged For Commit:
+  (use git add &lt;file&gt; to add, git restore &lt;file&gt; to discard changes)" + [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Unstaged</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        (@(foreach ($line in $($_.Unstaged | Select-Object ChangeType, Path | Out-String -Width ($host.UI.RawUI.BufferSize.Width - 8)) -split '(?&gt;\r\n|\n)') {
+            (" " * 4) + $line
+        }) -join [Environment]::NewLine) + [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Untracked </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        "Untracked Files:
+  (use git add &lt;file&gt; to include in commit)" + [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Untracked</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        @(foreach ($line in $($_.Untracked | Out-String -Width ($host.UI.RawUI.BufferSize.Width - 8)) -split '(?&gt;\r\n|\n)') {
+            (" " * 4) + $line
+        }) -join [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <Text>Nothing to commit, working tree clean</Text>
+            </CustomItem>
+          </CustomEntry>
+        </CustomEntries>
+      </CustomControl>
+    </View>
+  </ViewDefinitions>
+</Configuration>
