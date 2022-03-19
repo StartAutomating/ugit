@@ -58,12 +58,12 @@
                 if ($in -is [IO.FileInfo]) { # If the input is a file
                     $in.Fullname             # return the full name of that file.
                 } elseif ($in -is [IO.DirectoryInfo]) {
-                    $directories += $in.Fullname # If the input was a directory, keep track of it.
+                    $directories += Get-Item -LiteralPath $in.Fullname # If the input was a directory, keep track of it.
                 } else {
                     # Otherwise, see if it was a path and it was a directory
                     if ((Test-Path $in -ErrorAction SilentlyContinue) -and 
-                        (Get-Item $in -is [IO.DirectoryInfo] -ErrorAction SilentlyContinue)) {
-                        $directories += Get-Item $in -is [IO.DirectoryInfo]
+                        (Get-Item $in -ErrorAction SilentlyContinue) -is [IO.DirectoryInfo]) {
+                        $directories += Get-Item $in
                     } else {
                         $in
                     }
