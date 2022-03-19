@@ -22,6 +22,18 @@
         To ensure a parameter is passed to git, instead of interpreted as as PowerShell parameter, simply enclose it in quotes.
     .LINK
         Out-Git
+    .Example
+        # Log entries are returned as objects, with properties and methods.
+        git log -n 1 | Get-Member
+    .Example
+        # Status entries are converted into objects.
+        git status
+    .Example
+        # Display untracked files.
+        git status | Select-Object -ExpandProperty Untracked
+    .Example
+        # Display the list of branches, as objects.
+        git branch    
     #>
     [Alias('git')]
     [CmdletBinding(PositionalBinding=$false)]
