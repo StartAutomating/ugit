@@ -60,6 +60,9 @@
         if (-not $script:CachedGitCmd) { # If we still don't have git
             throw "Git not found"        # throw.
         }
+        if (-not $script:RepoRoots) {    # If we have not yet created a cache of repo roots
+            $script:RepoRoots = @{}      # do so now.
+        }
     }
 
     process {
@@ -100,15 +103,20 @@
         foreach ($dir in $directories) {
             $AllGitArgs = @(@($GitArgument) + $InputObject) # collect the combined arguments
             $OutGitParams = @{GitArgument=$AllGitArgs}      # and prepare a splat (to save precious space when reporting errors).
-            Push-Location -LiteralPath $dir                 # Then we Push into that directory  
-                & $script:CachedGitCmd @AllGitArgs *>&1       | # then we run git, combining all streams into output.
-                    Tee-Object -Variable global:lastGitOutput | # We store that output in $global:lastGitOutput, using Tee-Object
-                                                                # then pipe to Out-Git, which will
-                    Out-Git @OutGitParams # output git as objects.
-                                        
-                    # These objects are decorated for the PowerShell Extended Type System.
-                    # This makes them easy to extend and customize their display.
-                    # If Out-Git finds one or more extensions to run, these can parse the output.
+            Push-Location -LiteralPath $dir                 # Then we Push into that directory.
+            if (-not $script:RepoRoots[$dir]) {
+                $script:RepoRoots[$dir] = 
+                    @("$(& $script:CachedGitCmd rev-parse --show-toplevel *>&1)") -like "*/*" -replace '/', [io.path]::DirectorySeparatorChar
+            }
+            $OutGitParams.GitRoot = "$($script:RepoRoots[$dir])"
+            & $script:CachedGitCmd @AllGitArgs *>&1       | # Then we run git, combining all streams into output.                
+                Tee-Object -Variable global:lastGitOutput | # We store that output in $global:lastGitOutput, using Tee-Object
+                                                            # then pipe to Out-Git, which will
+                Out-Git @OutGitParams # output git as objects.
+                                    
+                # These objects are decorated for the PowerShell Extended Type System.
+                # This makes them easy to extend and customize their display.
+                # If Out-Git finds one or more extensions to run, these can parse the output.
 
             Pop-Location # After we have run, Pop back out of the location.
         }

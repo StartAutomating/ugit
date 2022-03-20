@@ -38,7 +38,11 @@
 
     # The arguments that were passed to git.
     [string[]]
-    $GitArgument
+    $GitArgument,
+
+    # The root of the current git repository.
+    [string]
+    $GitRoot
     )
 
     begin {
