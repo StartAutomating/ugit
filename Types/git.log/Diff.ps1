@@ -1,3 +1,3 @@
-param([string[]]$DiffArgs)
-
-git diff $this.CommitHash @DiffArgs
+Push-Location $this.GitRoot
+git diff $this.CommitHash @args
+Pop-Location
