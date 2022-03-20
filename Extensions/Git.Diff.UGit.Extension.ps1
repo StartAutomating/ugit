@@ -8,11 +8,13 @@
 [Management.Automation.Cmdlet("Out","Git")]
 # when the pattern is "git diff"
 [ValidatePattern("^git diff",Options='IgnoreCase')]
-param(
-)
+[OutputType('Git.Diff','Git.Diff.ChangeSet')]
+param()
 
-begin {    
-    $lines = @()
+begin {
+    # Diff messages are spread across many lines, so we need to keep track of them.    
+    $lines = [Collections.Queue]::new()
+    $allDiffLines = [Collections.Queue]::new()
     function OutDiff {
         param([string[]]$OutputLines)
 
@@ -40,6 +42,8 @@ begin {
                     }
                 }
             )
+            
+            $diffObject.DiffLines = $allDiffLines.ToArray()
             [PSCustomObject]$diffObject
         }        
     }
@@ -48,14 +52,15 @@ begin {
 
 process {    
     if ("$gitOut" -like 'diff*' -and $lines) {
-        OutDiff $lines
-        $lines = @()
+        OutDiff $lines.ToArray()
+        $lines.Clear()
     }
-    $lines += "$gitOut"
+    $lines.Enqueue($gitOut)
+    $allDiffLines.Enqueue($gitOut)
 }
 
 end {
-    OutDiff $lines
+    OutDiff $lines.ToArray()
 }
 
 
