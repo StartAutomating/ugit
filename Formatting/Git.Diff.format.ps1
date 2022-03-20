@@ -1,20 +1,22 @@
 Write-FormatView -TypeName Git.Diff -Action {
-    Write-FormatViewExpression -Text '@'
-    Write-FormatViewExpression -If {
-        ($_.From -replace '^[ab]/') -eq ($_.To -replace '^[ab]/')
-    }  -ScriptBlock {
-        (' ' + $_.From -replace '^[ab]/')
-    }
+    Write-FormatViewExpression -ScriptBlock {
+        @(
+        . $SetOutputStyle -ForegroundColor Verbose
+        '@ '
+        if ($_.From -eq $_.To) {
+            $_.From
+        } else {
+            $_.From + '-->' + $_.To
+        }
 
-    Write-FormatViewExpression -If {
-        ($_.From -replace '^[ab]/') -ne ($_.To -replace '^[ab]/')
-    } -ScriptBlock {
-        '' + $_.From + '-->' + $_.To
+        ' @'
+        " ($($_.FromHash)..$($_.ToHash)) "
+        . $ClearOutputStyle
+        ) -join ''
     }
     
-    Write-FormatViewExpression -ScriptBlock {
-        " ($($_.FromHash)..$($_.ToHash)) "
-    }
+    Write-FormatViewExpression -Newline
+    Write-FormatViewExpression -Newline
 
     Write-FormatViewExpression -ControlName Git.Diff.ChangeSet -Enumerate -ScriptBlock { $_.ChangeSet }
 }

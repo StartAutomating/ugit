@@ -9,12 +9,6 @@
           <CustomEntry>
             <CustomItem>
               <ExpressionBinding>
-                <ScriptBlock>
-        "@@ -$($_.LineStart),$($_.LineCount) +$($_.NewLineStart),$($_.NewLineCount) @@"
-    </ScriptBlock>
-              </ExpressionBinding>
-              <NewLine />
-              <ExpressionBinding>
                 <ScriptBlock>$moduleName = 'ugit'
 do {
     $lm = Get-Module -Name $moduleName -ErrorAction Ignore
@@ -40,19 +34,31 @@ $($ParentNode.CustomControl.CustomEntries.CustomEntry.CustomItem.ExpressionBindi
 
 } while ($false)
 
-
+. ${ugit_SetOutputStyle} -ForegroundColor 'Verbose'</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>
+        "@@ -$($_.LineStart),$($_.LineCount) +$($_.NewLineStart),$($_.NewLineCount) @@"
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>. ${ugit_ClearOutputStyle}</ScriptBlock>
+              </ExpressionBinding>
+              <NewLine />
+              <ExpressionBinding>
+                <ScriptBlock>
         $changeLines = @($_.Changes -split '(?&gt;\r\n|\n)' -ne '')
         @(foreach ($changeLine in $changeLines) {
             [Environment]::NewLine
             if ($changeLine.StartsWith('+')) {                
-                . ${ugit_EZOut_SetOutputStyle} -ForegroundColor Success
+                . ${ugit_SetOutputStyle} -ForegroundColor Success
                 $changeLine -replace "[\s\r\n]+$"
-                . ${ugit_EZOut_ClearOutputStyle}
+                . ${ugit_ClearOutputStyle}
             }
             elseif ($changeLine.StartsWith('-')) {            
-                . ${ugit_EZOut_SetOutputStyle} -ForegroundColor Failure
+                . ${ugit_SetOutputStyle} -ForegroundColor Failure
                 $changeLine -replace "[\s\r\n]+$"
-                . ${ugit_EZOut_ClearOutputStyle}
+                . ${ugit_ClearOutputStyle}
             }
             else {                
                 $changeLine
@@ -67,14 +73,13 @@ $($ParentNode.CustomControl.CustomEntries.CustomEntry.CustomItem.ExpressionBindi
       </CustomControl>
     </Control>
     <Control>
-      <Name>${ugit_EZOut_SetOutputStyle}</Name>
+      <Name>${ugit_SetOutputStyle}</Name>
       <CustomControl>
         <CustomEntries>
           <CustomEntry>
             <CustomItem>
               <ExpressionBinding>
-                <ScriptBlock>
-&lt;#
+                <ScriptBlock>&lt;#
 .Synopsis
     Adds style to a format output
 .Description
@@ -265,14 +270,13 @@ if ($canUseHTML) {
       </CustomControl>
     </Control>
     <Control>
-      <Name>${ugit_EZOut_ClearOutputStyle}</Name>
+      <Name>${ugit_ClearOutputStyle}</Name>
       <CustomControl>
         <CustomEntries>
           <CustomEntry>
             <CustomItem>
               <ExpressionBinding>
-                <ScriptBlock>
-&lt;#
+                <ScriptBlock>&lt;#
 .Synopsis
     Clears the output style
 .Description
@@ -358,32 +362,50 @@ $BackgroundColor
         <CustomEntries>
           <CustomEntry>
             <CustomItem>
-              <Text>@</Text>
               <ExpressionBinding>
-                <ItemSelectionCondition>
-                  <ScriptBlock>
-        ($_.From -replace '^[ab]/') -eq ($_.To -replace '^[ab]/')
-    </ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock>
-        (' ' + $_.From -replace '^[ab]/')
-    </ScriptBlock>
-              </ExpressionBinding>
-              <ExpressionBinding>
-                <ItemSelectionCondition>
-                  <ScriptBlock>
-        ($_.From -replace '^[ab]/') -ne ($_.To -replace '^[ab]/')
-    </ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock>
-        '' + $_.From + '--&gt;' + $_.To
-    </ScriptBlock>
-              </ExpressionBinding>
-              <ExpressionBinding>
-                <ScriptBlock>
+                <ScriptBlock>$moduleName = 'ugit'
+do {
+    $lm = Get-Module -Name $moduleName -ErrorAction Ignore
+    if (-not $lm) { continue } 
+    if ($lm.FormatPartsLoaded) { break }
+    $wholeScript = @(foreach ($formatFilePath in $lm.exportedFormatFiles) {         
+        foreach ($partNodeName in Select-Xml -LiteralPath $formatFilePath -XPath "/Configuration/Controls/Control/Name[starts-with(., '$')]") {
+            $ParentNode = $partNodeName.Node.ParentNode
+            "$($ParentNode.Name)={
+$($ParentNode.CustomControl.CustomEntries.CustomEntry.CustomItem.ExpressionBinding.ScriptBlock)}"
+        }
+    }) -join [Environment]::NewLine
+    New-Module -Name "${ModuleName}.format.ps1xml" -ScriptBlock ([ScriptBlock]::Create(($wholeScript + ';Export-ModuleMember -Variable *'))) |
+        Import-Module -Global
+    $onRemove = [ScriptBlock]::Create("Remove-Module '${ModuleName}.format.ps1xml'")
+    
+    if (-not $lm.OnRemove) {
+        $lm.OnRemove = $onRemove
+    } else {
+        $lm.OnRemove = [ScriptBlock]::Create($onRemove.ToString() + ''  + [Environment]::NewLine + $lm.OnRemove)
+    }
+    $lm | Add-Member NoteProperty FormatPartsLoaded $true -Force
+
+} while ($false)
+
+
+        @(
+        . ${ugit_SetOutputStyle} -ForegroundColor Verbose
+        '@ '
+        if ($_.From -eq $_.To) {
+            $_.From
+        } else {
+            $_.From + '--&gt;' + $_.To
+        }
+
+        ' @'
         " ($($_.FromHash)..$($_.ToHash)) "
+        . ${ugit_ClearOutputStyle}
+        ) -join ''
     </ScriptBlock>
               </ExpressionBinding>
+              <NewLine />
+              <NewLine />
               <ExpressionBinding>
                 <ScriptBlock> $_.ChangeSet </ScriptBlock>
                 <EnumerateCollection />
