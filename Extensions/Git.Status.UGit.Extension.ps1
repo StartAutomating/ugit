@@ -26,6 +26,7 @@ end {
         Staged     = @()
         Unstaged   = @()
         Untracked  = @()
+        GitRoot    = $GitRoot
     }
 
     $inPhase     = ''
