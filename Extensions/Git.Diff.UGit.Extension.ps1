@@ -18,34 +18,54 @@ begin {
     function OutDiff {
         param([string[]]$OutputLines)
 
+        
         if (-not $OutputLines) { return }
-        $diffExtract = $OutputLines -join [Environment]::NewLine   | & ${?<Git_Diff>} -Extract        
-        foreach ($diff in $diffExtract) {
-            $diffObject = [Ordered]@{PSTypeName='git.diff'}
-            foreach ($prop in $diff.psobject.properties) {
-                if ($prop.Name -like '*_*') { continue }
-                $diffObject[$prop.Name] = $prop.Value
-            }            
-            $diffRangeExtract = @($diff.Git_DiffRanges      | & ${?<Git_DiffRange>})            
-            $diffRangeSplit   = @($diff.Git_DiffRanges      | & ${?<Git_DiffRange>} -Split) -notmatch '^\s+$'
-            $diffObject.ChangeSet =  @(
-                for ($diffRangeIndex = 0; $diffRangeIndex -lt $diffRangeExtract.Count; $diffRangeIndex++){
-                    [PSCustomObject][Ordered]@{
-                        PSTypeName   ='git.diff.range'
-                        Changes      = $diffRangeSplit[$diffRangeIndex]
-                        LineStart    = $diffRangeExtract[$diffRangeIndex].Groups["FromFileLineStart"].Value -as [int]
-                        LineCount    = $diffRangeExtract[$diffRangeIndex].Groups["FromFileLineCount"].Value -as [int]
-                        NewLineStart = $diffRangeExtract[$diffRangeIndex].Groups["ToFileLineEnd"].Value -as [int]
-                        NewLineCount = $diffRangeExtract[$diffRangeIndex].Groups["ToFileLineCount"].Value -as [int]
-                        Added        = @($diffRangeSplit[$diffRangeIndex] -split '(?>\r\n|\n)' -like '+*' -replace '^\+')
-                        Removed      = @($diffRangeSplit[$diffRangeIndex] -split '(?>\r\n|\n)' -like '-*' -replace '^\-')
-                    }
+        $outputLineCount = 0
+        $diffRange  = $null
+        $diffObject = [Ordered]@{PSTypeName='git.diff';ChangeSet=@()}
+        foreach ($outputLine in $OutputLines) {
+            $outputLineCount++
+            if ($outputLineCount -eq 1) {
+                $diffObject.From, $diffObject.To  = $outputLine -replace '^diff --git ' -split '[ab]/' -ne ''
+            }
+            if (-not $diffRange -and $outputline -match 'index\s(?<fromhash>[0-9a-f]+)..(?<tohash>[0-9a-f]+)') {
+                $diffObject.FromHash, $diffObject.ToHash = $Matches.fromhash, $Matches.tohash
+            }
+            if ($outputLine -like "@@*@@*") {
+                if ($diffRange) {
+                    $diffObject.ChangeSet += [PSCustomObject]$diffRange
                 }
-            )
-            
-            $diffObject.DiffLines = $allDiffLines.ToArray()
-            [PSCustomObject]$diffObject
-        }        
+                
+                $extendedHeader = $outputLine -replace '^@@[^@]+@@' -replace '^\s+'
+                $diffRange = [Ordered]@{
+                    PSTypeName='git.diff.range';
+                    Changes=@(if ($extendedHeader) {$extendedHeader});
+                    Added=@();
+                    Removed=@()
+                }
+                $diffRange.LineStart,
+                $diffRange.LineCount,
+                $diffRange.NewLineStart,
+                $diffRange.NewLineCount = 
+                    @($outputLine -replace '\s' -split '[-@+]' -ne '' -split ',')[0..3] -as [int[]]
+                continue
+            }
+
+            if ($diffRange) {
+                $diffRange.Changes += $outputLine
+                if ($outputLine.StartsWith('+')) {
+                    $diffRange.Added += $outputLine -replace '^+'
+                }
+                elseif ($outputLine.StartsWith('-')) {
+                    $diffRange.Removed += $outputLine -replace '^+'
+                }
+            }
+
+            if ($outputLineCount -eq $OutputLines.Length) {
+                $diffObject.ChangeSet += [PSCustomObject]$diffRange
+            }
+        }
+        [PSCustomObject]$diffObject
     }
 }
 
