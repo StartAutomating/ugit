@@ -43,4 +43,22 @@ Pop-Location
       </ScriptMethod>
     </Members>
   </Type>
+  <Type>
+    <Name>git.status</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>Push</Name>
+        <Script>
+                        Push-Location $this.GitRoot
+if (-not $this.Status) {
+    git push --set-upstream origin $this.BranchName @args
+} else {
+    git push @args
+}
+Pop-Location
+
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
 </Types>
