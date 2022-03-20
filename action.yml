@@ -1,5 +1,5 @@
 
-name: UGit
+name: UseUGit
 description: Updated Git
 inputs: 
   UGitScript: 
