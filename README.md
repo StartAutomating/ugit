@@ -8,13 +8,20 @@ ugit is a PowerShell module that gives you an updated git.  You can use the obje
 If you're using one of a number of supported commands, ugit will return your git output as objects.
 This enables _a lot_ of interesting scenarios, giving you and updated way to work with git.
 
-## How do I use it?
+## Getting start
 
-## How does it work?
+### Installing ugit
+~~~PowerShell
+Install-Module ugit -Scope CurrentUser
+Import-Module ugit -Force -PassThru
+# Once you've imported ugit, just run git commands normally.
+# If ugit has an extension for the command, it will output as an object.
+# These objects can be formatted by PowerShell
+git log -n 5 
 
-## How do I extend it?
-
-
+git log -n 5 |
+  Get-Member
+~~~
 
 
 
