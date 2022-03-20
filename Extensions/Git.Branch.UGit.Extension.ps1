@@ -31,6 +31,7 @@ process {
                 PSTypeName = 'git.branch.deleted'
                 DeletedBranchName = $Matches.BranchName
                 BranchHash = $Matches.BranchHash
+                GitRoot = $GitRoot
             }
         } elseif (-not ("$gitout" -replace '\s')) { # Otherwise, if there was content on the line
             $gitout # output it.
@@ -52,6 +53,7 @@ process {
             BranchHash       = $branchHash
             CommitMessage    = $lastCommitMessage -join ' '
             IsCurrentBranch  = $IsCurrentBranch
+            GitRoot          = $GitRoot
         }        
     } else {
         # If verbose wasn't passed, the branchname is any whitepsace.
@@ -62,7 +64,8 @@ process {
         $allBranches += [PSCustomObject][Ordered]@{
             PSTypeName       = 'git.branch'
             BranchName       = $branchName
-            IsCurrentBranch = $IsCurrentBranch
+            IsCurrentBranch  = $IsCurrentBranch
+            GitRoot          = $GitRoot
         }
     }
     # If the user passed their own --sort parameter, 
