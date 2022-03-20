@@ -613,6 +613,9 @@ $($ParentNode.CustomControl.CustomEntries.CustomEntry.CustomItem.ExpressionBindi
       <ViewSelectedBy>
         <TypeName>Git.Status</TypeName>
       </ViewSelectedBy>
+      <GroupBy>
+        <PropertyName>GitRoot</PropertyName>
+      </GroupBy>
       <CustomControl>
         <CustomEntries>
           <CustomEntry>
