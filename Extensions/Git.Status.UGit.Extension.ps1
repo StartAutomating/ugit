@@ -53,9 +53,6 @@ end {
             $gitStatusOut.Status = $statusLines[$sln]
             continue
         }
-    
-
-        
 
         if ($statusLines[$sln] -match '^\s+\(') { continue }
         if ($statusLines[$sln] -match '^\s+' -and $inPhase) {
