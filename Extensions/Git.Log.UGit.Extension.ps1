@@ -4,9 +4,7 @@
 .Description
     Outputs git log entries as objects
 #>
-# It's an extension
-[Runtime.CompilerServices.Extension()]
-# that extends Out-Git
+# It's an extension for Out-Git
 [Management.Automation.Cmdlet("Out","Git")]
 # when the pattern is "git log"
 [ValidatePattern("^git log",Options='IgnoreCase')]
@@ -37,14 +35,11 @@ begin {
 '@, 'IgnoreCase,IgnorePatternWhitespace', '00:00:05')
 
     $lines = @()
-}
 
-
-process {
-    
-    if ("$gitOut" -like 'Commit*' -and $lines) {
-        
-        $gitLogMatch = $Git_Log.Match($lines -join [Environment]::NewLine)
+    function OutGitLog {
+        param([string[]]$OutputLines)
+        if (-not $OutputLines) { return }
+        $gitLogMatch = $Git_Log.Match($OutputLines -join [Environment]::NewLine)
         if (-not $gitLogMatch.Success) { return }
         
         $gitLogOut = [Ordered]@{PSTypeName='git.log'}
@@ -66,29 +61,23 @@ process {
         if ($gitLogOut.CommitMessage) {
             $gitLogOut.CommitMessage = $gitLogOut.CommitMessage.Trim()
         }
-        
+        $gitLogOut.GitRoot = $GitRoot
         [PSCustomObject]$gitLogOut
+    }
+}
+
+
+process {
+    
+    if ("$gitOut" -like 'Commit*' -and $lines) {
+        OutGitLog $lines
+        
         $lines = @()
     }
     $lines += "$gitOut"
 }
 
 end {
-    $gitLogMatch = $Git_Log.Match($lines -join [Environment]::NewLine)
-    if (-not $gitLogMatch.Success) { return }
-    
-    $gitLogOut = [Ordered]@{PSTypeName='git.log'}
-    if ($gitCommand -like '*--merges*') {
-        $gitLogOut.PSTypeName = 'git.merge.log'
-    }
-    foreach ($group in $gitLogMatch.Groups) {
-        if ($group.Name -as [int] -ne $null) { continue}
-        $gitLogOut[$group.Name]  = $group.Value
-    }
-    $gitLogOut.Remove("HexDigits")
-    if ($gitLogOut.CommitDate) {
-        $gitLogOut.CommitDate = [datetime]::ParseExact($gitLogOut.CommitDate.Trim(), "ddd MMM d HH:mm:ss yyyy K", [cultureinfo]::InvariantCulture)
-    }
-    [PSCustomObject]$gitLogOut
+    OutGitLog $lines
 }
 
