@@ -1,0 +1,1 @@
+[Regex]::new("#(?<n>\d+)").Matches($this.CommitMessage) -replace '#' -as [int[]]

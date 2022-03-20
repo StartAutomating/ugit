@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-16"?>
+<!-- Generated with EZOut 1.8.4: Install-Module EZOut or https://github.com/StartAutomating/EZOut -->
+<Types>
+  <Type>
+    <Name>git.branch</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>Delete</Name>
+        <Script>
+                        Push-Location $this.GitRoot
+git branch '-d' $this.BranchName @args
+Pop-Location
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.log</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>Archive</Name>
+        <Script>
+                        param(
+[Parameter(Mandatory)]
+[string]
+$ArchivePath
+)
+$unresolvedArchivePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($ArchivePath)
+
+Push-Location $this.GitRoot
+git archive $this.CommitHash '-o' "$unresolvedArchivePath" @args
+Pop-Location
+
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
+        <Name>Diff</Name>
+        <Script>
+                        Push-Location $this.GitRoot
+git diff $this.CommitHash @args
+Pop-Location
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.status</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>Push</Name>
+        <Script>
+                        Push-Location $this.GitRoot
+if (-not $this.Status) {
+    git push --set-upstream origin $this.BranchName @args
+} else {
+    git push @args
+}
+Pop-Location
+
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+</Types>

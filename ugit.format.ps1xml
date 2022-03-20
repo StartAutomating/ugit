@@ -1,0 +1,698 @@
+<?xml version="1.0" encoding="utf-16"?>
+<!-- Generated with EZOut 1.8.4: Install-Module EZOut or https://github.com/StartAutomating/EZOut -->
+<Configuration>
+  <Controls>
+    <Control>
+      <Name>Git.Diff.ChangeSet</Name>
+      <CustomControl>
+        <CustomEntries>
+          <CustomEntry>
+            <CustomItem>
+              <ExpressionBinding>
+                <ScriptBlock>$moduleName = 'ugit'
+do {
+    $lm = Get-Module -Name $moduleName -ErrorAction Ignore
+    if (-not $lm) { continue } 
+    if ($lm.FormatPartsLoaded) { break }
+    $wholeScript = @(foreach ($formatFilePath in $lm.exportedFormatFiles) {         
+        foreach ($partNodeName in Select-Xml -LiteralPath $formatFilePath -XPath "/Configuration/Controls/Control/Name[starts-with(., '$')]") {
+            $ParentNode = $partNodeName.Node.ParentNode
+            "$($ParentNode.Name)={
+$($ParentNode.CustomControl.CustomEntries.CustomEntry.CustomItem.ExpressionBinding.ScriptBlock)}"
+        }
+    }) -join [Environment]::NewLine
+    New-Module -Name "${ModuleName}.format.ps1xml" -ScriptBlock ([ScriptBlock]::Create(($wholeScript + ';Export-ModuleMember -Variable *'))) |
+        Import-Module -Global
+    $onRemove = [ScriptBlock]::Create("Remove-Module '${ModuleName}.format.ps1xml'")
+    
+    if (-not $lm.OnRemove) {
+        $lm.OnRemove = $onRemove
+    } else {
+        $lm.OnRemove = [ScriptBlock]::Create($onRemove.ToString() + ''  + [Environment]::NewLine + $lm.OnRemove)
+    }
+    $lm | Add-Member NoteProperty FormatPartsLoaded $true -Force
+
+} while ($false)
+
+. ${ugit_SetOutputStyle} -ForegroundColor 'Verbose'</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>
+        "@@ -$($_.LineStart),$($_.LineCount) +$($_.NewLineStart),$($_.NewLineCount) @@"
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>. ${ugit_ClearOutputStyle}</ScriptBlock>
+              </ExpressionBinding>
+              <NewLine />
+              <ExpressionBinding>
+                <ScriptBlock>
+        $changeLines = @($_.Changes -split '(?&gt;\r\n|\n)' -ne '')
+        @(foreach ($changeLine in $changeLines) {
+            [Environment]::NewLine
+            if ($changeLine.StartsWith('+')) {                
+                . ${ugit_SetOutputStyle} -ForegroundColor Success
+                $changeLine -replace "[\s\r\n]+$"
+                . ${ugit_ClearOutputStyle}
+            }
+            elseif ($changeLine.StartsWith('-')) {            
+                . ${ugit_SetOutputStyle} -ForegroundColor Failure
+                $changeLine -replace "[\s\r\n]+$"
+                . ${ugit_ClearOutputStyle}
+            }
+            else {                
+                $changeLine
+            }
+            
+        }) -join ''
+    </ScriptBlock>
+              </ExpressionBinding>
+            </CustomItem>
+          </CustomEntry>
+        </CustomEntries>
+      </CustomControl>
+    </Control>
+    <Control>
+      <Name>${ugit_SetOutputStyle}</Name>
+      <CustomControl>
+        <CustomEntries>
+          <CustomEntry>
+            <CustomItem>
+              <ExpressionBinding>
+                <ScriptBlock>&lt;#
+.Synopsis
+    Adds style to a format output
+.Description
+    Adds style information to a format output, including:
+
+    * ForegroundColor
+    * BackgroundColor
+    * Bold
+    * Underline
+.Notes
+    Stylized Output works in two contexts at present:
+    * Rich consoles (Windows Terminal, PowerShell.exe, Pwsh.exe) (when $host.UI.SupportsVirtualTerminal)
+    * Web pages (Based off the presence of a $Request variable, or when $host.UI.SupportsHTML (you must add this property to $host.UI))
+
+    IsFormatPart: true
+#&gt;
+param(
+[string]$ForegroundColor,
+[string]$BackgroundColor,
+[switch]$Bold,
+[switch]$Underline,
+[switch]$Invert
+)
+
+$canUseANSI = $host.UI.SupportsVirtualTerminal
+$canUseHTML = $Request -or $host.UI.SupportsHTML
+if (-not ($canUseANSI -or $canUseHTML)) { return }
+
+$knownStreams = @{
+    Output='';Error='BrightRed';Warning='BrightYellow';
+    Verbose='BrightCyan';Debug='Yellow';Progress='Cyan';
+    Success='BrightGreen';Failure='Red';Default=''}
+$standardColors = 'Black', 'Red', 'Green', 'Yellow', 'Blue','Magenta', 'Cyan', 'White'
+$brightColors   = 'BrightBlack', 'BrightRed', 'BrightGreen', 'BrightYellow', 'BrightBlue','BrightMagenta', 'BrightCyan', 'BrightWhite'
+$n =0
+$cssClasses = @()
+$styleAttributes =
+    @(:nextColor foreach ($hc in $ForegroundColor,$BackgroundColor) {
+        $n++
+        if (-not $hc) { continue }
+        if ($hc[0] -eq [char]0x1b) {
+            if ($canUseANSI) { 
+                $hc; continue
+            }
+        }
+
+        $ansiStartPoint = if ($n -eq 1) { 30 } else { 40 } 
+        if ($knownStreams.ContainsKey($hc)) {
+            $i = $brightColors.IndexOf($knownStreams[$hc])
+            if ($canUseHTML) {
+                $cssClasses += $hc
+            } else {
+                if ($i -ge 0 -and $canUseANSI) {
+                    '' + [char]0x1b + "[1;$($ansiStartPoint + $i)m"
+                } else {
+                    $i = $standardColors.IndexOf($knownStreams[$hc])
+                    if ($i -ge 0 -and $canUseANSI) {
+                        '' + [char]0x1b + "[1;$($ansiStartPoint + $i)m"
+                    } elseif ($i -le 0 -and $canUseANSI) {                        
+                        '' + [char]0x1b + "[$($ansistartpoint + 8):5m"
+                    }
+                }
+            }
+            continue nextColor
+        }
+        elseif ($standardColors -contains $hc) {
+            for ($i = 0; $i -lt $standardColors.Count;$i++) {
+                if ($standardColors[$i] -eq $hc) {
+                    if ($canUseANSI -and -not $canUseHTML) {
+                        '' + [char]0x1b + "[$($ansiStartPoint + $i)m"
+                    } else {
+                        $cssClasses += $standardColors[$i]
+                    }
+                    continue nextColor
+                }
+            }
+        } elseif ($brightColors -contains $hc) {
+            for ($i = 0; $i -lt $brightColors.Count;$i++) {
+                if ($brightColors[$i] -eq $hc) {
+                    if ($canUseANSI -and -not $canUseHTML) {
+                        '' + [char]0x1b + "[1;$($ansiStartPoint + $i)m"
+                    } else {
+                        $cssClasses += $standardColors[$i]
+                    }
+                    continue nextColor
+                }
+            }
+        }
+
+
+        if ($hc -and -not $hc.StartsWith('#')) { 
+            $placesToLook=
+                @(if ($hc.Contains('.')) {
+                    $module, $setting = $hc -split '\.', 2
+                    $theModule = Get-Module $module
+                    $theModule.PrivateData.Color,
+                        $theModule.PrivateData.Colors,
+                        $theModule.PrivateData.Colour,
+                        $theModule.PrivateData.Colours,
+                        $theModule.PrivateData.EZOut,
+                        $global:PSColors,
+                        $global:PSColours
+                } else {
+                    $setting = $hc
+                    $moduleColorSetting = $theModule.PrivateData.PSColors.$setting
+                })
+
+            foreach ($place in $placesToLook) {
+                if (-not $place) { continue }
+                foreach ($propName in $setting -split '\.') {
+                    $place = $place.$propName
+                    if (-not $place) { break }
+                }
+                if ($place -and "$place".StartsWith('#') -and 4,7 -contains "$place".Length) {
+                    $hc = $place
+                    continue
+                }
+            }
+            if (-not $hc.StartsWith -or -not $hc.StartsWith('#')) {
+                continue
+            }
+        }
+        $r,$g,$b = if ($hc.Length -eq 7) {
+            [int]::Parse($hc[1..2]-join'', 'HexNumber')
+            [int]::Parse($hc[3..4]-join '', 'HexNumber')
+            [int]::Parse($hc[5..6] -join'', 'HexNumber')
+        }elseif ($hc.Length -eq 4) {
+            [int]::Parse($hc[1], 'HexNumber') * 16
+            [int]::Parse($hc[2], 'HexNumber') * 16
+            [int]::Parse($hc[3], 'HexNumber') * 16
+        }
+
+        if ($canUseHTML) {
+            if ($n -eq 1) { "color:$hc" }
+            elseif ($n -eq 2) { "background-color:$hc"} 
+        }
+        elseif ($canUseANSI) {
+            if ($n -eq 1) { [char]0x1b+"[38;2;$r;$g;${b}m" }
+            elseif ($n -eq 2) { [char]0x1b+"[48;2;$r;$g;${b}m" }
+        }
+        
+    })
+
+
+if ($Bold) {
+    $styleAttributes += 
+        if ($canUseHTML) {
+            "font-weight:bold"
+        }
+        elseif ($canUseANSI) 
+        {
+            [char]0x1b + "[1m"
+        }
+}
+
+if ($Underline) {
+    $styleAttributes += 
+        if ($canUseHTML) {
+            "text-decoration:underline"
+        } elseif ($canUseANSI) {
+            [char]0x1b + "[4m"
+        }
+}
+
+if ($Invert) {
+    $styleAttributes += 
+        if ($canUseHTML) {
+            "filter:invert(100%)"
+        } elseif ($canUseANSI) {
+            [char]0x1b + "[7m"            
+        }
+}
+
+if ($canUseHTML) {
+   
+    "&lt;span$(
+        if ($styleAttributes) { " style='$($styleAttributes -join ';')'"}
+    )$(
+        if ($cssClasses) { " class='$($cssClasses -join ' ')'"}
+    )&gt;"
+} elseif ($canUseANSI) {
+    $styleAttributes -join ''
+}</ScriptBlock>
+              </ExpressionBinding>
+            </CustomItem>
+          </CustomEntry>
+        </CustomEntries>
+      </CustomControl>
+    </Control>
+    <Control>
+      <Name>${ugit_ClearOutputStyle}</Name>
+      <CustomControl>
+        <CustomEntries>
+          <CustomEntry>
+            <CustomItem>
+              <ExpressionBinding>
+                <ScriptBlock>&lt;#
+.Synopsis
+    Clears the output style
+.Description
+    Clears ANSI output style or closes the most recent span element.
+
+    ANSI stylization can be toggled off individually (for instance, to stop applying an -Underline but leave the color unchanged)
+.Notes
+    IsFormatPart: true
+#&gt;
+param(
+# If set, will explicitly clear ANSI Bold
+[switch]
+$Bold,
+# If set, will explicitly clear ANSI Underline
+[switch]
+$Underline,
+# If set, will explicitly clear ANSI Invert
+[switch]
+$Invert,
+# If set, will explicitly clear ANSI Foreground Color
+[switch]
+$ForegroundColor,
+# If set, will explicitly clear ANSI Background Color
+[switch]
+$BackgroundColor
+)
+@(if ($request -or $host.UI.SupportsHTML) {
+    "&lt;/span&gt;"
+} elseif ($Host.UI.SupportsVirtualTerminal) {
+    if ($Underline) {
+        [char]0x1b + "[24m"
+    }
+    if ($Bold) {        
+        [char]0x1b + "[21m"
+    }
+    if ($Invert) {
+        [char]0x1b + '[27m'
+    }
+    if ($ForegroundColor) {
+        [char]0x1b + '[39m'
+    }
+    if ($BackgroundColor) {
+        [char]0x1b + '[49m'
+    }
+
+    if (-not ($Underline -or $Bold -or $Invert -or $ForegroundColor -or $BackgroundColor)) {
+        [char]0x1b + '[0m'
+    }
+    
+}) -join ''</ScriptBlock>
+              </ExpressionBinding>
+            </CustomItem>
+          </CustomEntry>
+        </CustomEntries>
+      </CustomControl>
+    </Control>
+  </Controls>
+  <ViewDefinitions>
+    <View>
+      <Name>git.branch</Name>
+      <ViewSelectedBy>
+        <TypeName>git.branch</TypeName>
+      </ViewSelectedBy>
+      <GroupBy>
+        <PropertyName>GitRoot</PropertyName>
+      </GroupBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>BranchName</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>IsCurrentBranch</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+    <View>
+      <Name>git.branch.detail</Name>
+      <ViewSelectedBy>
+        <TypeName>git.branch.detail</TypeName>
+      </ViewSelectedBy>
+      <GroupBy>
+        <PropertyName>GitRoot</PropertyName>
+      </GroupBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <Wrap />
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>BranchName</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>BranchHash</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>IsCurrentBranch</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CommitMessage</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+    <View>
+      <Name>Git.Diff.ChangeSet</Name>
+      <ViewSelectedBy>
+        <TypeName>Git.Diff.ChangeSet</TypeName>
+      </ViewSelectedBy>
+      <CustomControl>
+        <CustomEntries>
+          <CustomEntry>
+            <CustomItem>
+              <ExpressionBinding>
+                <ScriptBlock> $_ </ScriptBlock>
+                <CustomControlName>Git.Diff.ChangeSet</CustomControlName>
+              </ExpressionBinding>
+            </CustomItem>
+          </CustomEntry>
+        </CustomEntries>
+      </CustomControl>
+    </View>
+    <View>
+      <Name>Git.Diff</Name>
+      <ViewSelectedBy>
+        <TypeName>Git.Diff</TypeName>
+      </ViewSelectedBy>
+      <CustomControl>
+        <CustomEntries>
+          <CustomEntry>
+            <CustomItem>
+              <ExpressionBinding>
+                <ScriptBlock>$moduleName = 'ugit'
+do {
+    $lm = Get-Module -Name $moduleName -ErrorAction Ignore
+    if (-not $lm) { continue } 
+    if ($lm.FormatPartsLoaded) { break }
+    $wholeScript = @(foreach ($formatFilePath in $lm.exportedFormatFiles) {         
+        foreach ($partNodeName in Select-Xml -LiteralPath $formatFilePath -XPath "/Configuration/Controls/Control/Name[starts-with(., '$')]") {
+            $ParentNode = $partNodeName.Node.ParentNode
+            "$($ParentNode.Name)={
+$($ParentNode.CustomControl.CustomEntries.CustomEntry.CustomItem.ExpressionBinding.ScriptBlock)}"
+        }
+    }) -join [Environment]::NewLine
+    New-Module -Name "${ModuleName}.format.ps1xml" -ScriptBlock ([ScriptBlock]::Create(($wholeScript + ';Export-ModuleMember -Variable *'))) |
+        Import-Module -Global
+    $onRemove = [ScriptBlock]::Create("Remove-Module '${ModuleName}.format.ps1xml'")
+    
+    if (-not $lm.OnRemove) {
+        $lm.OnRemove = $onRemove
+    } else {
+        $lm.OnRemove = [ScriptBlock]::Create($onRemove.ToString() + ''  + [Environment]::NewLine + $lm.OnRemove)
+    }
+    $lm | Add-Member NoteProperty FormatPartsLoaded $true -Force
+
+} while ($false)
+
+
+        @(
+        . ${ugit_SetOutputStyle} -ForegroundColor Verbose
+        '@ '
+        if ($_.From -eq $_.To) {
+            $_.From
+        } else {
+            $_.From + '--&gt;' + $_.To
+        }
+
+        ' @'
+        " ($($_.FromHash)..$($_.ToHash)) "
+        . ${ugit_ClearOutputStyle}
+        ) -join ''
+    </ScriptBlock>
+              </ExpressionBinding>
+              <NewLine />
+              <NewLine />
+              <ExpressionBinding>
+                <ScriptBlock> $_.ChangeSet </ScriptBlock>
+                <EnumerateCollection />
+                <CustomControlName>Git.Diff.ChangeSet</CustomControlName>
+              </ExpressionBinding>
+            </CustomItem>
+          </CustomEntry>
+        </CustomEntries>
+      </CustomControl>
+    </View>
+    <View>
+      <Name>git</Name>
+      <ViewSelectedBy>
+        <TypeName>git</TypeName>
+      </ViewSelectedBy>
+      <CustomControl>
+        <CustomEntries>
+          <CustomEntry>
+            <CustomItem>
+              <ExpressionBinding>
+                <PropertyName>GitOutput</PropertyName>
+              </ExpressionBinding>
+            </CustomItem>
+          </CustomEntry>
+        </CustomEntries>
+      </CustomControl>
+    </View>
+    <View>
+      <Name>Git.Log</Name>
+      <ViewSelectedBy>
+        <TypeName>Git.Log</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <Wrap />
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>GitUserName</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CommitDate</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CommitMessage</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+    <View>
+      <Name>IncludeCommitHash</Name>
+      <ViewSelectedBy>
+        <TypeName>Git.Log</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <Wrap />
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>GitUserName</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CommitDate</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CommitHash</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CommitMessage</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+    <View>
+      <Name>Git.Merge.Log</Name>
+      <ViewSelectedBy>
+        <TypeName>Git.Merge.Log</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <Wrap />
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>GitUserName</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CommitDate</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>MergeHash</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CommitMessage</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+    <View>
+      <Name>Git.Status</Name>
+      <ViewSelectedBy>
+        <TypeName>Git.Status</TypeName>
+      </ViewSelectedBy>
+      <GroupBy>
+        <PropertyName>GitRoot</PropertyName>
+      </GroupBy>
+      <CustomControl>
+        <CustomEntries>
+          <CustomEntry>
+            <CustomItem>
+              <Text>On Branch: </Text>
+              <ExpressionBinding>
+                <ScriptBlock> $_.BranchName </ScriptBlock>
+              </ExpressionBinding>
+              <NewLine />
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Status </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock> $_.Status + [Environment]::NewLine </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Staged </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock> 
+        "Changes Staged For Commit:
+  (use git commit -m to commit)" + [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Staged </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        (@(foreach ($line in $($_.Staged | Select-Object ChangeType, Path | Out-String -Width ($host.UI.RawUI.BufferSize.Width - 8)) -split '(?&gt;\r\n|\n)') {
+            (" " * 4) + $line
+        }) -join [Environment]::NewLine) + [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Unstaged </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock> 
+        "Changes Not Staged For Commit:
+  (use git add &lt;file&gt; to add, git restore &lt;file&gt; to discard changes)" + [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Unstaged</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        (@(foreach ($line in $($_.Unstaged | Select-Object ChangeType, Path | Out-String -Width ($host.UI.RawUI.BufferSize.Width - 8)) -split '(?&gt;\r\n|\n)') {
+            (" " * 4) + $line
+        }) -join [Environment]::NewLine) + [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Untracked </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        "Untracked Files:
+  (use git add &lt;file&gt; to include in commit)" + [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Untracked</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        @(foreach ($line in $($_.Untracked | Out-String -Width ($host.UI.RawUI.BufferSize.Width - 8)) -split '(?&gt;\r\n|\n)') {
+            (" " * 4) + $line
+        }) -join [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <Text>Nothing to commit, working tree clean</Text>
+            </CustomItem>
+          </CustomEntry>
+        </CustomEntries>
+      </CustomControl>
+    </View>
+  </ViewDefinitions>
+</Configuration>
