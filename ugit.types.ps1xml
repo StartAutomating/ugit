@@ -7,7 +7,9 @@
       <ScriptMethod>
         <Name>Delete</Name>
         <Script>
-                        git branch '-d' $this.BranchName @args
+                        Push-Location $this.GitRoot
+git branch '-d' $this.BranchName @args
+Pop-Location
                     </Script>
       </ScriptMethod>
     </Members>
