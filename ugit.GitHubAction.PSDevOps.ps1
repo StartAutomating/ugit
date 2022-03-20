@@ -1,7 +1,7 @@
 ﻿#requires -Module PSDevOps
 #requires -Module ugit
 Import-BuildStep -ModuleName ugit
-New-GitHubAction -Name "UGit" -Description 'Updated Git' -Action UGitAction -Icon github  -ActionOutput ([Ordered]@{
+New-GitHubAction -Name "UseUGit" -Description 'Updated Git' -Action UGitAction -Icon github  -ActionOutput ([Ordered]@{
     ugitScriptRuntime = [Ordered]@{
         description = "The time it took the .ugitScript parameter to run"
         value = '${{steps.ugitAction.outputs.ugitScriptRuntime}}'
