@@ -1,5 +1,5 @@
 ﻿@{
-    ModuleVersion    = '0.1'
+    ModuleVersion    = '0.1.1'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -7,7 +7,7 @@
     Author           = 'James Brundage'
     Copyright        = '2022 Start-Automating'    
     CompanyName      = 'Start-Automating'
-    Description      = 'uGit:  Updated Git.
+    Description      = 'ugit:  Updated Git.
 
 A powerful PowerShell wrapper for git that lets you extend git, automate multiple repos, and use the object pipeline.'
 PrivateData   = @{
@@ -16,6 +16,9 @@ PrivateData   = @{
         ProjectURI = 'https://github.com/StartAutomating/ugit'
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
         ReleaseNotes = @'
+## 0.1.1
+* Support for git commit (#4)
+---
 ## 0.1
 * Initial Release of ugit
 ---
