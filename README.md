@@ -23,3 +23,42 @@ git log -n 5
 git log -n 5 |
   Get-Member
 ~~~
+
+
+## How ugit works:
+
+ugit only has a few commands:
+
+### Use-Git
+
+After you've imported ugit, Use-Git is what will be called when you run "git".
+
+This happens because Use-Git is aliased to "git", and aliases are resolved first in PowerShell.
+
+Use-Git assumes all positional parameters are arguments to Git, and passes them on directly.
+
+This works in almost every scenario, except with some single character git options.  You can pass these in quotes.
+
+When Use-Git outputs, it sets $global:LastGitOutput and then pipes to Out-Git.
+
+### Out-Git
+
+Out-Git will attempt to take git output and return it as a useful object.
+
+This object can then be extended and formatted by PowerShell's Extended Type System.
+
+Out-Git accomplishes this with several extensions.  You can list extensions with Get-UGitExtension:
+
+### Get-UGitExtension
+
+Get-UGitExtension enables any file beneath ugit (or a module that tags ugit) named *.ugit.extension.ps1 to be treated as an extension.
+
+In ugit, extensions signal that they apply to a given git command by adding a ```[ValidatePattern]``` attribute to the command.
+
+If this pattern matches the given git command, the extension will run.
+
+Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/Piecemeal)
+
+
+
+
