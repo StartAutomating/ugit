@@ -59,6 +59,16 @@ If this pattern matches the given git command, the extension will run.
 
 Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/Piecemeal)
 
+## Git Commands Extended
 
+* git branch
+* git diff
+* git log
+* git status
 
+### Extensions that may apply to any git command:
 
+* git.fileoutput extension.
+
+This applies to an git command that uses the -o flag.
+It will attempt to locate any output specified by -o and return it as a file or directory.
