@@ -41,6 +41,12 @@ git diff $this.CommitHash @args
 Pop-Location
                     </Script>
       </ScriptMethod>
+      <ScriptProperty>
+        <Name>ReferenceNumbers</Name>
+        <GetScriptBlock>
+                        [Regex]::new("#(?&lt;n&gt;\d+)").Matches($this.CommitMessage) -replace '#' -as [int[]]
+                    </GetScriptBlock>
+      </ScriptProperty>
     </Members>
   </Type>
   <Type>
