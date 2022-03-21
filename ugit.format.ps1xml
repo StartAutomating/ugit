@@ -414,15 +414,6 @@ $BackgroundColor
           <CustomEntry>
             <CustomItem>
               <ExpressionBinding>
-                <ScriptBlock>
-        "[$($_.BranchName) $($_.CommitHash)] "
-    </ScriptBlock>
-              </ExpressionBinding>
-              <ExpressionBinding>
-                <PropertyName>CommitMessage</PropertyName>
-              </ExpressionBinding>
-              <NewLine />
-              <ExpressionBinding>
                 <ScriptBlock>$moduleName = 'ugit'
 do {
     $lm = Get-Module -Name $moduleName -ErrorAction Ignore
@@ -449,6 +440,21 @@ $($ParentNode.CustomControl.CustomEntries.CustomEntry.CustomItem.ExpressionBindi
 } while ($false)
 
 . ${ugit_SetOutputStyle} -ForegroundColor 'verbose'</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>
+        "[$($_.BranchName) $($_.CommitHash)] "
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>. ${ugit_ClearOutputStyle}</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <PropertyName>CommitMessage</PropertyName>
+              </ExpressionBinding>
+              <NewLine />
+              <ExpressionBinding>
+                <ScriptBlock>. ${ugit_SetOutputStyle} -ForegroundColor 'verbose'</ScriptBlock>
               </ExpressionBinding>
               <ExpressionBinding>
                 <ScriptBlock>

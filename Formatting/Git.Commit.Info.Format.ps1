@@ -1,7 +1,7 @@
 Write-FormatView -TypeName Git.Commit.Info -Action {
     Write-FormatViewExpression -ScriptBlock {
         "[$($_.BranchName) $($_.CommitHash)] "
-    }
+    } -ForegroundColor verbose
     Write-FormatViewExpression -Property CommitMessage
     Write-FormatViewExpression -Newline
     Write-FormatViewExpression -ScriptBlock {
