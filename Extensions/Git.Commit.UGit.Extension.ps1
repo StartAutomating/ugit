@@ -19,7 +19,7 @@ process {
 
 end {
     if ($commitLines -match '[a-f0-9]+\]') {
-        $commitInfo = [Ordered]@{FilesChanged=0;Insertions=0;Deletions=0;PSTypeName='git.commit.info'}
+        $commitInfo = [Ordered]@{FilesChanged=0;Insertions=0;Deletions=0;GitRoot=$GitRoot;PSTypeName='git.commit.info'}
         for ($cln = 0; $cln -lt $commitLines.Length; $cln++) {
             if ($commitLines[$cln] -match '^\[(?<n>\S+)\s(?<h>[a-f0-9]+)\]') {
                 $commitInfo.BranchName = $matches.n
