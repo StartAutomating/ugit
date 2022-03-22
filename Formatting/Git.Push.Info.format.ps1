@@ -1,4 +1,4 @@
-Write-FormatView -TypeName Git.Push -Action {
+Write-FormatView -TypeName Git.Push.Info -Action {
     Write-FormatViewExpression -ScriptBlock {
         "To " + $_.GitUrl + [Environment]::NewLine
     }

@@ -706,9 +706,9 @@ $($ParentNode.CustomControl.CustomEntries.CustomEntry.CustomItem.ExpressionBindi
       </TableControl>
     </View>
     <View>
-      <Name>Git.Push</Name>
+      <Name>Git.Push.Info</Name>
       <ViewSelectedBy>
-        <TypeName>Git.Push</TypeName>
+        <TypeName>Git.Push.Info</TypeName>
       </ViewSelectedBy>
       <CustomControl>
         <CustomEntries>
