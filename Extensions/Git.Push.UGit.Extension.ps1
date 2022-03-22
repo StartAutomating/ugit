@@ -27,11 +27,6 @@ end {
         $pushLines
         return
     }
-<#
-To https://github.com/StartAutomating/RoughDraft.git
-   963ae1e..b8ddde6  ImprovingCachingAndMoreExtensions -> ImprovingCachingAndMoreExtensions
-
-#>
     $pushOutput = [Ordered]@{PSTypeName='git.push.info'}
     
     foreach ($pl in $pushLines) {
