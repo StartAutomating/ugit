@@ -1,5 +1,5 @@
 ﻿@{
-    ModuleVersion    = '0.1.1'
+    ModuleVersion    = '0.1.2'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -16,6 +16,10 @@ PrivateData   = @{
         ProjectURI = 'https://github.com/StartAutomating/ugit'
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
         ReleaseNotes = @'
+## 0.1.2
+* Support for git push (#7)
+* Adding .Amend/.UpdateMessage to git.commit.info (#6)
+---
 ## 0.1.1
 * Support for git commit (#4)
 ---
