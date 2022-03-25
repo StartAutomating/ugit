@@ -1,5 +1,5 @@
 ﻿@{
-    ModuleVersion    = '0.1.2'
+    ModuleVersion    = '0.1.3'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -16,6 +16,14 @@ PrivateData   = @{
         ProjectURI = 'https://github.com/StartAutomating/ugit'
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
         ReleaseNotes = @'
+## 0.1.3
+* Updating git push extension:  Support for first push (#14)
+* Adding .output to automatic typenames (Fixing #11)
+* Adding .ToString to git.branch and git.branch.detail (#9)
+* Updating git branch extension:  Fixing --delete behavior (#13)
+* Use-Git:  Support for -d/-D/-v/-V (#12).  -Verbose implies --verbose (#10)
+---
+---
 ## 0.1.2
 * Support for git push (#7)
 * Adding .Amend/.UpdateMessage to git.commit.info (#6)
