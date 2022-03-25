@@ -12,6 +12,33 @@ git branch '-d' $this.BranchName @args
 Pop-Location
                     </Script>
       </ScriptMethod>
+      <ScriptMethod>
+        <Name>ToString</Name>
+        <Script>
+                        $this.BranchName
+
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.branch.detail</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>Delete</Name>
+        <Script>
+                        Push-Location $this.GitRoot
+git branch '-d' $this.BranchName @args
+Pop-Location
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
+        <Name>ToString</Name>
+        <Script>
+                        $this.BranchName
+
+                    </Script>
+      </ScriptMethod>
     </Members>
   </Type>
   <Type>
