@@ -1,4 +1,5 @@
 ## 0.1.3:
+* Updating git.log extension:  Adding .Merged (#16)
 * Updating git push extension:  Support for first push (#14)
 * Adding .output to automatic typenames (Fixing #11)
 * Adding .ToString to git.branch and git.branch.detail (#9)
