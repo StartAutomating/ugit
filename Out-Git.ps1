@@ -128,12 +128,12 @@
             # Followed by each smaller set of arguments, separated by periods
             # Followed by a PSTypeName of 'git'
             # Thus, for example, git clone $repo
-            # Would have the typenames of :"git.clone.$repo", "git.clone","git"
+            # Would have the typenames of :"git.clone.$repo.output", "git.clone.output","git.output"
             $gitOut.pstypenames.clear()
             for ($n = $GitArgument.Length - 1 ; $n -ge 0; $n--) { 
-                $gitOut.pstypenames.add(@('git') + $GitArgument[0..$n] -join '.')
+                $gitOut.pstypenames.add(@('git') + $GitArgument[0..$n]  + @('output') -join '.')
             }
-            $gitOut.pstypenames.add('git')
+            $gitOut.pstypenames.add('git.output')
 
             # All gitOutput should attach the original output line, as well as the command that produced that line.
             $gitOut.psobject.properties.add([PSNoteProperty]::new('GitOutput',"$out"))

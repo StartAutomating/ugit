@@ -17,9 +17,7 @@
     .NOTES        
         For almost everything git does, calling Use-Git is the same as calling git directly.
 
-        The exceptions are short, single-character parameters, like -v and -d.
-        These get mapped to PowerShell parameters, like -Verbose and -Debug.
-        To ensure a parameter is passed to git, instead of interpreted as as PowerShell parameter, simply enclose it in quotes.
+        If you have any difficulties passing parameters to git, try enclosing them in quotes. 
     .LINK
         Out-Git
     .Example
@@ -63,8 +61,37 @@
         if (-not $script:RepoRoots) {    # If we have not yet created a cache of repo roots
             $script:RepoRoots = @{}      # do so now.
         }
-    }
 
+        $myInv = $MyInvocation
+        $callstackPeek = @(Get-PSCallStack)[1]
+        $callingContext =
+            if ($callstackPeek.InvocationInfo.MyCommand.ScriptBlock) {
+                @($callstackPeek.InvocationInfo.MyCommand.ScriptBlock.Ast.FindAll({
+                    param($ast) 
+                        $ast.Extent.StartLineNumber -eq $myInv.ScriptLineNumber -and
+                        $ast.Extent.StartColumnNumber -eq $myInv.OffsetInLine -and 
+                        $ast -is [Management.Automation.Language.CommandAst]
+                },$true))[0]
+            }
+        
+        $argumentNumber = 0
+        foreach ($commandElement in $callingContext.CommandElements) {
+            if ($commandElement.parameterName -in 'd', 'v') {
+                # If they passed -d/-D or -v/-V, they probably don't mean -Debug/-Verbose
+                $beforeArgs = @(if ($argumentNumber) { $GitArgument[0..$argumentNumber]})
+                $afterArgs  = @(if ($argumentNumber + 1 -le $gitArgument.Length) {
+                    $GitArgument[($argumentNumber + 1)..($GitArgument.Length - 1)]
+                })
+                $GitArgument = @($beforeArgs) + @("$($commandElement.Extent)") + @($afterArgs)
+            }
+            $argumentNumber++
+        }
+
+        if ($VerbosePreference -ne 'silentlyContinue' -and -not ($GitArgument -eq '-v'))
+        { 
+            $GitArgument += '--verbose' # they probably want --verbose (and enough git commands support it to try).
+        }
+    }
     process {
         # First, we need to take any input and figure out what directories we are going into.
         $directories = @()
@@ -98,7 +125,6 @@
             $directories = @(foreach ($dir in $directories) { $dir.Fullname }) 
         }
 
-        
         # For each directory we know of, we
         foreach ($dir in $directories) {
             $AllGitArgs = @(@($GitArgument) + $InputObject) # collect the combined arguments
@@ -109,6 +135,7 @@
                     @("$(& $script:CachedGitCmd rev-parse --show-toplevel *>&1)") -like "*/*" -replace '/', [io.path]::DirectorySeparatorChar
             }
             $OutGitParams.GitRoot = "$($script:RepoRoots[$dir])"
+            Write-Verbose "Calling git with $AllGitArgs"
             & $script:CachedGitCmd @AllGitArgs *>&1       | # Then we run git, combining all streams into output.                
                 Tee-Object -Variable global:lastGitOutput | # We store that output in $global:lastGitOutput, using Tee-Object
                                                             # then pipe to Out-Git, which will

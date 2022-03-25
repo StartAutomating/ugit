@@ -23,7 +23,7 @@ begin {
 }
 process {
     # If -d or -delete was passed
-    if ($gitCommand -match '\s-(?>d|delete)') {
+    if ($gitCommand -match '\s-(?>d|-delete)') {
         # and we have a confirmation of the branch being deleted
         if ("$gitout" -match '^Deleted branch (?<BranchName>\S+) \(was (?<BranchHash>[0-9a-f]+)\)') {
             # Output a 'git.branch.deleted' object

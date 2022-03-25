@@ -1,3 +1,3 @@
-﻿Write-FormatView -TypeName git -Action {
+﻿Write-FormatView -TypeName git.output -Action {
     Write-FormatViewExpression -Property GitOutput
 }
