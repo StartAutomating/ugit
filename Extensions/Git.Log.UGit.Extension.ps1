@@ -3,6 +3,10 @@
     Log Extension
 .Description
     Outputs git log entries as objects
+.Example
+    git log | Group-Object GitUserEmail -NoElement
+.EXAMPLE
+    git log | Where-Object -Not Merged
 #>
 # It's an extension for Out-Git
 [Management.Automation.Cmdlet("Out","Git")]
@@ -12,6 +16,7 @@ param(
 )
 
 begin {
+    $script:LogChangesMerged = $false
     $Git_Log = [Regex]::new(@'
 (?m)^commit                                                             # Commits start with 'commit'
 \s+(?<CommitHash>(?<HexDigits>
@@ -61,6 +66,10 @@ begin {
         if ($gitLogOut.CommitMessage) {
             $gitLogOut.CommitMessage = $gitLogOut.CommitMessage.Trim()
         }
+        if ($gitLogOut.MergeHash) {
+            $script:LogChangesMerged = $true
+        }
+        $gitLogOut.Merged = $script:LogChangesMerged
         $gitLogOut.GitRoot = $GitRoot
         [PSCustomObject]$gitLogOut
     }
@@ -79,5 +88,6 @@ process {
 
 end {
     OutGitLog $lines
+    $ExecutionContext.SessionState.PSVariable.Remove('script:LogChangesMerged')
 }
 
