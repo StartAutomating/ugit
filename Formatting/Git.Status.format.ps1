@@ -1,6 +1,7 @@
 Write-FormatView -TypeName Git.Status -Action {
     Write-FormatViewExpression -Text "On Branch: "
-    Write-FormatViewExpression -ScriptBlock { $_.BranchName }
+    Write-FormatViewExpression -ScriptBlock { $_.BranchName } -if { $_.BranchName -notin 'main', 'master' } -ForegroundColor Verbose
+    Write-FormatViewExpression -ScriptBlock { $_.BranchName } -if { $_.BranchName -in 'main', 'master' } -ForegroundColor Warning
     Write-FormatViewExpression -Newline
     Write-FormatViewExpression -If { $_.Status } -ScriptBlock { $_.Status + [Environment]::NewLine }
     Write-formatviewExpression -If { $_.Staged } -ScriptBlock { 
