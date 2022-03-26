@@ -104,6 +104,14 @@ git diff $this.CommitHash @args
 Pop-Location
                     </Script>
       </ScriptMethod>
+      <ScriptMethod>
+        <Name>Reset</Name>
+        <Script>
+                        Push-Location $this.GitRoot
+git reset $this.CommitHash @args
+Pop-Location
+                    </Script>
+      </ScriptMethod>
       <ScriptProperty>
         <Name>ReferenceNumbers</Name>
         <GetScriptBlock>

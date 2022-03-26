@@ -13,7 +13,7 @@
         If the input is a directory, Use-Git will Push-Location that directory.
         Otherwise, it will be passed as a positional argument (after any other arguments).
 
-        Use-Git will combine errors and output, 
+        Use-Git will combine errors and output, so that git output to standard error is handled without difficulty.
     .NOTES        
         For almost everything git does, calling Use-Git is the same as calling git directly.
 
@@ -91,6 +91,9 @@
         { 
             $GitArgument += '--verbose' # they probably want --verbose (and enough git commands support it to try).
         }
+        $progId = Get-Random
+        $dirCount = 0
+        $RepoNotRequired = 'clone','init'  # A small number of git operations do not require a repo.  List them here.
     }
     process {
         # First, we need to take any input and figure out what directories we are going into.
@@ -125,17 +128,31 @@
             $directories = @(foreach ($dir in $directories) { $dir.Fullname }) 
         }
 
+        
+
         # For each directory we know of, we
         foreach ($dir in $directories) {
             $AllGitArgs = @(@($GitArgument) + $InputObject) # collect the combined arguments
             $OutGitParams = @{GitArgument=$AllGitArgs}      # and prepare a splat (to save precious space when reporting errors).
+            $dirCount++
             Push-Location -LiteralPath $dir                 # Then we Push into that directory.
-            if (-not $script:RepoRoots[$dir]) {
+            if (-not $script:RepoRoots[$dir]) {             # and see if we have a repo root
                 $script:RepoRoots[$dir] = 
                     @("$(& $script:CachedGitCmd rev-parse --show-toplevel *>&1)") -like "*/*" -replace '/', [io.path]::DirectorySeparatorChar
+                if (-not $script:RepoRoots[$dir] -and      # If we did not have a repo root
+                    -not ($gitArgument -match "(?>$($RepoNotRequired -join '|'))") # and we are not doing an operation that does not require one 
+                ) {
+                    Write-Warning "'$($dir)' is not a git repository" # warn that there is no repo (#21)
+                    Pop-Location # pop back out of the directory                   
+                    continue # and continue to the next one.
+                }
             }
+            
             $OutGitParams.GitRoot = "$($script:RepoRoots[$dir])"
             Write-Verbose "Calling git with $AllGitArgs"
+            if ($dirCount -gt 1) {                
+                Write-Progress -PercentComplete (($dirCount * 5) % 100) -Status "git $allGitArgs " -Activity "$($dir) " -Id $progId
+            }
             & $script:CachedGitCmd @AllGitArgs *>&1       | # Then we run git, combining all streams into output.                
                 Tee-Object -Variable global:lastGitOutput | # We store that output in $global:lastGitOutput, using Tee-Object
                                                             # then pipe to Out-Git, which will
@@ -146,6 +163,14 @@
                 # If Out-Git finds one or more extensions to run, these can parse the output.
 
             Pop-Location # After we have run, Pop back out of the location.
+        }
+
+        
+    }
+
+    end {
+        if ($dirCount -gt 1) {
+            Write-Progress -completed -Status "$allGitArgs " -Activity " " -Id $progId
         }
     }
 }

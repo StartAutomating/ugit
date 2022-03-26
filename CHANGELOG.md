@@ -1,3 +1,12 @@
+## 0.1.4
+* Adding git.log.reset() (#20)
+* Adding git clone extension (#17)
+* Use-Git:  Running certain git commands when there is no repo (currently clone and init)
+* Use-Git:  Support for progress bars (#18).  Warning when repo not found (#21)
+* git branch extension:  Adding example
+* Highlighting branch name (fixing #19)
+---
+
 ## 0.1.3:
 * Updating git.log extension:  Adding .Merged (#16)
 * Updating git push extension:  Support for first push (#14)
