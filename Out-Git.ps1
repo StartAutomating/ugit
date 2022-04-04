@@ -31,10 +31,11 @@
     #>
     [CmdletBinding(PositionalBinding=$false)]
     param(
-    # One or more output lines from Git. 
+    # One or more output lines from Git.
     [Parameter(ValueFromPipeline)]
+    [Alias('GitOutputLines')]
     [string[]]
-    $OutputObject,
+    $GitOutputLine,
 
     # The arguments that were passed to git.
     [string[]]
@@ -42,7 +43,11 @@
 
     # The root of the current git repository.
     [string]
-    $GitRoot
+    $GitRoot,
+
+    # The timestamp.   This can be used for tracking.  Defaults to [DateTime]::Now
+    [DateTime]
+    $TimeStamp = [DateTime]::Now
     )
 
     begin {
@@ -111,16 +116,20 @@
         foreach ($tr in $spiToRemove) {
             $steppablePipelines.Remove($tr)
         }
+
+        $AllGitOutput    = [Collections.Queue]::new()
+        $ProcessedOutput = [Collections.Queue]::new()
     }
 
     process {
         # Walk over each output.
-        foreach ($out in $OutputObject) {
+        foreach ($out in $GitOutputLine) {
             # If the out was a literal string of 'System.Management.Automation.RemoteException', 
             if ("$out" -eq "System.Management.Automation.RemoteException") {                
                 # ignore it and continue (these things happen with some exes from time to time).
                 continue
             }
+            $AllGitOutput.Enqueue($out)
             # Wrap the output in a PSObject
             $gitOut = [PSObject]::new($out)
             # Next, clear it's typenames and determine an automatic typename.
@@ -170,7 +179,12 @@
                     }
                     $processIsRunning = $true # Set $processIsRunning,
                     try {
-                        $steppable.Process($gitOut) # attempt to run process, using the $gitOut object.
+                        $steppable.Process($gitOut) | & {
+                            process {
+                                $ProcessedOutput.Enqueue($_)
+                                $_
+                            }
+                        } # attempt to run process, using the $gitOut object.
                     } catch {
                         $PSCmdlet.WriteError($_)    # (catch any exceptions and write them as errors).
                     }
@@ -195,14 +209,32 @@
     }
 
     end {
+        $global:lastGitOutput = $AllGitOutput.ToArray()
+
         # End remaining steppable pipelines need to end.
         # Ending does not support the cancellation of other extensions.
         foreach ($steppable in $steppablePipelines) {
             try {
-                $steppable.End()
+                $steppable.End() | & { process {
+                    $ProcessedOutput.Enqueue($_)
+                    $_
+                }}
             } catch {
                 Write-Error -ErrorRecord $_
             }
+        }
+
+
+        if (-not $global:gitHistory -or 
+            $global:gitHistory -isnot [Collections.IDictionary]) {
+            $global:gitHistory = [Ordered]@{}
+        }
+        $global:gitHistory["$($MyInvocation.HistoryId)::$GitRoot::$GitArgument"] = @{
+            OutputObject  = $ProcessedOutput.ToArray()
+            GitOutputLine = $AllGitOutput.ToArray()
+            GitArgument   = $GitArgument
+            GitRoot       = $GitRoot
+            TimeStamp     = $TimeStamp
         }
     }
 }
