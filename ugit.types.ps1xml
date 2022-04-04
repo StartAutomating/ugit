@@ -97,6 +97,14 @@ Pop-Location
                     </Script>
       </ScriptMethod>
       <ScriptMethod>
+        <Name>Checkout</Name>
+        <Script>
+                        Push-Location $this.GitRoot
+git checkout $this.CommitHash @args
+Pop-Location
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
         <Name>Diff</Name>
         <Script>
                         Push-Location $this.GitRoot
@@ -109,6 +117,14 @@ Pop-Location
         <Script>
                         Push-Location $this.GitRoot
 git reset $this.CommitHash @args
+Pop-Location
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
+        <Name>Revert</Name>
+        <Script>
+                        Push-Location $this.GitRoot
+git revert $this.CommitHash @args
 Pop-Location
                     </Script>
       </ScriptMethod>
