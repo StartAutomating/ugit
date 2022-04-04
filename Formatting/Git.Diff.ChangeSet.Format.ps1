@@ -1,4 +1,5 @@
 Write-FormatView -TypeName Git.Diff.ChangeSet -AsControl -Name Git.Diff.ChangeSet -Action {
+    Write-FormatViewExpression -Newline
     Write-FormatViewExpression -ScriptBlock {
         "@@ -$($_.LineStart),$($_.LineCount) +$($_.NewLineStart),$($_.NewLineCount) @@"
     } -ForegroundColor Verbose

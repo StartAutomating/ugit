@@ -8,6 +8,7 @@
         <CustomEntries>
           <CustomEntry>
             <CustomItem>
+              <NewLine />
               <ExpressionBinding>
                 <ScriptBlock>$moduleName = 'ugit'
 do {

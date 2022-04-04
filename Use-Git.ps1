@@ -34,7 +34,7 @@
         git branch    
     #>
     [Alias('git')]
-    [CmdletBinding(PositionalBinding=$false)]
+    [CmdletBinding(PositionalBinding=$false,SupportsShouldProcess,ConfirmImpact='Low')]
     param(
     # Any arguments passed to git.  All positional arguments will automatically be passed to -GitArgument.
     [Parameter(ValueFromRemainingArguments)]
@@ -135,6 +135,11 @@
             $AllGitArgs = @(@($GitArgument) + $InputObject) # collect the combined arguments
             $OutGitParams = @{GitArgument=$AllGitArgs}      # and prepare a splat (to save precious space when reporting errors).
             $dirCount++
+            if ($WhatIfPreference) {
+                @{} + $PSBoundParameters
+                continue
+            }
+
             Push-Location -LiteralPath $dir                 # Then we Push into that directory.
             if (-not $script:RepoRoots[$dir]) {             # and see if we have a repo root
                 $script:RepoRoots[$dir] = 
@@ -153,15 +158,16 @@
             if ($dirCount -gt 1) {                
                 Write-Progress -PercentComplete (($dirCount * 5) % 100) -Status "git $allGitArgs " -Activity "$($dir) " -Id $progId
             }
-            & $script:CachedGitCmd @AllGitArgs *>&1       | # Then we run git, combining all streams into output.                
-                Tee-Object -Variable global:lastGitOutput | # We store that output in $global:lastGitOutput, using Tee-Object
-                                                            # then pipe to Out-Git, which will
-                Out-Git @OutGitParams # output git as objects.
-                                    
-                # These objects are decorated for the PowerShell Extended Type System.
-                # This makes them easy to extend and customize their display.
-                # If Out-Git finds one or more extensions to run, these can parse the output.
 
+            if ($PSCmdlet.ShouldProcess("$pwd : git $allGitArgs")) {
+                & $script:CachedGitCmd @AllGitArgs *>&1       | # Then we run git, combining all streams into output.
+                                                                # then pipe to Out-Git, which will
+                    Out-Git @OutGitParams # output git as objects.
+                                        
+                    # These objects are decorated for the PowerShell Extended Type System.
+                    # This makes them easy to extend and customize their display.
+                    # If Out-Git finds one or more extensions to run, these can parse the output.
+            }
             Pop-Location # After we have run, Pop back out of the location.
         }
 
