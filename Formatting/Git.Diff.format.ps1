@@ -14,9 +14,6 @@ Write-FormatView -TypeName Git.Diff -Action {
         . $ClearOutputStyle
         ) -join ''
     }
-    
-    Write-FormatViewExpression -Newline
-    Write-FormatViewExpression -Newline
-
+            
     Write-FormatViewExpression -ControlName Git.Diff.ChangeSet -Enumerate -ScriptBlock { $_.ChangeSet }
 }
