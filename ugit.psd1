@@ -1,5 +1,5 @@
 ﻿@{
-    ModuleVersion    = '0.1.5'
+    ModuleVersion    = '0.1.6'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -16,6 +16,11 @@ PrivateData   = @{
         ProjectURI = 'https://github.com/StartAutomating/ugit'
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
         ReleaseNotes = @'
+## 0.1.6
+* Adding support / formatting for git pull (#26)
+* Out-Git:  Extension Improvements (#33)
+---
+
 ## 0.1.5
 * Adding git.log .Checkout() and Revert() (#27, #28)
 * Fixing formatting for git diff (#25)

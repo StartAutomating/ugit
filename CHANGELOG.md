@@ -1,3 +1,9 @@
+## 0.1.6
+* Adding support / formatting for git pull (#26)
+* Out-Git:  Extension Improvements (#33)
+---
+
+
 ## 0.1.5
 * Adding git.log .Checkout() and Revert() (#27, #28)
 * Fixing formatting for git diff (#25)
