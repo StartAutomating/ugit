@@ -52,4 +52,18 @@ Write-FormatView -TypeName Git.Pull.FastForward -Action {
     } -ScriptBlock {
         ", $($_.Deletions) deletions(-)"
     } -ForegroundColor Error
+
+    Write-FormatViewExpression -If {
+        $_.NewFiles
+    } -ScriptBlock {
+        @([System.Environment]::NewLine
+        "++ New Files ++" 
+        [System.Environment]::NewLine) -join ''
+    }
+    
+    Write-FormatViewExpression -If {
+        $_.NewFiles
+    } -ScriptBlock {
+        $_.NewFiles | Out-String 
+    }
 }

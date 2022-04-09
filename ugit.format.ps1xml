@@ -900,6 +900,28 @@ $($ParentNode.CustomControl.CustomEntries.CustomEntry.CustomItem.ExpressionBindi
               <ExpressionBinding>
                 <ScriptBlock>. ${ugit_ClearOutputStyle}</ScriptBlock>
               </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock>
+        $_.NewFiles
+    </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        @([System.Environment]::NewLine
+        "++ New Files ++" 
+        [System.Environment]::NewLine) -join ''
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock>
+        $_.NewFiles
+    </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        $_.NewFiles | Out-String 
+    </ScriptBlock>
+              </ExpressionBinding>
             </CustomItem>
           </CustomEntry>
         </CustomEntries>
