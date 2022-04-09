@@ -97,7 +97,7 @@
             }
             $beginIsRunning = $true      # Note that beginIsRunning=$false,
             try {
-                $steppable.Begin($false) # then try to run begin
+                $steppable.Begin($true) # then try to run begin
             } catch {
                 $PSCmdlet.WriteError($_) # Write any exceptions as errors
             }
