@@ -2,37 +2,18 @@
 .SYNOPSIS
     git pull extension
 .DESCRIPTION
-
+    Returns git pull as objects.
 .EXAMPLE
     git pull
 #>
 [Management.Automation.Cmdlet("Out", "Git")]
-[ValidatePattern("^git (?>pull|fetch)")]
+[ValidatePattern("^git pull")]
 [OutputType('git.pull.fastforward', 'git.pull.nochange')]
 param(
 [Parameter(ValueFromPipeline)]
 [string]
 $GitOut
 )
-
-<#
-From https://github.com/StartAutomating/RoughDraft
-   432138e..9df4f8d  main       -> origin/main
- * [new tag]         v0.3.1     -> v0.3.1
-Updating 432138e..9df4f8d
-Fast-forward
- CHANGELOG.md                                    |  13 ++-
- Convert-Media.ps1                               |  37 +++++++--
- Edit-Media.ps1                                  |  95 ++++++++++++++-------
- Extension/DrawSubtitle.RoughDraft.Extension.ps1 |  78 ++++++++++++++++++
- Extension/Resize.RoughDraft.Extension.ps1       |  11 ++-
- Extension/Subtitler.RoughDraft.Extension.ps1    | 105 ++++++++++++++++++++++++
- RoughDraft.psd1                                 |  13 ++-
- Show-Media.ps1                                  |   2 +-
- 8 files changed, 309 insertions(+), 45 deletions(-)
- create mode 100644 Extension/DrawSubtitle.RoughDraft.Extension.ps1
- create mode 100644 Extension/Subtitler.RoughDraft.Extension.ps1
-#>
 
 begin {
     $pullLines = @()

@@ -1,5 +1,5 @@
 ﻿@{
-    ModuleVersion    = '0.1.6'
+    ModuleVersion    = '0.1.7'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -16,6 +16,13 @@ PrivateData   = @{
         ProjectURI = 'https://github.com/StartAutomating/ugit'
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
         ReleaseNotes = @'
+## 0.1.7:
+* Use-Git: -Verbose no longer infers --verbose (#10)
+* Out-Git: Support for extension caching (#35)
+* Out-Git: Using -ErrorAction Ignore when -Verbose is not passed (#36)
+* Get-UGitExtension:  Updating Piecemeal Version [0.2.1].  (Re #32 #36)
+---
+
 ## 0.1.6
 * Adding support / formatting for git pull (#26)
 * Out-Git:  Extension Improvements (#33)

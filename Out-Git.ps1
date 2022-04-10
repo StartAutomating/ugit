@@ -54,25 +54,48 @@
         # First, we need to determine what the combined git command was.
         # Luckily, this is easy:  just combine "git" with the list of git argument
         $gitCommand = @('git') + $GitArgument[0..$GitArgument.Length] -join ' '
-        # Now that we have that, let's initialize an empty variable to keep any extension validation errors.
-        $extensionValidationErrors = $null
-        # Then we create a hashtable containing the parameters to Get-UGitExtension:
-        $uGitExtensionParams = @{
-                CommandName   = $MyInvocation.MyCommand      # We want extensions for this command
-                ValidateInput = $gitCommand                  # that are valid, given $GitCommand.
-                ErrorAction   = 'SilentlyContinue'           # We do not want to display errors
-                ErrorVariable = 'extensionValidationErrors'  # we want to redirect them into $extensionValidationErrros.
+
+        # Now we need to see if we have have a cached for extension mapping.
+        if (-not $script:GitExtensionMappingCache) {
+            $script:GitExtensionMappingCache = @{} # If we don't, create one.
         }
-        # Now we get a list of git output extensions
-        $gitOutputExtensions = @(Get-UGitExtension @uGitExtensionParams)
-        # If any of them had errors, and we want to see the -Verbose channel
-        if ($extensionValidationErrors -and $VerbosePreference -ne 'silentlyContinue')  {
-            foreach ($validationError in $extensionValidationErrors) {
-                Write-Verbose "$validationError" # write the validation errors to verbose.
-                # It should be noted that there will almost always be validation errors,
-                # since most extensions will not apply to a given $GitCommand
+
+        if (-not $script:GitExtensionMappingCache[$gitCommand]) { # If we don't have a cached extension list
+
+            # let's initialize an empty variable to keep any extension validation errors.
+            $extensionValidationErrors = $null
+            # Then we create a hashtable containing the parameters to Get-UGitExtension:
+            $uGitExtensionParams = @{
+                    CommandName   = $MyInvocation.MyCommand      # We want extensions for this command
+                    ValidateInput = $gitCommand                  # that are valid, given $GitCommand.
+                    
             }
-        }
+
+            # If -Verbose is -Debug is set, we will want to populate extensionValidationErrors
+            if ($VerbosePreference -ne 'silentlyContinue' -or 
+                $DebugPreference -ne 'silentlyContinue') {
+                $uGitExtensionParams.ErrorAction   = 'SilentlyContinue'           # We do not want to display errors
+                $uGitExtensionParams.ErrorVariable = 'extensionValidationErrors'  # we want to redirect them into $extensionValidationErrors.
+                $uGitExtensionParams.AllValid      = $true                        # and we want to see that all of the validation attributes are correct.
+            } else {
+                $uGitExtensionParams.ErrorAction = 'Ignore'
+            }
+
+            # Now we get a list of git output extensions and store it in the cache.
+            $script:GitExtensionMappingCache[$gitCommand] = $gitOutputExtensions = @(Get-UGitExtension @uGitExtensionParams)
+
+            # If any of them had errors, and we want to see the -Verbose channel
+            if ($extensionValidationErrors -and $VerbosePreference -ne 'silentlyContinue')  {
+                foreach ($validationError in $extensionValidationErrors) {
+                    Write-Verbose "$validationError" # write the validation errors to verbose.
+                    # It should be noted that there will almost always be validation errors,
+                    # since most extensions will not apply to a given $GitCommand
+                }
+            }
+        } else {
+            # If there was already an extension cached, we can skip the previous steps and just reuse the cached extensions.
+            $gitOutputExtensions = $script:GitExtensionMappingCache[$gitCommand]
+        }        
 
         # Next we want to create a collection of SteppablePipelines.
         # These allow us to run the begin/process/end blocks of each Extension.
