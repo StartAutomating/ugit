@@ -87,10 +87,6 @@
             $argumentNumber++
         }
 
-        if ($VerbosePreference -ne 'silentlyContinue' -and -not ($GitArgument -eq '-v'))
-        { 
-            $GitArgument += '--verbose' # they probably want --verbose (and enough git commands support it to try).
-        }
         $progId = Get-Random
         $dirCount = 0
         $RepoNotRequired = 'clone','init'  # A small number of git operations do not require a repo.  List them here.
