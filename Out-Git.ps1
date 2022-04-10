@@ -60,9 +60,19 @@
         $uGitExtensionParams = @{
                 CommandName   = $MyInvocation.MyCommand      # We want extensions for this command
                 ValidateInput = $gitCommand                  # that are valid, given $GitCommand.
-                ErrorAction   = 'SilentlyContinue'           # We do not want to display errors
-                ErrorVariable = 'extensionValidationErrors'  # we want to redirect them into $extensionValidationErrros.
+                
         }
+
+        # If -Verbose is -Debug is set, we will want to populate extensionValidationErrors
+        if ($VerbosePreference -ne 'silentlyContinue' -or 
+            $DebugPreference -ne 'silentlyContinue') {
+            $uGitExtensionParams.ErrorAction   = 'SilentlyContinue'           # We do not want to display errors
+            $uGitExtensionParams.ErrorVariable = 'extensionValidationErrors'  # we want to redirect them into $extensionValidationErrors.
+            $uGitExtensionParams.AllValid      = $true                        # and we want to see that all of the validation attributes are correct.
+        } else {
+            $uGitExtensionParams.ErrorAction = 'Ignore'
+        }
+
         # Now we get a list of git output extensions
         $gitOutputExtensions = @(Get-UGitExtension @uGitExtensionParams)
         # If any of them had errors, and we want to see the -Verbose channel
