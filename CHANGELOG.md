@@ -1,8 +1,19 @@
+## 0.1.8:
+* Adding Support for git checkout (#38)
+* Use-Git:  Avoiding unwanted confirmation ( Fixing #39 )
+---
+
+## 0.1.7:
+* Use-Git: -Verbose no longer infers --verbose (#10)
+* Out-Git: Support for extension caching (#35)
+* Out-Git: Using -ErrorAction Ignore when -Verbose is not passed (#36)
+* Get-UGitExtension:  Updating Piecemeal Version [0.2.1].  (Re #32 #36)
+---
+
 ## 0.1.6
 * Adding support / formatting for git pull (#26)
 * Out-Git:  Extension Improvements (#33)
 ---
-
 
 ## 0.1.5
 * Adding git.log .Checkout() and Revert() (#27, #28)
