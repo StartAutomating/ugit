@@ -83,6 +83,9 @@
                     $GitArgument[($argumentNumber + 1)..($GitArgument.Length - 1)]
                 })
                 $GitArgument = @($beforeArgs) + @("$($commandElement.Extent)") + @($afterArgs)
+                if ($commandElement.parameterName -eq 'd') { # Also, if they passed -d/-D, they probably don't want to be confirmed
+                    $ConfirmPreference ='none' # so set confirm impact to none
+                }
             }
             $argumentNumber++
         }
@@ -118,6 +121,10 @@
         # git sometimes like to return information along standard error, and CI/CD and user defaults sometimes set $ErrorActionPreference to 'Stop'
         # So we change $ErrorActionPreference before we call git, just in case.
         $ErrorActionPreference = 'continue'
+
+        # Before we process each directory, make a copy of the bound parameters.
+        $paramCopy = ([Ordered]@{} + $PSBoundParameters)
+
         
         # Now, we will force there to be at least one directory (the current path).
         # This makes the code simpler, because we are always going thru a loop.
@@ -128,7 +135,6 @@
             $directories = @(foreach ($dir in $directories) { $dir.Fullname }) 
         }
 
-        
 
         # For each directory we know of, we
         foreach ($dir in $directories) {
@@ -152,14 +158,16 @@
                     continue # and continue to the next one.
                 }
             }
-            
+                        
             $OutGitParams.GitRoot = "$($script:RepoRoots[$dir])"
             Write-Verbose "Calling git with $AllGitArgs"
             if ($dirCount -gt 1) {                
                 Write-Progress -PercentComplete (($dirCount * 5) % 100) -Status "git $allGitArgs " -Activity "$($dir) " -Id $progId
             }
 
-            if ($PSCmdlet.ShouldProcess("$pwd : git $allGitArgs")) {
+            if (($ConfirmPreference -eq 'None' -and -not $paramCopy.Confirm) -or # If we have indicated we do not care about -Confirmation, don't prompt
+                $PSCmdlet.ShouldProcess("$pwd : git $allGitArgs") # otherwise, as for confirmation to run.
+            ) {
                 & $script:CachedGitCmd @AllGitArgs *>&1       | # Then we run git, combining all streams into output.
                                                                 # then pipe to Out-Git, which will
                     Out-Git @OutGitParams # output git as objects.
@@ -169,9 +177,7 @@
                     # If Out-Git finds one or more extensions to run, these can parse the output.
             }
             Pop-Location # After we have run, Pop back out of the location.
-        }
-
-        
+        }        
     }
 
     end {
