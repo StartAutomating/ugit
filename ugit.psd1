@@ -1,4 +1,4 @@
-﻿@{
+@{
     ModuleVersion    = '0.1.8'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'

@@ -69,6 +69,7 @@ Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/
 * git log
 * git pull
 * git push
+* git pull
 * git status
 
 ### Extensions that may apply to any git command:
