@@ -1,5 +1,5 @@
-﻿@{
-    ModuleVersion    = '0.1.7'
+@{
+    ModuleVersion    = '0.1.8'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -16,6 +16,11 @@ PrivateData   = @{
         ProjectURI = 'https://github.com/StartAutomating/ugit'
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
         ReleaseNotes = @'
+## 0.1.8:
+* Adding Support for git checkout (#38)
+* Use-Git:  Avoiding unwanted confirmation ( Fixing #39 )
+---
+
 ## 0.1.7:
 * Use-Git: -Verbose no longer infers --verbose (#10)
 * Out-Git: Support for extension caching (#35)
