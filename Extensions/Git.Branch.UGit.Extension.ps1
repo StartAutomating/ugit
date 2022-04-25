@@ -1,10 +1,10 @@
 <#
 .SYNOPSIS
-    git branch Extension
+    git branch extension
 .DESCRIPTION
     Outputs git branch as objects (unless, -m, -c, -column, -format, or -show-current are passed)
 .EXAMPLE
-    git branch
+    git branch  # Get a list of branches
 .EXAMPLE
     git branch |                                          # Get all branches
         Where-Object -Not IsCurrentBranch |               # where it is not the current branch

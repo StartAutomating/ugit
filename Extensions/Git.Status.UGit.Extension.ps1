@@ -1,3 +1,13 @@
+<#
+.SYNOPSIS
+    git status extension
+.DESCRIPTION
+    Returns git status as an object.
+.EXAMPLE
+    git status
+.EXAMPLE
+    git status | Select-Object -ExpandProperty Untracked
+#>
 [Management.Automation.Cmdlet("Out","Git")]
 [ValidatePattern('^git status')]
 param(
