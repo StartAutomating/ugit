@@ -1,5 +1,5 @@
 @{
-    ModuleVersion    = '0.1.8'
+    ModuleVersion    = '0.1.9'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -16,6 +16,13 @@ PrivateData   = @{
         ProjectURI = 'https://github.com/StartAutomating/ugit'
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
         ReleaseNotes = @'
+## 0.1.9:
+* Support for eventing (#42)
+* Autogeneration of docs (#43)
+* Autogeneration of formatting (#44)
+* Fixing git status formatting (#45)
+---
+
 ## 0.1.8:
 * Adding Support for git checkout (#38)
 * Use-Git:  Avoiding unwanted confirmation ( Fixing #39 )

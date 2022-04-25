@@ -3,6 +3,11 @@
     git commit extension
 .DESCRIPTION
     Returns output from succesful git commits as objects.
+.EXAMPLE
+    git commit -m "Updating #123"
+.EXAMPLE
+    $committedMessage = git commit -m "Committting Stuff" # Whoops, this commit had a typo
+    $commitMessage.Amend("Committing stuff") # that's better
 #>
 [Management.Automation.Cmdlet("Out","Git")]
 [ValidatePattern("^git commit")]

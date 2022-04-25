@@ -1,3 +1,10 @@
+## 0.1.9:
+* Support for eventing (#42)
+* Autogeneration of docs (#43)
+* Autogeneration of formatting (#44)
+* Fixing git status formatting (#45)
+---
+
 ## 0.1.8:
 * Adding Support for git checkout (#38)
 * Use-Git:  Avoiding unwanted confirmation ( Fixing #39 )

@@ -4,9 +4,11 @@
 .Description
     Outputs git log entries as objects
 .Example
-    git log | Group-Object GitUserEmail -NoElement
+    git log | Group-Object GitUserEmail -NoElement | Sort-Object Count -Descending
 .EXAMPLE
     git log | Where-Object -Not Merged
+.EXAMPLE
+    git log | Group-Object { $_.CommitDate.DayOfWeek } -NoElement
 #>
 # It's an extension for Out-Git
 [Management.Automation.Cmdlet("Out","Git")]

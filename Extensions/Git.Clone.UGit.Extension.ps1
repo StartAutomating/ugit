@@ -6,7 +6,9 @@
 .Example
     git clone https://github.com/StartAutomating/ugit.git
 .EXAMPLE
-    git clone https://github.com/Azure
+    # Clone a large repo.
+    # When --progress is provided, Write-Progress will be called.
+    git clone https://github.com/Azure/azure-quickstart-templates --progress
 #>
 [Management.Automation.Cmdlet("Out","Git")]
 [ValidatePattern('^git clone')]

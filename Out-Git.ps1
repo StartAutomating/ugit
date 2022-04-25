@@ -28,6 +28,8 @@
     .Example
         # Display the list of branches, as objects.
         git branch
+    .NOTES
+        Out-Git will generate two events upon completion.  They will have the source identifiers of "Out-Git" and "Out-Git $GitArgument"
     #>
     [CmdletBinding(PositionalBinding=$false)]
     param(
@@ -252,12 +254,22 @@
             $global:gitHistory -isnot [Collections.IDictionary]) {
             $global:gitHistory = [Ordered]@{}
         }
-        $global:gitHistory["$($MyInvocation.HistoryId)::$GitRoot::$GitArgument"] = @{
+        $messageData = [Ordered]@{
             OutputObject  = $ProcessedOutput.ToArray()
             GitOutputLine = $AllGitOutput.ToArray()
             GitArgument   = $GitArgument
+            GitCommand    = @(@("git") + $GitArgument) -join ' '
             GitRoot       = $GitRoot
             TimeStamp     = $TimeStamp
         }
+
+        $eventSourceIds = @("Out-Git","Out-Git $gitArgument")
+
+        $null =
+            foreach ($sourceIdentifier in $eventSourceIds) {
+                New-Event -SourceIdentifier $sourceIdentifier -MessageData $messageData
+            }
+
+        $global:gitHistory["$($MyInvocation.HistoryId)::$GitRoot::$GitArgument"] = $messageData
     }
 }
