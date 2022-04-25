@@ -31,7 +31,9 @@
         git status | Select-Object -ExpandProperty Untracked
     .Example
         # Display the list of branches, as objects.
-        git branch    
+        git branch
+    .NOTES
+        Use-Git will generate two events before git runs.  They will have the source identifiers of "Use-Git" and "Use-Git $GitArgument"
     #>
     [Alias('git')]
     [CmdletBinding(PositionalBinding=$false,SupportsShouldProcess,ConfirmImpact='Low')]
@@ -160,10 +162,19 @@
             if ($dirCount -gt 1) {                
                 Write-Progress -PercentComplete (($dirCount * 5) % 100) -Status "git $allGitArgs " -Activity "$($dir) " -Id $progId
             }
-
+        
             if (($ConfirmPreference -eq 'None' -and -not $paramCopy.Confirm) -or # If we have indicated we do not care about -Confirmation, don't prompt
                 $PSCmdlet.ShouldProcess("$pwd : git $allGitArgs") # otherwise, as for confirmation to run.
             ) {
+                $eventSourceIds = @("Use-Git","Use-Git $allGitArgs")
+                $messageData = @{
+                    GitRoot = "$pwd"
+                    GitCommand = @(@("git") + $AllGitArgs) -join ' '
+                }
+                $null =
+                    foreach ($sourceIdentifier in $eventSourceIds) {
+                        New-Event -SourceIdentifier $sourceIdentifier -MessageData $messageData
+                    }
                 & $script:CachedGitCmd @AllGitArgs *>&1       | # Then we run git, combining all streams into output.
                                                                 # then pipe to Out-Git, which will
                     Out-Git @OutGitParams # output git as objects.
