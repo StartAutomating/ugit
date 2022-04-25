@@ -94,5 +94,8 @@ The timestamp.   This can be used for tracking.  Defaults to [DateTime]::Now
 Out-Git [-GitOutputLine <String[]>] [-GitArgument <String[]>] [-GitRoot <String>] [-TimeStamp <DateTime>] [<CommonParameters>]
 ```
 ---
+### Notes
+Out-Git will generate two events upon completion.  They will have the source identifiers of "Out-Git" and "Out-Git $GitArgument"
+
 
 
