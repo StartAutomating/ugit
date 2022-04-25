@@ -347,7 +347,7 @@
         }
         elseif ($inputObject) {
             ($inputObject | Out-String).Trim()
-        }        
+        }
     }
 
     end {
