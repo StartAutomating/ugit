@@ -10,6 +10,8 @@ describe ugit {
             $logEntry = git log -n 1 
             $logEntry.commitHash | Should -not -be $null
             $logEntry.CommitDate | Should -BeLessThan ([DateTime]::now)
+            Get-Event -SourceIdentifier "Out-Git"
+            Get-Event -SourceIdentifier "Use-Git"
         }
     }
 }
