@@ -1,0 +1,98 @@
+
+Out-Git
+-------
+### Synopsis
+Outputs Git to PowerShell
+
+---
+### Description
+
+Outputs Git as PowerShell Objects.
+
+Git Output can be provided by any number of extensions to Out-Git.
+
+Extensions use two attributes to indicate if they should be run:
+
+~~~PowerShell
+[Management.Automation.Cmdlet("Out","Git")] # This signals that this is an extension for Out-Git
+[ValidatePattern("RegularExpression")]      # This is run on $GitCommand to determine if the extension should run.
+~~~
+
+---
+### Related Links
+* [](Invoke-Git.md)
+---
+### Examples
+#### EXAMPLE 1
+```PowerShell
+# Log entries are returned as objects, with properties and methods.
+git log -n 1 | Get-Member
+```
+
+#### EXAMPLE 2
+```PowerShell
+# Status entries are converted into objects.
+git status
+```
+
+#### EXAMPLE 3
+```PowerShell
+# Display untracked files.
+git status | Select-Object -ExpandProperty Untracked
+```
+
+#### EXAMPLE 4
+```PowerShell
+# Display the list of branches, as objects.
+git branch
+```
+
+---
+### Parameters
+#### **GitOutputLine**
+
+One or more output lines from Git.
+
+
+
+|Type            |Requried|Postion|PipelineInput |
+|----------------|--------|-------|--------------|
+|```[String[]]```|false   |named  |true (ByValue)|
+---
+#### **GitArgument**
+
+The arguments that were passed to git.
+
+
+
+|Type            |Requried|Postion|PipelineInput|
+|----------------|--------|-------|-------------|
+|```[String[]]```|false   |named  |false        |
+---
+#### **GitRoot**
+
+The root of the current git repository.
+
+
+
+|Type          |Requried|Postion|PipelineInput|
+|--------------|--------|-------|-------------|
+|```[String]```|false   |named  |false        |
+---
+#### **TimeStamp**
+
+The timestamp.   This can be used for tracking.  Defaults to [DateTime]::Now
+
+
+
+|Type            |Requried|Postion|PipelineInput|
+|----------------|--------|-------|-------------|
+|```[DateTime]```|false   |named  |false        |
+---
+### Syntax
+```PowerShell
+Out-Git [-GitOutputLine <String[]>] [-GitArgument <String[]>] [-GitRoot <String>] [-TimeStamp <DateTime>] [<CommonParameters>]
+```
+---
+
+
