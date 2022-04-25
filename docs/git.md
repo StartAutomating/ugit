@@ -90,9 +90,7 @@ Use-Git [-GitArgument <String[]>] [-InputObject <PSObject[]>] [-WhatIf] [-Confir
 ```
 ---
 ### Notes
-For almost everything git does, calling Use-Git is the same as calling git directly.
-
-If you have any difficulties passing parameters to git, try enclosing them in quotes.
+Use-Git will generate two events before git runs.  They will have the source identifiers of "Use-Git" and "Use-Git $GitArgument"
 
 
 
