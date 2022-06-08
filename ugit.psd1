@@ -1,5 +1,5 @@
 @{
-    ModuleVersion    = '0.1.9'
+    ModuleVersion    = '0.1.9.1'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -16,6 +16,9 @@ PrivateData   = @{
         ProjectURI = 'https://github.com/StartAutomating/ugit'
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
         ReleaseNotes = @'
+## 0.1.9.1:
+* Fixing git status duplicate message (#49)
+---
 ## 0.1.9:
 * Support for eventing (#42)
 * Autogeneration of docs (#43)
