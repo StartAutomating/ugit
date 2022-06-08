@@ -3,7 +3,7 @@ Write-FormatView -TypeName Git.Status -Action {
     Write-FormatViewExpression -ScriptBlock { $_.BranchName } -if { $_.BranchName -notin 'main', 'master' } -ForegroundColor Verbose
     Write-FormatViewExpression -ScriptBlock { $_.BranchName } -if { $_.BranchName -in 'main', 'master' } -ForegroundColor Warning
     Write-FormatViewExpression -Newline
-    Write-FormatViewExpression -If { $_.Status } -ScriptBlock { $_.Status + [Environment]::NewLine }
+    Write-FormatViewExpression -If { $_.Status -notlike 'Nothing*' } -ScriptBlock { $_.Status + [Environment]::NewLine }
     Write-formatviewExpression -If { $_.Staged } -ScriptBlock { 
         "Changes Staged For Commit:
   (use git commit -m to commit)" + [Environment]::NewLine
@@ -37,6 +37,8 @@ Write-FormatView -TypeName Git.Status -Action {
     }
 
     Write-FormatViewExpression -if {
-        -not $_.Untracked -and -not $_.Unstaged -and -not $_.Staged -and $_.Status -ne 'Nothing to commit, working tree clean'
+        $gitStatus = $_
+        (-not $gitStatus.Untracked) -and (-not $gitStatus.Unstaged) -and (-not $gitStatus.Staged)
     } -Text "Nothing to commit, working tree clean"
+
 } -GroupByProperty GitRoot
