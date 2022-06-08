@@ -20,7 +20,7 @@ Use-Git will combine errors and output, so that git output to standard error is 
 
 ---
 ### Related Links
-* [](Out-Git.md)
+* [Out-Git](Out-Git.md)
 ---
 ### Examples
 #### EXAMPLE 1

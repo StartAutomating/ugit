@@ -20,7 +20,7 @@ Extensions use two attributes to indicate if they should be run:
 
 ---
 ### Related Links
-* [](Invoke-Git.md)
+* [Invoke-Git](Invoke-Git.md)
 ---
 ### Examples
 #### EXAMPLE 1

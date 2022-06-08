@@ -1,3 +1,7 @@
+## 0.1.9.1:
+* Fixing git status duplicate message (#49)
+---
+
 ## 0.1.9:
 * Support for eventing (#42)
 * Autogeneration of docs (#43)

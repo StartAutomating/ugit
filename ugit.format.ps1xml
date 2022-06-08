@@ -1705,7 +1705,7 @@ $BackgroundColor
               <NewLine />
               <ExpressionBinding>
                 <ItemSelectionCondition>
-                  <ScriptBlock> $_.Status </ScriptBlock>
+                  <ScriptBlock> $_.Status -notlike 'Nothing*' </ScriptBlock>
                 </ItemSelectionCondition>
                 <ScriptBlock> $_.Status + [Environment]::NewLine </ScriptBlock>
               </ExpressionBinding>
