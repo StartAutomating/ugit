@@ -1639,6 +1639,42 @@ $BackgroundColor
       </CustomControl>
     </View>
     <View>
+      <Name>Git.Reference.Log</Name>
+      <ViewSelectedBy>
+        <TypeName>Git.Reference.Log</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>ReferenceName</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>ReferenceNumber</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CommitHash</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CommitMessage</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+    <View>
       <Name>Git.Status</Name>
       <ViewSelectedBy>
         <TypeName>Git.Status</TypeName>
