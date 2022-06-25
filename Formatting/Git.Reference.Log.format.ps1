@@ -1,1 +1,6 @@
-Write-FormatView -TypeName Git.Reference.Log -Property ReferenceName, ReferenceNumber, CommitHash, CommitMessage
+Write-FormatView -TypeName Git.Reference.Log -Property Name, '#', CommitHash, CommitMessage -VirtualProperty @{
+    '#' = { $_.'Number'}
+    Name = { $_.Name + '@' }
+}  -AlignProperty @{
+    Name = 'Right'
+}

@@ -14,7 +14,7 @@ param()
 begin {
     $refLogLines = @() # Create a list for all of the lines from a git reflog.
     # Declare a regex to match each one.
-    $refLogRegex = "^(?<CommitHash>[a-f0-9]+)\s{0,}(?<ReferenceName>[^@]+)@\{(?<ReferenceNumber>\d+)\}:\s{1,}(?<CommitMessage>.+)$"
+    $refLogRegex = [Regex]::new("^(?<CommitHash>[a-f0-9]+)\s{0,}(?<Name>[^@]+)@\{(?<Number>\d+)\}:\s{1,}(?<CommitMessage>.+)$")
 }
 
 process {
@@ -29,7 +29,6 @@ end {
     }
 
     foreach ($refLogLine in $refLogLines) {
-
         $matched = $refLogLine -match $refLogRegex
         $refExtract = [Ordered]@{} + $matches
         $refExtract.Remove(0)
