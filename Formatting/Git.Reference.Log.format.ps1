@@ -3,4 +3,5 @@ Write-FormatView -TypeName Git.Reference.Log -Property Name, '#', CommitHash, Co
     Name = { $_.Name + '@' }
 }  -AlignProperty @{
     Name = 'Right'
+    '#'  = 'Left'
 }
