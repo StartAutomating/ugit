@@ -1,4 +1,4 @@
-#region Piecemeal [ 0.2.1 ] : Easy Extensible Plugins for PowerShell
+#region Piecemeal [ 0.3.0 ] : Easy Extensible Plugins for PowerShell
 # Install-Module Piecemeal -Scope CurrentUser 
 # Import-Module Piecemeal -Force 
 # Install-Piecemeal -ExtensionModule 'ugit' -ExtensionModuleAlias 'git' -ExtensionNoun 'UGitExtension' -ExtensionTypeName 'ugit.extension' -OutputPath '.\Get-UGitExtension.ps1'
@@ -10,59 +10,83 @@ function Get-UGitExtension
     .Description
         Gets Extensions.
 
-        ugit Extensions can be found in:
+        UGitExtension can be found in:
 
-        * Any module that includes -ExtensionModuleName in it's tags.
-        * The directory specified in -ExtensionPath
+        * Any module that includes -UGitExtensionModuleName in it's tags.
+        * The directory specified in -UGitExtensionPath
     .Example
         Get-UGitExtension
     #>
     [OutputType('Extension')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSReviewUnusedParameter", "", Justification="PSScriptAnalyzer cannot handle nested scoping")]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSAvoidAssignmentToAutomaticVariable", "", Justification="Desired for scenario")]
     param(
     # If provided, will look beneath a specific path for extensions.
     [Parameter(ValueFromPipelineByPropertyName)]
     [Alias('Fullname')]
     [string]
-    $ExtensionPath,
+    $UGitExtensionPath,
 
     # If set, will clear caches of extensions, forcing a refresh.
     [switch]
     $Force,
 
-    # If provided, will get ugit Extensions that extend a given command
+    # If provided, will get UGitExtension that extend a given command
     [Parameter(ValueFromPipelineByPropertyName)]
     [Alias('ThatExtends', 'For')]
     [string[]]
     $CommandName,
 
-    # The name of an extension
-    [Parameter(ValueFromPipelineByPropertyName)]
-    [ValidateNotNullOrEmpty()]    
-    [string[]]
-    $ExtensionName,
+    <#
+    
+    The name of an extension.
+    By default, this will match any extension command whose name, displayname, or aliases exactly match the name.
 
-    # If provided, will treat -ExtensionName as a wildcard.
-    [Parameter(ValueFromPipelineByPropertyName)]    
+    If the extension has an Alias with a regular expression literal (```'/Expression/'```) then the -UGitExtensionName will be valid if that regular expression matches.
+    #>
+    [Parameter(ValueFromPipelineByPropertyName)]
+    [ValidateNotNullOrEmpty()]
+    [string[]]
+    $UGitExtensionName,
+    
+    <#
+
+    If provided, will treat -UGitExtensionName as a wildcard.
+    This will return any extension whose name, displayname, or aliases are like the -UGitExtensionName.
+
+    If the extension has an Alias with a regular expression literal (```'/Expression/'```) then the -UGitExtensionName will be valid if that regular expression matches.
+    #>
+    [Parameter(ValueFromPipelineByPropertyName)]
     [switch]
     $Like,
 
-    # If provided, will treat -ExtensionName as a regular expression.
+    <#
+    
+    If provided, will treat -UGitExtensionName as a regular expression.
+    This will return any extension whose name, displayname, or aliases match the -UGitExtensionName.
+    
+    If the extension has an Alias with a regular expression literal (```'/Expression/'```) then the -UGitExtensionName will be valid if that regular expression matches.
+    #>
     [Parameter(ValueFromPipelineByPropertyName)]
     [switch]
     $Match,
 
-    # If set, will return the dynamic parameters object of all the ugit Extensions for a given command.
+    # If set, will return the dynamic parameters object of all the UGitExtension for a given command.
     [Parameter(ValueFromPipelineByPropertyName)]
     [switch]
     $DynamicParameter,
 
-    # If set, will return if the extension could run
+    # If set, will return if the extension could run.
     [Parameter(ValueFromPipelineByPropertyName)]
     [Alias('CanRun')]
     [switch]
     $CouldRun,
-    
+
+    # If set, will return if the extension could accept this input from the pipeline.
+    [Alias('CanPipe')]
+    [PSObject]
+    $CouldPipe,
+
     # If set, will run the extension.  If -Stream is passed, results will be directly returned.
     # By default, extension results are wrapped in a return object.
     [Parameter(ValueFromPipelineByPropertyName)]
@@ -75,20 +99,20 @@ function Get-UGitExtension
     [switch]
     $Stream,
 
-    # If set, will return the dynamic parameters of all ugit Extensions for a given command, using the provided DynamicParameterSetName.
+    # If set, will return the dynamic parameters of all UGitExtension for a given command, using the provided DynamicParameterSetName.
     # Implies -DynamicParameter.
     [Parameter(ValueFromPipelineByPropertyName)]
     [string]
     $DynamicParameterSetName,
 
 
-    # If provided, will return the dynamic parameters of all ugit Extensions for a given command, with all positional parameters offset.
+    # If provided, will return the dynamic parameters of all UGitExtension for a given command, with all positional parameters offset.
     # Implies -DynamicParameter.
     [Parameter(ValueFromPipelineByPropertyName)]
     [int]
     $DynamicParameterPositionOffset = 0,
 
-    # If set, will return the dynamic parameters of all ugit Extensions for a given command, with all mandatory parameters marked as optional.
+    # If set, will return the dynamic parameters of all UGitExtension for a given command, with all mandatory parameters marked as optional.
     # Implies -DynamicParameter.  Does not actually prevent the parameter from being Mandatory on the Extension.
     [Parameter(ValueFromPipelineByPropertyName)]
     [Alias('NoMandatoryDynamicParameters')]
@@ -108,13 +132,13 @@ function Get-UGitExtension
     # The name of the parameter set.  This is used by -CouldRun and -Run to enforce a single specific parameter set.
     [Parameter(ValueFromPipelineByPropertyName)]
     [string]
-    $ParameterSetName,    
+    $ParameterSetName,
 
     # The parameters to the extension.  Only used when determining if the extension -CouldRun.
     [Parameter(ValueFromPipelineByPropertyName)]
     [Collections.IDictionary]
     [Alias('Parameters','ExtensionParameter','ExtensionParameters')]
-    $Parameter = @{},
+    $Parameter = [Ordered]@{},
 
     # If set, will output a steppable pipeline for the extension.
     # Steppable pipelines allow you to control how begin, process, and end are executed in an extension.
@@ -141,10 +165,10 @@ function Get-UGitExtension
     )
 
     begin {
-        $ExtensionPattern = '(?<!-)(extension|ext|ex|x)\.ps1$'
-        $ExtensionModule = 'ugit'
-        $ExtensionModuleAlias = 'git'
-        $ExtensionTypeName = 'ugit.extension'
+        $UGitExtensionPattern = '(?>extension|ext|ex|x)\.ps1$'
+        $UGitExtensionModule = 'ugit'
+        $UGitExtensionModuleAlias = 'git'
+        $UGitExtensionTypeName = 'ugit.extension'
         #region Define Inner Functions
         function WhereExtends {
             param(
@@ -156,20 +180,42 @@ function Get-UGitExtension
             [PSObject]
             $ExtensionCommand
             )
+
             process {
-                if ($ExtensionName) {
+                if ($UGitExtensionName) {
+                    $ExtensionCommandAliases = @($ExtensionCommand.Attributes.AliasNames)
+                    $ExtensionCommandAliasRegexes = @($ExtensionCommandAliases -match '^/' -match '/$')
+                    if ($ExtensionCommandAliasRegexes) {
+                        $ExtensionCommandAliases = @($ExtensionCommandAliases -notmatch '^/' -match '/$')
+                    }
                     :CheckExtensionName do {
-                        foreach ($exn in $ExtensionName) {
-                            if ($like) { 
-                                if ($extensionCommand -like $exn) { break CheckExtensionName }
+                        foreach ($exn in $UGitExtensionName) {
+                            if ($like) {
+                                if (($extensionCommand -like $exn) -or
+                                    ($extensionCommand.DisplayName -like $exn) -or
+                                    ($ExtensionCommandAliases -like $exn)) { break CheckExtensionName }
                             }
                             elseif ($match) {
-                                if ($ExtensionCommand -match $exn) { break CheckExtensionName }
+                                if (($ExtensionCommand -match $exn) -or
+                                    ($extensionCommand.DisplayName -match $exn) -or
+                                    ($ExtensionCommandAliases -match $exn)) { break CheckExtensionName }
                             }
-                            elseif ($ExtensionCommand -eq $exn) { break CheckExtensionName }
+                            elseif (($ExtensionCommand -eq $exn) -or
+                                ($ExtensionCommand.DisplayName -eq $exn) -or
+                                ($ExtensionCommandAliases -eq $exn)) { break CheckExtensionName }
+                            elseif ($ExtensionCommandAliasRegexes) {
+                                foreach ($extensionAliasRegex in $ExtensionCommandAliasRegexes) {                            
+                                    $extensionAliasRegex = [Regex]::New($extensionAliasRegex -replace '^/' -replace '/$', 'IgnoreCase,IgnorePatternWhitespace')
+                                    if ($extensionAliasRegex -and $extensionAliasRegex.IsMatch($exn)) {
+                                        break CheckExtensionName
+                                    }
+                                }
+                            }
                         }
+                        
+
                         return
-                    } while ($false)                    
+                    } while ($false)
                 }
                 if ($Command -and $ExtensionCommand.Extends -contains $command) {
                     $commandExtended = $ext
@@ -187,24 +233,34 @@ function Get-UGitExtension
                     $in
                 }
                 elseif ($in -is [IO.FileInfo]) {
-                    $ExecutionContext.SessionState.InvokeCommand.GetCommand($in.fullname, 'ExternalScript')
+                    $ExecutionContext.SessionState.InvokeCommand.GetCommand($in.fullname, 'ExternalScript,Application')
                 }
                 else {
-                    $ExecutionContext.SessionState.InvokeCommand.GetCommand($in, 'Function,ExternalScript')
+                    $ExecutionContext.SessionState.InvokeCommand.GetCommand($in, 'Function,ExternalScript,Application')
                 }
 
             $hasExtensionAttribute = $false
-                        
+
             $extCmd.PSObject.Methods.Add([psscriptmethod]::new('GetExtendedCommands', {
-                $allLoadedCmds = $ExecutionContext.SessionState.InvokeCommand.GetCommands('*','Alias,Function', $true)
-                $extends = @{}
-                foreach ($loadedCmd in $allLoadedCmds) {
+
+                $extendedCommandNames = @(
                     foreach ($attr in $this.ScriptBlock.Attributes) {
                         if ($attr -isnot [Management.Automation.CmdletAttribute]) { continue }
-                        $extensionCommandName = (
+                        (
                             ($attr.VerbName -replace '\s') + '-' + ($attr.NounName -replace '\s')
-                        ) -replace '^\-' -replace '\-$'
-                        if ($extensionCommandName -and $loadedCmd.Name -match $extensionCommandName) {                            
+                        ) -replace '^\-' -replace '\-$'                        
+                    }
+                )
+                if (-not $extendedCommandNames) {
+                    $this | Add-Member NoteProperty Extends @() -Force
+                    $this | Add-Member NoteProperty ExtensionCommands @() -Force
+                    return    
+                }
+                $allLoadedCmds = $ExecutionContext.SessionState.InvokeCommand.GetCommands('*','All', $true)
+                $extends = @{}
+                foreach ($loadedCmd in $allLoadedCmds) {
+                    foreach ($extensionCommandName in $extendedCommandNames) {
+                        if ($extensionCommandName -and $loadedCmd.Name -match $extensionCommandName) {
                             $loadedCmd
                             $extends[$loadedCmd.Name] = $loadedCmd
                         }
@@ -214,16 +270,16 @@ function Get-UGitExtension
                 if (-not $extends.Count) {
                     $extends = $null
                 }
-                
+
                 $this | Add-Member NoteProperty Extends $extends.Keys -Force
                 $this | Add-Member NoteProperty ExtensionCommands $extends.Values -Force
             }))
-                        
-            $null = $extCmd.GetExtendedCommands()            
+
+            $null = $extCmd.GetExtendedCommands()
 
             $inheritanceLevel = [ComponentModel.InheritanceLevel]::Inherited
-            if (-not $hasExtensionAttribute -and $RequireExtensionAttribute) { return }
-            
+            if (-not $hasExtensionAttribute -and $RequireUGitExtensionAttribute) { return }
+
             $extCmd.PSObject.Properties.Add([PSNoteProperty]::new('InheritanceLevel', $inheritanceLevel))
             $extCmd.PSObject.Properties.Add([PSScriptProperty]::new(
                 'DisplayName', [ScriptBlock]::Create("`$this.Name -replace '$extensionFullRegex'")
@@ -234,7 +290,7 @@ function Get-UGitExtension
             $extCmd.PSObject.Properties.Add([PSScriptProperty]::new(
                 'Rank', {
                     foreach ($attr in $this.ScriptBlock.Attributes) {
-                        if ($attr -is [Reflection.AssemblyMetaDataAttribute] -and 
+                        if ($attr -is [Reflection.AssemblyMetaDataAttribute] -and
                             $attr.Key -in 'Order', 'Rank') {
                             return $attr.Value -as [int]
                         }
@@ -252,7 +308,7 @@ function Get-UGitExtension
                         (?<Content>(.|\s)+?(?=(\.\w+|\#\>))) # Anything until the next .\field or end of the comment block
                         ', 'IgnoreCase,IgnorePatternWhitespace', [Timespan]::FromSeconds(1)).Match(
                             $this.ScriptBlock
-                    ).Groups["Content"].Value
+                    ).Groups["Content"].Value -replace '[\s\r\n]+$'
                 }
             ))
 
@@ -266,55 +322,85 @@ function Get-UGitExtension
                     (?<Content>(.|\s)+?(?=(\.\w+|\#\>))) # Anything until the next .\field or end of the comment block
                     ', 'IgnoreCase,IgnorePatternWhitespace', [Timespan]::FromSeconds(1)).Match(
                         $this.ScriptBlock
-                ).Groups["Content"].Value
-            }))                        
+                ).Groups["Content"].Value -replace '[\s\r\n]+$'
+            }))
 
             $extCmd.PSObject.Methods.Add([psscriptmethod]::new('Validate', {
                 param(
                     # input being validated
-                    [PSObject]$ValidateInput, 
+                    [PSObject]$ValidateInput,
                     # If set, will require all [Validate] attributes to be valid.
                     # If not set, any input will be valid.
                     [switch]$AllValid
                 )
-                
+
                 foreach ($attr in $this.ScriptBlock.Attributes) {
-                    if ($attr -is [Management.Automation.ValidateSetAttribute]) {
+                    if ($attr -is [Management.Automation.ValidateScriptAttribute]) {
+                        try {
+                            $_ = $this = $psItem = $ValidateInput
+                            $isValidInput = . $attr.ScriptBlock
+                            if ($isValidInput -and -not $AllValid) { return $true}
+                            if (-not $isValidInput -and $AllValid) {
+                                if ($ErrorActionPreference -eq 'ignore') {
+                                    return $false
+                                } elseif ($AllValid) {
+                                    throw "'$ValidateInput' is not a valid value."
+                                }
+                            }
+                        } catch {
+                            if ($AllValid) {
+                                if ($ErrorActionPreference -eq 'ignore') {
+                                    return $false
+                                } else {
+                                    throw
+                                }
+                            }
+                        }
+                    }
+                    elseif ($attr -is [Management.Automation.ValidateSetAttribute]) {
                         if ($ValidateInput -notin $attr.ValidValues) {
-                            if ($ErrorActionPreference -eq 'ignore') {
-                                return $false
-                            } elseif ($AllValid) {
-                                throw "'$ValidateInput' is not a valid value.  Valid values are '$(@($attr.ValidValues) -join "','")'"
+                            if ($AllValid) {
+                                if ($ErrorActionPreference -eq 'ignore') {
+                                    return $false
+                                } else {
+                                    throw "'$ValidateInput' is not a valid value.  Valid values are '$(@($attr.ValidValues) -join "','")'"
+                                }
                             }
                         } elseif (-not $AllValid) {
                             return $true
                         }
                     }
-                    if ($attr -is [Management.Automation.ValidatePatternAttribute]) {
+                    elseif ($attr -is [Management.Automation.ValidatePatternAttribute]) {
                         $matched = [Regex]::new($attr.RegexPattern, $attr.Options, [Timespan]::FromSeconds(1)).Match($ValidateInput)
                         if (-not $matched.Success) {
-                            if ($ErrorActionPreference -eq 'ignore') {
-                                return $false
-                            } elseif ($AllValid) {
-                                throw "'$ValidateInput' is not a valid value.  Valid values must match the pattern '$($attr.RegexPattern)'"
+                            if ($allValid) {
+                                if ($ErrorActionPreference -eq 'ignore') {
+                                    return $false
+                                } else {
+                                    throw "'$ValidateInput' is not a valid value.  Valid values must match the pattern '$($attr.RegexPattern)'"
+                                }
                             }
                         } elseif (-not $AllValid) {
                             return $true
                         }
                     }
-                    if ($attr -is [Management.Automation.ValidateRangeAttribute]) {
+                    elseif ($attr -is [Management.Automation.ValidateRangeAttribute]) {
                         if ($null -ne $attr.MinRange -and $validateInput -lt $attr.MinRange) {
-                            if ($ErrorActionPreference -eq 'ignore') {
-                                return $false
-                            } elseif ($AllValid) {
-                                throw "'$ValidateInput' is below the minimum range [ $($attr.MinRange)-$($attr.MaxRange) ]"
+                            if ($AllValid) {
+                                if ($ErrorActionPreference -eq 'ignore') {
+                                    return $false
+                                } else {
+                                    throw "'$ValidateInput' is below the minimum range [ $($attr.MinRange)-$($attr.MaxRange) ]"
+                                }
                             }
                         }
                         elseif ($null -ne $attr.MaxRange -and $validateInput -gt $attr.MaxRange) {
-                            if ($ErrorActionPreference -eq 'ignore') {
-                                return $false
-                            } else {
-                                throw "'$ValidateInput' is above the maximum range [ $($attr.MinRange)-$($attr.MaxRange) ]"
+                            if ($AllValid) {
+                                if ($ErrorActionPreference -eq 'ignore') {
+                                    return $false
+                                } else {
+                                    throw "'$ValidateInput' is above the maximum range [ $($attr.MinRange)-$($attr.MaxRange) ]"
+                                }
                             }
                         }
                         elseif (-not $AllValid) {
@@ -322,7 +408,7 @@ function Get-UGitExtension
                         }
                     }
                 }
-                            
+
                 if ($AllValid) {
                     return $true
                 } else {
@@ -347,7 +433,7 @@ function Get-UGitExtension
 
                 $ExtensionDynamicParameters = [Management.Automation.RuntimeDefinedParameterDictionary]::new()
                 $Extension = $this
-                
+
                 :nextDynamicParameter foreach ($in in @(([Management.Automation.CommandMetaData]$Extension).Parameters.Keys)) {
                     $attrList = [Collections.Generic.List[Attribute]]::new()
                     $validCommandNames = @()
@@ -371,12 +457,12 @@ function Get-UGitExtension
                                 }
                             }
 
-                            $attrCopy.ParameterSetName =                                
+                            $attrCopy.ParameterSetName =
                                 if ($ParameterSetName) {
                                     $ParameterSetName
                                 }
                                 else {
-                                    $defaultParamSetName = 
+                                    $defaultParamSetName =
                                         foreach ($extAttr in $Extension.ScriptBlock.Attributes) {
                                             if ($extAttr.DefaultParameterSetName) {
                                                 $extAttr.DefaultParameterSetName
@@ -395,7 +481,7 @@ function Get-UGitExtension
                                         $this.Source
                                     }
                                 }
-                                                                
+
                             if ($NoMandatory -and $attrCopy.Mandatory) {
                                 $attrCopy.Mandatory = $false
                             }
@@ -409,7 +495,7 @@ function Get-UGitExtension
 
 
                     if ($commandList -and $validCommandNames) {
-                        :CheckCommandValidity do { 
+                        :CheckCommandValidity do {
                             foreach ($vc in $validCommandNames) {
                                 if ($commandList -match $vc) { break CheckCommandValidity }
                             }
@@ -427,13 +513,86 @@ function Get-UGitExtension
 
             }))
 
+
+            $extCmd.PSObject.Methods.Add([PSScriptMethod]::new('IsParameterValid', {
+                param([Parameter(Mandatory)]$ParameterName, [PSObject]$Value)
+
+                if ($this.Parameters.Count -ge 0 -and 
+                    $this.Parameters[$parameterName].Attributes
+                ) {
+                    foreach ($attr in $this.Parameters[$parameterName].Attributes) {
+                        $_ = $value
+                        if ($attr -is [Management.Automation.ValidateScriptAttribute]) {
+                            $result = try { . $attr.ScriptBlock } catch { $null }
+                            if ($result -ne $true) {
+                                return $false
+                            }
+                        }
+                        elseif ($attr -is [Management.Automation.ValidatePatternAttribute] -and 
+                                (-not [Regex]::new($attr.RegexPattern, $attr.Options, '00:00:05').IsMatch($value))
+                            ) {
+                                return $false
+                            }
+                        elseif ($attr -is [Management.Automation.ValidateSetAttribute] -and 
+                                $attr.ValidValues -notcontains $value) {
+                                    return $false
+                                }
+                        elseif ($attr -is [Management.Automation.ValidateRangeAttribute] -and (
+                            ($value -gt $attr.MaxRange) -or ($value -lt $attr.MinRange)
+                        )) {
+                            return $false
+                        }
+                    }
+                }
+                return $true
+            }))
+
+            $extCmd.PSObject.Methods.Add([PSScriptMethod]::new('CouldPipe', {
+                param([PSObject]$InputObject)
+
+                :nextParameterSet foreach ($paramSet in $this.ParameterSets) {
+                    if ($ParameterSetName -and $paramSet.Name -ne $ParameterSetName) { continue }
+                    $params = @{}
+                    $mappedParams = [Ordered]@{} # Create a collection of mapped parameters
+                    # Walk thru each parameter of this command
+                    foreach ($myParam in $paramSet.Parameters) {
+                        # If the parameter is ValueFromPipeline
+                        if ($myParam.ValueFromPipeline) {
+                            # and we have an input object
+                            if ($null -ne $inputObject -and
+                                (
+                                    # of the exact type
+                                    $myParam.ParameterType -eq $inputObject.GetType() -or
+                                    # (or a subclass of that type)
+                                    $inputObject.GetType().IsSubClassOf($myParam.ParameterType) -or
+                                    # (or an inteface of that type)
+                                    ($myParam.ParameterType.IsInterface -and $InputObject.GetType().GetInterface($myParam.ParameterType))
+                                )
+                            ) {
+                                # then map the parameter.
+                                $mappedParams[$myParam.Name] = $params[$myParam.Name] = $InputObject
+                            }
+                        }
+                    }
+                    # Check for parameter validity.
+                    foreach ($mappedParamName in @($mappedParams.Keys)) {
+                        if (-not $this.IsParameterValid($mappedParamName, $mappedParams[$mappedParamName])) {
+                            $mappedParams.Remove($mappedParamName)
+                        }
+                    }
+                    if ($mappedParams.Count -gt 0) {
+                        return $mappedParams
+                    }
+                }
+            }))            
+
             $extCmd.PSObject.Methods.Add([PSScriptMethod]::new('CouldRun', {
                 param([Collections.IDictionary]$params, [string]$ParameterSetName)
 
                 :nextParameterSet foreach ($paramSet in $this.ParameterSets) {
                     if ($ParameterSetName -and $paramSet.Name -ne $ParameterSetName) { continue }
                     $mappedParams = [Ordered]@{} # Create a collection of mapped parameters
-                    $mandatories  =  # Walk thru each parameter of this command                
+                    $mandatories  =  # Walk thru each parameter of this command
                         @(foreach ($myParam in $paramSet.Parameters) {
                             if ($params.Contains($myParam.Name)) { # If this was in Params,
                                 $mappedParams[$myParam.Name] = $params[$myParam.Name] # then map it.
@@ -449,19 +608,27 @@ function Get-UGitExtension
                                 $myParam.Name # keep track of it.
                             }
                         })
+
+                    # Check for parameter validity.
+                    foreach ($mappedParamName in @($mappedParams.Keys)) {
+                        if (-not $this.IsParameterValid($mappedParamName, $mappedParams[$mappedParamName])) {
+                            $mappedParams.Remove($mappedParamName)
+                        }
+                    }
+                    
                     foreach ($mandatoryParam in $mandatories) { # Walk thru each mandatory parameter.
-                        if (-not $params.Contains($mandatoryParam)) { # If it wasn't in the parameters.
+                        if (-not $mappedParams.Contains($mandatoryParam)) { # If it wasn't in the parameters.
                             continue nextParameterSet
                         }
                     }
-                    return $mappedParams                        
+                    return $mappedParams
                 }
                 return $false
             }))
 
             $extCmd.pstypenames.clear()
-            if ($ExtensionTypeName) {
-                $extCmd.pstypenames.add($ExtensionTypeName)
+            if ($UGitExtensionTypeName) {
+                $extCmd.pstypenames.add($UGitExtensionTypeName)
             } else {
                 $extCmd.pstypenames.add('Extension')
             }
@@ -474,29 +641,48 @@ function Get-UGitExtension
             }
             process {
                 $extCmd = $_
-                if ($ValidateInput) {
+
+                # When we're outputting an extension, we start off assuming that it is valid.
+                $IsValid = $true
+                if ($ValidateInput) { # If we have a particular input we want to validate
                     try {
+                        # Check if it is valid
                         if (-not $extCmd.Validate($ValidateInput, $AllValid)) {
-                            return
+                            $IsValid = $false # and then set IsValid if it is not.
                         }
                     } catch {
-                        Write-Error $_
-                        return
+                        Write-Error $_    # If we encountered an exception, write it out
+                        $IsValid = $false # and set is $IsValid to false.
                     }
                 }
-                
 
-                if ($DynamicParameter -or $DynamicParameterSetName -or $DynamicParameterPositionOffset -or $NoMandatoryDynamicParameter) {
-                    $extensionParams = $extCmd.GetDynamicParameters($DynamicParameterSetName, $DynamicParameterPositionOffset, $NoMandatoryDynamicParameter, $CommandName)
+                
+                # If we're requesting dynamic parameters (and the extension is valid)
+                if ($IsValid -and 
+                    ($DynamicParameter -or $DynamicParameterSetName -or $DynamicParameterPositionOffset -or $NoMandatoryDynamicParameter)) {
+                    # Get what the dynamic parameters of the extension would be.
+                    $extensionParams = $extCmd.GetDynamicParameters($DynamicParameterSetName, 
+                        $DynamicParameterPositionOffset, 
+                        $NoMandatoryDynamicParameter, $CommandName)
+                    
+                    # Then, walk over each extension parameter.
                     foreach ($kv in $extensionParams.GetEnumerator()) {
+                        # If the $CommandExtended had a built-in parameter, we cannot override it, so skip it.
                         if ($commandExtended -and ([Management.Automation.CommandMetaData]$commandExtended).Parameters.$($kv.Key)) {
                             continue
                         }
+
+                        # If already have this dynamic parameter
                         if ($allDynamicParameters.ContainsKey($kv.Key)) {
+
+                            # check it's type.
                             if ($kv.Value.ParameterType -ne $allDynamicParameters[$kv.Key].ParameterType) {
+                                # If the types are different, make it a PSObject (so it could be either).
                                 Write-Verbose "Extension '$extCmd' Parameter '$($kv.Key)' Type Conflict, making type PSObject"
                                 $allDynamicParameters[$kv.Key].ParameterType = [PSObject]
                             }
+
+
                             foreach ($attr in $kv.Value.Attributes) {
                                 if ($allDynamicParameters[$kv.Key].Attributes.Contains($attr)) {
                                     continue
@@ -508,44 +694,63 @@ function Get-UGitExtension
                         }
                     }
                 }
-                elseif ($CouldRun) {
+                elseif ($IsValid -and ($CouldPipe -or $CouldRun)) {
                     if (-not $extCmd) { return }
-                    $couldRunExt = $extCmd.CouldRun($Parameter, $ParameterSetName)
-                    if (-not $couldRunExt) { return }
+
+                    $extensionParams = [Ordered]@{}
+                    $pipelineParams = @()
+                    if ($CouldPipe) {
+                        $couldPipeExt = $extCmd.CouldPipe($CouldPipe)
+                        if (-not $couldPipeExt) { return }
+                        $pipelineParams += $couldPipeExt.Keys
+                        if (-not $CouldRun) {                            
+                            $extensionParams += $couldPipeExt
+                        } else {
+                            foreach ($kv in $couldPipeExt.GetEnumerator()) {
+                                $Parameter[$kv.Key] = $kv.Value
+                            }
+                        }
+                    }
+                    if ($CouldRun) {
+                        $couldRunExt = $extCmd.CouldRun($Parameter, $ParameterSetName)
+                        if (-not $couldRunExt) { return }
+                        $extensionParams += $couldRunExt
+                    }
+                
                     [PSCustomObject][Ordered]@{
                         ExtensionCommand = $extCmd
                         CommandName = $CommandName
-                        ExtensionParameter = $couldRunExt
+                        ExtensionInputObject = if ($CouldPipe) { $CouldPipe } else { $null }                        
+                        ExtensionParameter   = $extensionParams
+                        PipelineParameters   = $pipelineParams
                     }
-
-                    return
                 }
-                elseif ($SteppablePipeline) {
+                elseif ($IsValid -and $SteppablePipeline) {
                     if (-not $extCmd) { return }
                     if ($Parameter) {
                         $couldRunExt = $extCmd.CouldRun($Parameter, $ParameterSetName)
                         if (-not $couldRunExt) {
                             $sb = {& $extCmd }
-                            $sb.GetSteppablePipeline() | 
+                            $sb.GetSteppablePipeline() |
                                 Add-Member NoteProperty ExtensionCommand $extCmd -Force -PassThru |
                                 Add-Member NoteProperty ExtensionParameters $couldRunExt -Force -PassThru |
                                 Add-Member NoteProperty ExtensionScriptBlock $sb -Force -PassThru
                         } else {
                             $sb = {& $extCmd @couldRunExt}
-                            $sb.GetSteppablePipeline() | 
+                            $sb.GetSteppablePipeline() |
                                 Add-Member NoteProperty ExtensionCommand $extCmd -Force -PassThru |
                                 Add-Member NoteProperty ExtensionParameters $couldRunExt -Force -PassThru |
                                 Add-Member NoteProperty ExtensionScriptBlock $sb -Force -PassThru
                         }
                     } else {
                         $sb = {& $extCmd }
-                        $sb.GetSteppablePipeline() | 
+                        $sb.GetSteppablePipeline() |
                             Add-Member NoteProperty ExtensionCommand $extCmd -Force -PassThru |
                             Add-Member NoteProperty ExtensionParameters @{} -Force -PassThru |
                             Add-Member NoteProperty ExtensionScriptBlock $sb -Force -PassThru
-                    }                    
+                    }
                 }
-                elseif ($Run) {
+                elseif ($IsValid -and $Run) {
                     if (-not $extCmd) { return }
                     $couldRunExt = $extCmd.CouldRun($Parameter, $ParameterSetName)
                     if (-not $couldRunExt) { return }
@@ -562,7 +767,7 @@ function Get-UGitExtension
                     }
                     return
                 }
-                elseif ($Help -or $FullHelp -or $Example -or $ParameterHelp) {
+                elseif ($IsValid -and ($Help -or $FullHelp -or $Example -or $ParameterHelp)) {
                     $getHelpSplat = @{}
                     if ($FullHelp) {
                         $getHelpSplat["Full"] = $true
@@ -578,9 +783,9 @@ function Get-UGitExtension
                         Get-Help $extCmd.Source @getHelpSplat
                     } elseif ($extCmd -is [Management.Automation.FunctionInfo]) {
                         Get-Help $extCmd @getHelpSplat
-                    }                                        
-                }                
-                else {
+                    }
+                }
+                elseif ($IsValid) {
                     return $extCmd
                 }
             }
@@ -594,16 +799,18 @@ function Get-UGitExtension
 
 
         $extensionFullRegex =
-            if ($ExtensionModule) {
-                "\.(?>$(@(@($ExtensionModule) + $ExtensionModuleAlias) -join '|'))\." + $ExtensionPattern
-            } else {
-                $ExtensionPattern
-            }
+            [Regex]::New($(
+                if ($UGitExtensionModule) {
+                    "\.(?>$(@(@($UGitExtensionModule) + $UGitExtensionModuleAlias) -join '|'))\." + "(?>$($UGitExtensionPattern -join '|'))"
+                } else {
+                    "(?>$($UGitExtensionPattern -join '|'))"
+                }
+            ), 'IgnoreCase,IgnorePatternWhitespace', '00:00:01')
 
         #region Find Extensions
         $loadedModules = @(Get-Module)
         $myInv = $MyInvocation
-        $myModuleName = if ($ExtensionModule) { $ExtensionModule } else {$MyInvocation.MyCommand.Module.Name }
+        $myModuleName = if ($UGitExtensionModule) { $UGitExtensionModule } else { $MyInvocation.MyCommand.Module.Name }
         if ($myInv.MyCommand.Module -and $loadedModules -notcontains $myInv.MyCommand.Module) {
             $loadedModules = @($myInv.MyCommand.Module) + $loadedModules
         }
@@ -616,7 +823,7 @@ function Get-UGitExtension
         {
             $script:UGitExtensions =
                 @(
-                #region Find ugit Extensions in Loaded Modules
+                #region Find UGitExtension in Loaded Modules
                 foreach ($loadedModule in $loadedModules) { # Walk over all modules.
                     if ( # If the module has PrivateData keyed to this module
                         $loadedModule.PrivateData.$myModuleName
@@ -643,15 +850,15 @@ function Get-UGitExtension
                             }
                         }
                     }
-                    elseif ($loadedModule.PrivateData.Tags -contains $myModuleName -or $loadedModule.Name -eq $myModuleName) {
+                    elseif ($loadedModule.PrivateData.PSData.Tags -contains $myModuleName -or $loadedModule.Name -eq $myModuleName) {
                         $loadedModule |
                             Split-Path |
                             Get-ChildItem -Recurse |
-                            Where-Object Name -Match $extensionFullRegex |
+                            Where-Object { $_.Name -Match $extensionFullRegex } |
                             ConvertToExtension
                     }
                 }
-                #endregion Find ugit Extensions in Loaded Modules
+                #endregion Find UGitExtension in Loaded Modules
                 )
         }
         #endregion Find Extensions
@@ -659,20 +866,26 @@ function Get-UGitExtension
 
     process {
 
-        if ($ExtensionPath) {
-            Get-ChildItem -Recurse -Path $ExtensionPath |
-                Where-Object Name -Match $extensionFullRegex |
+        if ($UGitExtensionPath) {
+            Get-ChildItem -Recurse -Path $UGitExtensionPath |
+                Where-Object { $_.Name -Match $extensionFullRegex } |
                 ConvertToExtension |
                 . WhereExtends $CommandName |
+                #region Install-Piecemeal -WhereObject
+                # This section can be updated by using Install-Piecemeal -WhereObject
+                #endregion Install-Piecemeal -WhereObject
                 Sort-Object Rank, Name |
                 OutputExtension
+                #region Install-Piecemeal -ForeachObject
+                # This section can be updated by using Install-Piecemeal -ForeachObject
+                #endregion Install-Piecemeal -ForeachObject
         } else {
             $script:UGitExtensions |
-                . WhereExtends $CommandName |                
+                . WhereExtends $CommandName |
                 Sort-Object Rank, Name |
                 OutputExtension
         }
     }
 }
-#endregion Piecemeal [ 0.2.1 ] : Easy Extensible Plugins for PowerShell
+#endregion Piecemeal [ 0.3.0 ] : Easy Extensible Plugins for PowerShell
 
