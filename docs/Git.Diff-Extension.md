@@ -9,8 +9,6 @@ Diff Extension
 
 Outputs git diff entries as objects
 
-It  extends Out-Git
-
 ---
 ### Outputs
 Git.Diff

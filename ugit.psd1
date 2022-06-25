@@ -1,5 +1,5 @@
 @{
-    ModuleVersion    = '0.2.0'
+    ModuleVersion    = '0.2.1'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -16,6 +16,12 @@ PrivateData   = @{
         ProjectURI = 'https://github.com/StartAutomating/ugit'
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
         ReleaseNotes = @'
+## 0.2.1:
+* Adding support for git shortlog (#48)
+* Adding .GitRoot to git reflog (#53)
+* Extension documentation cleanup (#54)
+---
+
 ## 0.2.0:
 * Adding support for git reflog (#51)
 ---

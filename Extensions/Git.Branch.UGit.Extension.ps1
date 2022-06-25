@@ -11,10 +11,8 @@
         Where-Object BranchName -NotIn 'main', 'master' | # and the name is not either main or master
         git branch -d                                     # then attempt to delete the branch.
 #>
-# It's an extension for Out-Git
-[Management.Automation.Cmdlet("Out","Git")]
-# when the pattern is "git branch"
-[ValidatePattern("^git branch",Options='IgnoreCase')]
+[Management.Automation.Cmdlet("Out","Git")]           # It's an extension for Out-Git
+[ValidatePattern("^git branch",Options='IgnoreCase')] # when the pattern is "git branch"
 [OutputType('git.branch', 'git.branch.deleted','git.branch.detail')]
 param()
 

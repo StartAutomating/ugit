@@ -9,10 +9,10 @@ Gets Extensions
 
 Gets Extensions.
 
-ugit Extensions can be found in:
+UGitExtension can be found in:
 
-* Any module that includes -ExtensionModuleName in it's tags.
-* The directory specified in -ExtensionPath
+* Any module that includes -UGitExtensionModuleName in it's tags.
+* The directory specified in -UGitExtensionPath
 
 ---
 ### Examples
@@ -23,7 +23,7 @@ Get-UGitExtension
 
 ---
 ### Parameters
-#### **ExtensionPath**
+#### **UGitExtensionPath**
 
 If provided, will look beneath a specific path for extensions.
 
@@ -45,7 +45,7 @@ If set, will clear caches of extensions, forcing a refresh.
 ---
 #### **CommandName**
 
-If provided, will get ugit Extensions that extend a given command
+If provided, will get UGitExtension that extend a given command
 
 
 
@@ -53,9 +53,12 @@ If provided, will get ugit Extensions that extend a given command
 |----------------|--------|-------|---------------------|
 |```[String[]]```|false   |2      |true (ByPropertyName)|
 ---
-#### **ExtensionName**
+#### **UGitExtensionName**
 
-The name of an extension
+The name of an extension.
+By default, this will match any extension command whose name, displayname, or aliases exactly match the name.
+
+If the extension has an Alias with a regular expression literal (```'/Expression/'```) then the -UGitExtensionName will be valid if that regular expression matches.
 
 
 
@@ -65,7 +68,10 @@ The name of an extension
 ---
 #### **Like**
 
-If provided, will treat -ExtensionName as a wildcard.
+If provided, will treat -UGitExtensionName as a wildcard.
+This will return any extension whose name, displayname, or aliases are like the -UGitExtensionName.
+
+If the extension has an Alias with a regular expression literal (```'/Expression/'```) then the -UGitExtensionName will be valid if that regular expression matches.
 
 
 
@@ -75,7 +81,10 @@ If provided, will treat -ExtensionName as a wildcard.
 ---
 #### **Match**
 
-If provided, will treat -ExtensionName as a regular expression.
+If provided, will treat -UGitExtensionName as a regular expression.
+This will return any extension whose name, displayname, or aliases match the -UGitExtensionName.
+
+If the extension has an Alias with a regular expression literal (```'/Expression/'```) then the -UGitExtensionName will be valid if that regular expression matches.
 
 
 
@@ -85,7 +94,7 @@ If provided, will treat -ExtensionName as a regular expression.
 ---
 #### **DynamicParameter**
 
-If set, will return the dynamic parameters object of all the ugit Extensions for a given command.
+If set, will return the dynamic parameters object of all the UGitExtension for a given command.
 
 
 
@@ -95,13 +104,23 @@ If set, will return the dynamic parameters object of all the ugit Extensions for
 ---
 #### **CouldRun**
 
-If set, will return if the extension could run
+If set, will return if the extension could run.
 
 
 
 |Type          |Requried|Postion|PipelineInput        |
 |--------------|--------|-------|---------------------|
 |```[Switch]```|false   |named  |true (ByPropertyName)|
+---
+#### **CouldPipe**
+
+If set, will return if the extension could accept this input from the pipeline.
+
+
+
+|Type            |Requried|Postion|PipelineInput|
+|----------------|--------|-------|-------------|
+|```[PSObject]```|false   |4      |false        |
 ---
 #### **Run**
 
@@ -127,29 +146,29 @@ By default, extension results are wrapped in a return object.
 ---
 #### **DynamicParameterSetName**
 
-If set, will return the dynamic parameters of all ugit Extensions for a given command, using the provided DynamicParameterSetName.
+If set, will return the dynamic parameters of all UGitExtension for a given command, using the provided DynamicParameterSetName.
 Implies -DynamicParameter.
 
 
 
 |Type          |Requried|Postion|PipelineInput        |
 |--------------|--------|-------|---------------------|
-|```[String]```|false   |4      |true (ByPropertyName)|
+|```[String]```|false   |5      |true (ByPropertyName)|
 ---
 #### **DynamicParameterPositionOffset**
 
-If provided, will return the dynamic parameters of all ugit Extensions for a given command, with all positional parameters offset.
+If provided, will return the dynamic parameters of all UGitExtension for a given command, with all positional parameters offset.
 Implies -DynamicParameter.
 
 
 
 |Type         |Requried|Postion|PipelineInput        |
 |-------------|--------|-------|---------------------|
-|```[Int32]```|false   |5      |true (ByPropertyName)|
+|```[Int32]```|false   |6      |true (ByPropertyName)|
 ---
 #### **NoMandatoryDynamicParameter**
 
-If set, will return the dynamic parameters of all ugit Extensions for a given command, with all mandatory parameters marked as optional.
+If set, will return the dynamic parameters of all UGitExtension for a given command, with all mandatory parameters marked as optional.
 Implies -DynamicParameter.  Does not actually prevent the parameter from being Mandatory on the Extension.
 
 
@@ -166,7 +185,7 @@ If set, will validate this input against [ValidateScript], [ValidatePattern], [V
 
 |Type            |Requried|Postion|PipelineInput        |
 |----------------|--------|-------|---------------------|
-|```[PSObject]```|false   |6      |true (ByPropertyName)|
+|```[PSObject]```|false   |7      |true (ByPropertyName)|
 ---
 #### **AllValid**
 
@@ -187,7 +206,7 @@ The name of the parameter set.  This is used by -CouldRun and -Run to enforce a 
 
 |Type          |Requried|Postion|PipelineInput        |
 |--------------|--------|-------|---------------------|
-|```[String]```|false   |7      |true (ByPropertyName)|
+|```[String]```|false   |8      |true (ByPropertyName)|
 ---
 #### **Parameter**
 
@@ -197,7 +216,7 @@ The parameters to the extension.  Only used when determining if the extension -C
 
 |Type               |Requried|Postion|PipelineInput        |
 |-------------------|--------|-------|---------------------|
-|```[IDictionary]```|false   |8      |true (ByPropertyName)|
+|```[IDictionary]```|false   |9      |true (ByPropertyName)|
 ---
 #### **SteppablePipeline**
 
@@ -229,7 +248,7 @@ If set, will get help about one or more parameters of an extension
 
 |Type            |Requried|Postion|PipelineInput|
 |----------------|--------|-------|-------------|
-|```[String[]]```|false   |9      |false        |
+|```[String[]]```|false   |10     |false        |
 ---
 #### **Example**
 
@@ -258,7 +277,7 @@ Extension
 ---
 ### Syntax
 ```PowerShell
-Get-UGitExtension [[-ExtensionPath] <String>] [-Force] [[-CommandName] <String[]>] [[-ExtensionName] <String[]>] [-Like] [-Match] [-DynamicParameter] [-CouldRun] [-Run] [-Stream] [[-DynamicParameterSetName] <String>] [[-DynamicParameterPositionOffset] <Int32>] [-NoMandatoryDynamicParameter] [[-ValidateInput] <PSObject>] [-AllValid] [[-ParameterSetName] <String>] [[-Parameter] <IDictionary>] [-SteppablePipeline] [-Help] [[-ParameterHelp] <String[]>] [-Example] [-FullHelp] [<CommonParameters>]
+Get-UGitExtension [[-UGitExtensionPath] <String>] [-Force] [[-CommandName] <String[]>] [[-UGitExtensionName] <String[]>] [-Like] [-Match] [-DynamicParameter] [-CouldRun] [[-CouldPipe] <PSObject>] [-Run] [-Stream] [[-DynamicParameterSetName] <String>] [[-DynamicParameterPositionOffset] <Int32>] [-NoMandatoryDynamicParameter] [[-ValidateInput] <PSObject>] [-AllValid] [[-ParameterSetName] <String>] [[-Parameter] <IDictionary>] [-SteppablePipeline] [-Help] [[-ParameterHelp] <String[]>] [-Example] [-FullHelp] [<CommonParameters>]
 ```
 ---
 

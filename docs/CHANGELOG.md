@@ -1,3 +1,9 @@
+## 0.2.1:
+* Adding support for git shortlog (#48)
+* Adding .GitRoot to git reflog (#53)
+* Extension documentation cleanup (#54)
+---
+
 ## 0.2.0:
 * Adding support for git reflog (#51)
 ---

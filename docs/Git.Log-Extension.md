@@ -25,7 +25,7 @@ git log | Where-Object -Not Merged
 ```PowerShell
 git log | Group-Object { $_.CommitDate.DayOfWeek } -NoElement
 ```
-It's an extension for Out-Git
+
 ---
 ### Syntax
 ```PowerShell

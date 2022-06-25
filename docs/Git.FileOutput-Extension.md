@@ -17,7 +17,7 @@ When the command is finished, this will attempt to file the argument provided af
 ```PowerShell
 git archive -o My.zip
 ```
-It's an extension for Out-Git
+
 ---
 ### Syntax
 ```PowerShell

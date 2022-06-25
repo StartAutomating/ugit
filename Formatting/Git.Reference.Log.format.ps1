@@ -7,4 +7,4 @@ Write-FormatView -TypeName Git.Reference.Log -Property Name, '#', Hash, Command,
     '#'  = 'Left'
     Command ='Right'
     Message = 'Left'
-}
+} -GroupByProperty GitRoot

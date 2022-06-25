@@ -23,7 +23,7 @@ git branch |                                          # Get all branches
     Where-Object BranchName -NotIn 'main', 'master' | # and the name is not either main or master
     git branch -d                                     # then attempt to delete the branch.
 ```
-It's an extension for Out-Git
+
 ---
 ### Outputs
 git.branch

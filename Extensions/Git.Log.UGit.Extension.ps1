@@ -10,10 +10,8 @@
 .EXAMPLE
     git log | Group-Object { $_.CommitDate.DayOfWeek } -NoElement
 #>
-# It's an extension for Out-Git
-[Management.Automation.Cmdlet("Out","Git")]
-# when the pattern is "git log"
-[ValidatePattern("^git log",Options='IgnoreCase')]
+[Management.Automation.Cmdlet("Out","Git")]        # It's an extension for Out-Git
+[ValidatePattern("^git log",Options='IgnoreCase')] # when the pattern is "git log"
 param(
 )
 

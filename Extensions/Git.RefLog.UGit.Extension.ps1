@@ -32,6 +32,7 @@ end {
         $matched = $refLogLine -match $refLogRegex
         $refExtract = [Ordered]@{} + $matches
         $refExtract.Remove(0)
+        $refExtract.GitRoot = $GitRoot
         $refExtract.PSTypeName = 'Git.Reference.Log'
         [PSCustomObject]$refExtract
     }        

@@ -4,10 +4,8 @@
 .Description
     Outputs git diff entries as objects
 #>
-# It  extends Out-Git
-[Management.Automation.Cmdlet("Out","Git")]
-# when the pattern is "git diff"
-[ValidatePattern("^git diff",Options='IgnoreCase')]
+[Management.Automation.Cmdlet("Out","Git")]         # It  extends Out-Git
+[ValidatePattern("^git diff",Options='IgnoreCase')] # when the pattern is "git diff"
 [OutputType('Git.Diff','Git.Diff.ChangeSet')]
 param()
 
