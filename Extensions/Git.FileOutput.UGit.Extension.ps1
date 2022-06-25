@@ -8,10 +8,8 @@
 .EXAMPLE
     git archive -o My.zip
 #>
-# It's an extension for Out-Git
-[Management.Automation.Cmdlet("Out","Git")]
-# that is run when the switch -o is used.
-[ValidatePattern("-o\s{0}")]
+[Management.Automation.Cmdlet("Out","Git")]   # It's an extension for Out-Git
+[ValidatePattern("-o\s{0}")]                  # that is run when the switch -o is used.
 param(
 )
 
