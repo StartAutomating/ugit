@@ -1646,22 +1646,28 @@ $BackgroundColor
       <TableControl>
         <TableHeaders>
           <TableColumnHeader>
+            <Label>Name</Label>
+            <Alignment>Right</Alignment>
           </TableColumnHeader>
           <TableColumnHeader>
+            <Label>#</Label>
+            <Alignment>Right</Alignment>
           </TableColumnHeader>
           <TableColumnHeader>
+            <Alignment>Right</Alignment>
           </TableColumnHeader>
           <TableColumnHeader>
+            <Alignment>Right</Alignment>
           </TableColumnHeader>
         </TableHeaders>
         <TableRowEntries>
           <TableRowEntry>
             <TableColumnItems>
               <TableColumnItem>
-                <PropertyName>ReferenceName</PropertyName>
+                <ScriptBlock> $_.Name + '@' </ScriptBlock>
               </TableColumnItem>
               <TableColumnItem>
-                <PropertyName>ReferenceNumber</PropertyName>
+                <ScriptBlock> $_.'Number'</ScriptBlock>
               </TableColumnItem>
               <TableColumnItem>
                 <PropertyName>CommitHash</PropertyName>
