@@ -14,7 +14,7 @@ param()
 begin {
     $refLogLines = @() # Create a list for all of the lines from a git reflog.
     # Declare a regex to match each one.
-    $refLogRegex = [Regex]::new("^(?<CommitHash>[a-f0-9]+)\s{0,}(?<Name>[^@]+)@\{(?<Number>\d+)\}:\s{1,}(?<CommitMessage>.+)$")
+    $refLogRegex = [Regex]::new("^(?<Hash>[a-f0-9]+)\s{0,}(?<Name>[^@]+)@\{(?<Number>\d+)\}:\s{1,}(?<Command>[^:]+)\:(?<Message>.+)$")
 }
 
 process {

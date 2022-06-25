@@ -347,7 +347,7 @@
         }
         elseif ($inputObject) {
             ($inputObject | Out-String).Trim()
-        }
+        }        
     }
 
     end {
@@ -1651,29 +1651,36 @@ $BackgroundColor
           </TableColumnHeader>
           <TableColumnHeader>
             <Label>#</Label>
+            <Alignment>Left</Alignment>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Alignment>Left</Alignment>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Label>Command</Label>
             <Alignment>Right</Alignment>
           </TableColumnHeader>
           <TableColumnHeader>
-            <Alignment>Right</Alignment>
-          </TableColumnHeader>
-          <TableColumnHeader>
-            <Alignment>Right</Alignment>
+            <Alignment>Left</Alignment>
           </TableColumnHeader>
         </TableHeaders>
         <TableRowEntries>
           <TableRowEntry>
             <TableColumnItems>
               <TableColumnItem>
-                <ScriptBlock> $_.Name + '@' </ScriptBlock>
+                <ScriptBlock> $_.Name </ScriptBlock>
               </TableColumnItem>
               <TableColumnItem>
-                <ScriptBlock> $_.'Number'</ScriptBlock>
+                <ScriptBlock> $_.'Number' + ' '</ScriptBlock>
               </TableColumnItem>
               <TableColumnItem>
-                <PropertyName>CommitHash</PropertyName>
+                <PropertyName>Hash</PropertyName>
               </TableColumnItem>
               <TableColumnItem>
-                <PropertyName>CommitMessage</PropertyName>
+                <ScriptBlock> $_.Command + ':'</ScriptBlock>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Message</PropertyName>
               </TableColumnItem>
             </TableColumnItems>
           </TableRowEntry>
