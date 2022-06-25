@@ -1,3 +1,7 @@
+## 0.2.0:
+* Adding support for git reflog (#51)
+---
+
 ## 0.1.9.1:
 * Fixing git status duplicate message (#49)
 ---
