@@ -1,7 +1,10 @@
-Write-FormatView -TypeName Git.Pull.FastForward -Action {
+Write-FormatView -TypeName Git.Pull.FastForward, Git.Pull.Strategy -Action {
     Write-FormatViewExpression -ScriptBlock {
         ">> Fast Forward >>"        
-    }
+    } -if { -not $_.Strategy}
+    Write-FormatViewExpression -If { $_.strategy } -ScriptBlock {
+        ">> Merge made by '$($_.Strategy)' strategy >>"
+    } -ForegroundColor Warning
     Write-FormatViewExpression -Newline     
     Write-FormatViewExpression -ScriptBlock {
         "$($_.GitUrl)"        
