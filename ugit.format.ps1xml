@@ -1298,20 +1298,23 @@ $BackgroundColor
       </CustomControl>
     </View>
     <View>
-      <Name>Git.Pull.FastForward</Name>
+      <Name>Git.Pull.FastForwardGit.Pull.Strategy</Name>
       <ViewSelectedBy>
         <TypeName>Git.Pull.FastForward</TypeName>
+        <TypeName>Git.Pull.Strategy</TypeName>
       </ViewSelectedBy>
       <CustomControl>
         <CustomEntries>
           <CustomEntry>
             <CustomItem>
               <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> -not $_.Strategy</ScriptBlock>
+                </ItemSelectionCondition>
                 <ScriptBlock>
         "&gt;&gt; Fast Forward &gt;&gt;"        
     </ScriptBlock>
               </ExpressionBinding>
-              <NewLine />
               <ExpressionBinding>
                 <ScriptBlock>$moduleName = 'ugit'
 
@@ -1340,7 +1343,22 @@ $BackgroundColor
             } while ($false)
             
         
-@(&amp; ${ugit_Format-RichText} -ForegroundColor 'verbose' -NoClear) -join ''</ScriptBlock>
+@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Warning' -NoClear) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.strategy </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        "&gt;&gt; Merge made by '$($_.Strategy)' strategy &gt;&gt;"
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Warning' ) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <NewLine />
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'verbose' -NoClear) -join ''</ScriptBlock>
               </ExpressionBinding>
               <ExpressionBinding>
                 <ScriptBlock>
