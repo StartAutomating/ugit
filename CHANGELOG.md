@@ -1,3 +1,10 @@
+## 0.2.2:
+* Outputting hints as warnings (#56)
+* Improved support for git pull (#57)
+* Auto-building depedencies (#58)
+* Consolidating CI/CD (#59)
+---
+
 ## 0.2.1:
 * Adding support for git shortlog (#48)
 * Adding .GitRoot to git reflog (#53)
