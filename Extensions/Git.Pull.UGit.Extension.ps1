@@ -27,8 +27,25 @@ end {
     if ($pullLines -match 'Already up to date.') {
         [PSCustomObject]@{UpToDate=$true;GitRoot=$GitRoot;PSTypeName='git.pull.no.update'}
     }
-    elseif ($pullLines -match '^Fast-forward$') {
-        $gitPullOut = @{PSTypeName='git.pull.fastforward';GitRoot=$gitRoot;Changes=@();NewFiles=@()}
+    elseif ($pullLines -match '^Fast-forward$' -or $pullLines -match "'(?<strategy>[^']+)'\s{1}strategy\.$") {
+        
+        $gitPullOut = 
+            if ($pullLines -match '^Fast-forward$') {
+                @{PSTypeName='git.pull.fastforward';GitRoot=$gitRoot;Changes=@();NewFiles=@()}
+            } else {
+                foreach ($pl in $pullLines) {
+                    if ($pl -match "'(?<strategy>[^']+)'\s{1}strategy\.$") {
+                            @{
+                                PSTypeName="git.pull.strategy";
+                                Strategy=$matches.strategy;
+                                GitRoot=$gitRoot;
+                                Changes=@();
+                                NewFiles=@()
+                            }
+                        break
+                    }
+                }                
+            }
         
         foreach ($pl in $pullLines) {
             if ($pl -match '^From http') {
