@@ -186,7 +186,12 @@
                 continue # then move onto the next output.
             } else {
                 Write-Verbose "$out"
-            }        
+            }
+
+            if ("$out" -match '^hint:') {
+                Write-Warning ("$out" -replace '^hint:')
+                continue
+            }
 
             if (-not $steppablePipelines) {                
                 # If we do not have steppable pipelines, output directly
@@ -248,7 +253,6 @@
                 Write-Error -ErrorRecord $_
             }
         }
-
 
         if (-not $global:gitHistory -or 
             $global:gitHistory -isnot [Collections.IDictionary]) {

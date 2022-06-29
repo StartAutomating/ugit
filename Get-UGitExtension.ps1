@@ -1,4 +1,4 @@
-#region Piecemeal [ 0.3.0 ] : Easy Extensible Plugins for PowerShell
+#region Piecemeal [ 0.3.2 ] : Easy Extensible Plugins for PowerShell
 # Install-Module Piecemeal -Scope CurrentUser 
 # Import-Module Piecemeal -Force 
 # Install-Piecemeal -ExtensionModule 'ugit' -ExtensionModuleAlias 'git' -ExtensionNoun 'UGitExtension' -ExtensionTypeName 'ugit.extension' -OutputPath '.\Get-UGitExtension.ps1'
@@ -118,6 +118,11 @@ function Get-UGitExtension
     [Alias('NoMandatoryDynamicParameters')]
     [switch]
     $NoMandatoryDynamicParameter,
+
+    # If set, will require a [Runtime.CompilerServices.Extension()] attribute to be considered an extension.
+    [Parameter(ValueFromPipelineByPropertyName)]
+    [switch]
+    $RequireUGitExtensionAttribute,
 
     # If set, will validate this input against [ValidateScript], [ValidatePattern], [ValidateSet], and [ValidateRange] attributes found on an extension.
     [Parameter(ValueFromPipelineByPropertyName)]
@@ -239,8 +244,6 @@ function Get-UGitExtension
                     $ExecutionContext.SessionState.InvokeCommand.GetCommand($in, 'Function,ExternalScript,Application')
                 }
 
-            $hasExtensionAttribute = $false
-
             $extCmd.PSObject.Methods.Add([psscriptmethod]::new('GetExtendedCommands', {
 
                 $extendedCommandNames = @(
@@ -278,7 +281,32 @@ function Get-UGitExtension
             $null = $extCmd.GetExtendedCommands()
 
             $inheritanceLevel = [ComponentModel.InheritanceLevel]::Inherited
-            if (-not $hasExtensionAttribute -and $RequireUGitExtensionAttribute) { return }
+
+            $extCmd.PSObject.Properties.Add([psscriptproperty]::New('BlockComments', {
+                [Regex]::New("                   
+                \<\# # The opening tag
+                (?<Block> 
+                    (?:.|\s)+?(?=\z|\#>) # anything until the closing tag
+                )
+                \#\> # the closing tag
+                ", 'IgnoreCase,IgnorePatternWhitespace', '00:00:01').Matches($this.ScriptBlock)
+            }))
+
+            $extCmd.PSObject.Methods.Add([psscriptmethod]::New('GetHelpField', {
+                param([Parameter(Mandatory)]$Field)
+                foreach ($block in $this.BlockComments) {
+                    foreach ($match in [Regex]::new("
+                        \.(?<Field>$Field)                   # Field Start
+                        [\s-[\r\n]]{0,}                      # Optional Whitespace
+                        [\r\n]+                              # newline
+                        (?<Content>(.|\s)+?(?=(\.\w+|\#\>))) # Anything until the next .\field or end of the comment block
+                        ", 'IgnoreCase,IgnorePatternWhitespace', [Timespan]::FromSeconds(1)).Matches(
+                            $block.Value
+                        )) {
+                        $match.Groups["Content"].Value -replace '[\s\r\n]+$'
+                    }                    
+                }
+            }))
 
             $extCmd.PSObject.Properties.Add([PSNoteProperty]::new('InheritanceLevel', $inheritanceLevel))
             $extCmd.PSObject.Properties.Add([PSScriptProperty]::new(
@@ -287,6 +315,23 @@ function Get-UGitExtension
             $extCmd.PSObject.Properties.Add([PSScriptProperty]::new(
                 'Attributes', {$this.ScriptBlock.Attributes}
             ))
+
+
+            $extCmd.PSObject.Properties.Add([PSScriptProperty]::new(
+                'Category', {
+                    foreach ($attr in $this.ScriptBlock.Attributes) {
+                        if ($attr -is [Reflection.AssemblyMetaDataAttribute] -and
+                            $attr.Key -eq 'Category') {
+                            $attr.Value
+                        }
+                        elseif ($attr -is [ComponentModel.CategoryAttribute]) {
+                            $attr.Category
+                        }
+                    }
+                    
+                }
+            ))
+
             $extCmd.PSObject.Properties.Add([PSScriptProperty]::new(
                 'Rank', {
                     foreach ($attr in $this.ScriptBlock.Attributes) {
@@ -298,32 +343,35 @@ function Get-UGitExtension
                     return 0
                 }
             ))
-            $extCmd.PSObject.Properties.Add([PSScriptProperty]::new(
-                'Description',
-                {
-                    # From ?<PowerShell_HelpField> in Irregular (https://github.com/StartAutomating/Irregular)
-                    [Regex]::new('
-                        \.(?<Field>Description)              # Field Start
-                        \s{0,}                               # Optional Whitespace
-                        (?<Content>(.|\s)+?(?=(\.\w+|\#\>))) # Anything until the next .\field or end of the comment block
-                        ', 'IgnoreCase,IgnorePatternWhitespace', [Timespan]::FromSeconds(1)).Match(
-                            $this.ScriptBlock
-                    ).Groups["Content"].Value -replace '[\s\r\n]+$'
+            
+            $extCmd.PSObject.Properties.Add([psscriptproperty]::new(
+                'Metadata', {
+                    $Metadata = [Ordered]@{}
+                    foreach ($attr in $this.ScriptBlock.Attributes) {
+                        if ($attr -is [Reflection.AssemblyMetaDataAttribute]) {
+                            if ($Metadata[$attr.Key]) {
+                                $Metadata[$attr.Key] = @($Metadata[$attr.Key]) + $attr.Value
+                            } else {
+                                $Metadata[$attr.Key] = $attr.Value
+                            }                            
+                        }
+                    }
+                    return $Metadata
                 }
             ))
 
+            $extCmd.PSObject.Properties.Add([PSScriptProperty]::new(
+                'Description', { @($this.GetHelpField("Description"))[0] -replace '^\s+' }
+            ))
 
             $extCmd.PSObject.Properties.Add([PSScriptProperty]::new(
-                'Synopsis', {
-                # From ?<PowerShell_HelpField> in Irregular (https://github.com/StartAutomating/Irregular)
-                [Regex]::new('
-                    \.(?<Field>Synopsis)                 # Field Start
-                    \s{0,}                               # Optional Whitespace
-                    (?<Content>(.|\s)+?(?=(\.\w+|\#\>))) # Anything until the next .\field or end of the comment block
-                    ', 'IgnoreCase,IgnorePatternWhitespace', [Timespan]::FromSeconds(1)).Match(
-                        $this.ScriptBlock
-                ).Groups["Content"].Value -replace '[\s\r\n]+$'
-            }))
+                'Synopsis', { @($this.GetHelpField("Synopsis"))[0] -replace '^\s+' }))
+
+            $extCmd.PSObject.Properties.Add([PSScriptProperty]::new(
+                'Examples', { $this.GetHelpField("Example") }))
+
+            $extCmd.PSObject.Properties.Add([PSScriptProperty]::new(
+                'Links', { $this.GetHelpField("Link") }))
 
             $extCmd.PSObject.Methods.Add([psscriptmethod]::new('Validate', {
                 param(
@@ -887,5 +935,5 @@ function Get-UGitExtension
         }
     }
 }
-#endregion Piecemeal [ 0.3.0 ] : Easy Extensible Plugins for PowerShell
+#endregion Piecemeal [ 0.3.2 ] : Easy Extensible Plugins for PowerShell
 

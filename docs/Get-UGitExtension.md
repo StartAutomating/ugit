@@ -177,6 +177,16 @@ Implies -DynamicParameter.  Does not actually prevent the parameter from being M
 |--------------|--------|-------|---------------------|
 |```[Switch]```|false   |named  |true (ByPropertyName)|
 ---
+#### **RequireUGitExtensionAttribute**
+
+If set, will require a [Runtime.CompilerServices.Extension()] attribute to be considered an extension.
+
+
+
+|Type          |Requried|Postion|PipelineInput        |
+|--------------|--------|-------|---------------------|
+|```[Switch]```|false   |named  |true (ByPropertyName)|
+---
 #### **ValidateInput**
 
 If set, will validate this input against [ValidateScript], [ValidatePattern], [ValidateSet], and [ValidateRange] attributes found on an extension.
@@ -277,7 +287,7 @@ Extension
 ---
 ### Syntax
 ```PowerShell
-Get-UGitExtension [[-UGitExtensionPath] <String>] [-Force] [[-CommandName] <String[]>] [[-UGitExtensionName] <String[]>] [-Like] [-Match] [-DynamicParameter] [-CouldRun] [[-CouldPipe] <PSObject>] [-Run] [-Stream] [[-DynamicParameterSetName] <String>] [[-DynamicParameterPositionOffset] <Int32>] [-NoMandatoryDynamicParameter] [[-ValidateInput] <PSObject>] [-AllValid] [[-ParameterSetName] <String>] [[-Parameter] <IDictionary>] [-SteppablePipeline] [-Help] [[-ParameterHelp] <String[]>] [-Example] [-FullHelp] [<CommonParameters>]
+Get-UGitExtension [[-UGitExtensionPath] <String>] [-Force] [[-CommandName] <String[]>] [[-UGitExtensionName] <String[]>] [-Like] [-Match] [-DynamicParameter] [-CouldRun] [[-CouldPipe] <PSObject>] [-Run] [-Stream] [[-DynamicParameterSetName] <String>] [[-DynamicParameterPositionOffset] <Int32>] [-NoMandatoryDynamicParameter] [-RequireUGitExtensionAttribute] [[-ValidateInput] <PSObject>] [-AllValid] [[-ParameterSetName] <String>] [[-Parameter] <IDictionary>] [-SteppablePipeline] [-Help] [[-ParameterHelp] <String[]>] [-Example] [-FullHelp] [<CommonParameters>]
 ```
 ---
 
