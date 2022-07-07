@@ -1,3 +1,7 @@
+## 0.2.3:
+* Adding types for git.reference.log (#61 #62)
+---
+
 ## 0.2.2:
 * Outputting hints as warnings (#56)
 * Improved support for git pull (#57)

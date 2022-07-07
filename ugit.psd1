@@ -1,5 +1,5 @@
 @{
-    ModuleVersion    = '0.2.2'
+    ModuleVersion    = '0.2.3'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -16,12 +16,17 @@ PrivateData   = @{
         ProjectURI = 'https://github.com/StartAutomating/ugit'
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
         ReleaseNotes = @'
+## 0.2.3:
+* Adding types for git.reference.log (#61 #62)
+---
+
 ## 0.2.2:
 * Outputting hints as warnings (#56)
 * Improved support for git pull (#57)
 * Auto-building depedencies (#58)
 * Consolidating CI/CD (#59)
 ---
+
 ## 0.2.1:
 * Adding support for git shortlog (#48)
 * Adding .GitRoot to git reflog (#53)
