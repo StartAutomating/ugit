@@ -137,6 +137,69 @@ Pop-Location
     </Members>
   </Type>
   <Type>
+    <Name>git.reference.log</Name>
+    <Members>
+      <AliasProperty>
+        <Name>CommitHash</Name>
+        <ReferencedMemberName>Hash</ReferencedMemberName>
+      </AliasProperty>
+      <ScriptMethod>
+        <Name>Archive</Name>
+        <Script>
+                        param(
+[Parameter(Mandatory)]
+[string]
+$ArchivePath
+)
+$unresolvedArchivePath = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($ArchivePath)
+
+Push-Location $this.GitRoot
+git archive $this.CommitHash '-o' "$unresolvedArchivePath" @args
+Pop-Location
+
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
+        <Name>Checkout</Name>
+        <Script>
+                        Push-Location $this.GitRoot
+git checkout $this.CommitHash @args
+Pop-Location
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
+        <Name>Diff</Name>
+        <Script>
+                        Push-Location $this.GitRoot
+git diff $this.CommitHash @args
+Pop-Location
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
+        <Name>Reset</Name>
+        <Script>
+                        Push-Location $this.GitRoot
+git reset $this.CommitHash @args
+Pop-Location
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
+        <Name>Revert</Name>
+        <Script>
+                        Push-Location $this.GitRoot
+git revert $this.CommitHash @args
+Pop-Location
+                    </Script>
+      </ScriptMethod>
+      <ScriptProperty>
+        <Name>ReferenceNumbers</Name>
+        <GetScriptBlock>
+                        [Regex]::new("#(?&lt;n&gt;\d+)").Matches($this.CommitMessage) -replace '#' -as [int[]]
+                    </GetScriptBlock>
+      </ScriptProperty>
+    </Members>
+  </Type>
+  <Type>
     <Name>git.status</Name>
     <Members>
       <ScriptMethod>
