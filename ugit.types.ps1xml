@@ -200,6 +200,57 @@ Pop-Location
     </Members>
   </Type>
   <Type>
+    <Name>git.stash.entry</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>Apply</Name>
+        <Script>
+                        Push-Location $this.GitRoot
+git stash apply $this.Number 
+Pop-Location
+
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
+        <Name>Delete</Name>
+        <Script>
+                        Push-Location $this.GitRoot
+git stash drop $this.Number
+Pop-Location
+
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
+        <Name>Diff</Name>
+        <Script>
+                        Push-Location $this.GitRoot
+git stash show $this.Number --patch
+Pop-Location
+
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
+        <Name>Drop</Name>
+        <Script>
+                        Push-Location $this.GitRoot
+git stash drop $this.Number
+Pop-Location
+
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
+        <Name>Pop</Name>
+        <Script>
+                        Push-Location $this.GitRoot
+git stash pop $this.Number 
+Pop-Location
+
+
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
     <Name>git.status</Name>
     <Members>
       <ScriptMethod>
