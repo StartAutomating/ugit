@@ -101,8 +101,15 @@ end {
                         Path       = $changePath
                         File       = Get-Item -ErrorAction SilentlyContinue -Path $changePath
                     }
+                }                
+            }
+
+            if ($stashLine -match '^Dropped refs/stash\@\{(?<Number>\d+)\}\s\((?<CommitHash>[a-f0-9]+)\)') {
+                $gitStashOut.Dropped = [PSCustomObject]@{
+                    PSTypeName = 'git.stash.drop'
+                    Number     = [int]$matches.Number
+                    CommitHash = $matches.CommitHash
                 }
-                
             }
         }
     }
