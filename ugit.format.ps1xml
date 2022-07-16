@@ -1869,6 +1869,159 @@ $BackgroundColor
       </CustomControl>
     </View>
     <View>
+      <Name>Git.Stash.Apply</Name>
+      <ViewSelectedBy>
+        <TypeName>Git.Stash.Apply</TypeName>
+      </ViewSelectedBy>
+      <GroupBy>
+        <PropertyName>GitRoot</PropertyName>
+      </GroupBy>
+      <CustomControl>
+        <CustomEntries>
+          <CustomEntry>
+            <CustomItem>
+              <Text>On Branch: </Text>
+              <ExpressionBinding>
+                <ScriptBlock>$moduleName = 'ugit'
+
+            do {
+                $lm = Get-Module -Name $moduleName -ErrorAction Ignore
+                if (-not $lm) { continue } 
+                if ($lm.FormatPartsLoaded) { break }
+                $wholeScript = @(foreach ($formatFilePath in $lm.exportedFormatFiles) {         
+                    foreach ($partNodeName in Select-Xml -LiteralPath $formatFilePath -XPath "/Configuration/Controls/Control/Name[starts-with(., '$')]") {
+                        $ParentNode = $partNodeName.Node.ParentNode
+                        "$($ParentNode.Name)={
+            $($ParentNode.CustomControl.CustomEntries.CustomEntry.CustomItem.ExpressionBinding.ScriptBlock)}"
+                    }
+                }) -join [Environment]::NewLine
+                New-Module -Name "${ModuleName}.format.ps1xml" -ScriptBlock ([ScriptBlock]::Create(($wholeScript + ';Export-ModuleMember -Variable *'))) |
+                    Import-Module -Global
+                $onRemove = [ScriptBlock]::Create("Remove-Module '${ModuleName}.format.ps1xml'")
+                
+                if (-not $lm.OnRemove) {
+                    $lm.OnRemove = $onRemove
+                } else {
+                    $lm.OnRemove = [ScriptBlock]::Create($onRemove.ToString() + ''  + [Environment]::NewLine + $lm.OnRemove)
+                }
+                $lm | Add-Member NoteProperty FormatPartsLoaded $true -Force
+            
+            } while ($false)
+            
+        
+@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Verbose' -NoClear) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.BranchName -notin 'main', 'master' </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock> $_.BranchName </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Verbose' ) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Warning' -NoClear) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.BranchName -in 'main', 'master' </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock> $_.BranchName </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Warning' ) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <NewLine />
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Staged </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock> 
+        "Changes Staged For Commit:
+  (use git commit -m to commit)" + [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Staged </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        (@(foreach ($line in $($_.Staged | Select-Object ChangeType, Path | Out-String -Width ($host.UI.RawUI.BufferSize.Width - 8)) -split '(?&gt;\r\n|\n)') {
+            (" " * 4) + $line
+        }) -join [Environment]::NewLine) + [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Unstaged </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock> 
+        "Changes Not Staged For Commit:
+  (use git add &lt;file&gt; to add, git restore &lt;file&gt; to discard changes)" + [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Unstaged</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        (@(foreach ($line in $($_.Unstaged | Select-Object ChangeType, Path | Out-String -Width ($host.UI.RawUI.BufferSize.Width - 8)) -split '(?&gt;\r\n|\n)') {
+            (" " * 4) + $line
+        }) -join [Environment]::NewLine) + [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Untracked </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        "Untracked Files:
+  (use git add &lt;file&gt; to include in commit)" + [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Untracked</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        @(foreach ($line in $($_.Untracked | Out-String -Width ($host.UI.RawUI.BufferSize.Width - 8)) -split '(?&gt;\r\n|\n)') {
+            (" " * 4) + $line
+        }) -join [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+            </CustomItem>
+          </CustomEntry>
+        </CustomEntries>
+      </CustomControl>
+    </View>
+    <View>
+      <Name>Git.Stash.Drop</Name>
+      <ViewSelectedBy>
+        <TypeName>Git.Stash.Drop</TypeName>
+      </ViewSelectedBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>Number</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CommitHash</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+    <View>
       <Name>Git.Stash.Entry</Name>
       <ViewSelectedBy>
         <TypeName>Git.Stash.Entry</TypeName>
