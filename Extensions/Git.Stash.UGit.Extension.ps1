@@ -30,6 +30,13 @@ end {
         GitCommand = $GitCommand
         GitOutputLines = $stashLines
     }
+
+
+    if ($GitCommand -match 'stash show(?:\s\d+)? -(?>p|-patch)') {        
+        return
+    }
+
+
     $inPhase     = ''
     foreach ($stashLine in $stashLines) {
         $stashLineNumber++
@@ -102,14 +109,23 @@ end {
                         File       = Get-Item -ErrorAction SilentlyContinue -Path $changePath
                     }
                 }                
-            }
+            }            
+        }
 
-            if ($stashLine -match '^Dropped refs/stash\@\{(?<Number>\d+)\}\s\((?<CommitHash>[a-f0-9]+)\)') {
-                $gitStashOut.Dropped = [PSCustomObject]@{
+        if ($stashLine -match '^Dropped refs/stash\@\{(?<Number>\d+)\}\s\((?<CommitHash>[a-f0-9]+)\)') {
+            $dropInfo = [Ordered]@{
+                Number = [int]$matches.Number
+                CommitHash = $matches.CommitHash
+            }
+            
+            if ($GitCommand -match '^git stash drop') {
+                return [PSCustomObject]([Ordered]@{
                     PSTypeName = 'git.stash.drop'
-                    Number     = [int]$matches.Number
-                    CommitHash = $matches.CommitHash
-                }
+                } + $dropInfo + $gitStashOut)
+            } else {
+                $gitStashOut.Dropped = [PSCustomObject]([Ordered]@{
+                    PSTypeName = 'git.stash.drop'                    
+                } + $dropInfo)
             }
         }
     }
