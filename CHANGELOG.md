@@ -1,3 +1,8 @@
+## 0.2.4:
+* Adding support for git stash (#65)
+* Allowing git diff extension to display git stash show --patch (#66)
+---
+
 ## 0.2.3:
 * Adding types for git.reference.log (#61 #62)
 ---
