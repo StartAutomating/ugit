@@ -5,7 +5,7 @@
     Outputs git diff entries as objects
 #>
 [Management.Automation.Cmdlet("Out","Git")]         # It  extends Out-Git
-[ValidatePattern("^git diff",Options='IgnoreCase')] # when the pattern is "git diff"
+[ValidatePattern("^git (?>diff|stash show(?:\s\d+)? -(?>p|-patch))",Options='IgnoreCase')] # when the pattern is "git diff"
 [OutputType('Git.Diff','Git.Diff.ChangeSet')]
 param()
 
