@@ -1,5 +1,5 @@
 @{
-    ModuleVersion    = '0.2.4'
+    ModuleVersion    = '0.2.5'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -16,6 +16,14 @@ PrivateData   = @{
         ProjectURI = 'https://github.com/StartAutomating/ugit'
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
         ReleaseNotes = @'
+## 0.2.5:
+* Improving .Merged support for git log (#68)
+* git log now also returns:
+  * [int] .PullRequestNumber (the pull request number)
+  * .Source (the source branch of a merge)
+  * .Destination (the destination branch of a merge)
+---
+
 ## 0.2.4:
 * Adding support for git stash (#65)
 * Allowing git diff extension to display git stash show --patch (#66)

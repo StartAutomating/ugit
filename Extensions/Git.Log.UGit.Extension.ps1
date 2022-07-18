@@ -2,13 +2,38 @@
 .Synopsis
     Log Extension
 .Description
-    Outputs git log entries as objects
+    Outputs git log as objects.
 .Example
-    git log | Group-Object GitUserEmail -NoElement | Sort-Object Count -Descending
-.EXAMPLE
-    git log | Where-Object -Not Merged
-.EXAMPLE
-    git log | Group-Object { $_.CommitDate.DayOfWeek } -NoElement
+    # Get all logs
+    git log | 
+        # until the first merged pull request
+        Where-Object -Not Merged
+.Example
+    # Get a single log entry
+    git log -n 1 | 
+        # and see what the log object can do.
+        Get-Member
+.Example
+    # Get all logs
+    git log |
+        # Group them by the author
+        Group-Object GitUserEmail -NoElement |
+        # sort them by count
+        Sort-Object Count -Descending    
+.Example
+    # Get all logs
+    git log |
+        # Group them by day of week 
+        Group-Object { $_.CommitDate.DayOfWeek } -NoElement
+.Example
+    # Get all logs
+    git log |
+        # where there is a pull request number
+        Where-Object PullRequestNumber |
+        # pick out the PullRequestNumber and CommitDate
+        Select PullRequestNumber, CommitDate
+.Example
+    git log --merges
 #>
 [Management.Automation.Cmdlet("Out","Git")]        # It's an extension for Out-Git
 [ValidatePattern("^git log",Options='IgnoreCase')] # when the pattern is "git log"
@@ -66,9 +91,27 @@ begin {
         if ($gitLogOut.CommitMessage) {
             $gitLogOut.CommitMessage = $gitLogOut.CommitMessage.Trim()
         }
-        if ($gitLogOut.MergeHash) {
+        if ($gitLogOut.MergeHash -and 
+            $gitLogOut.CommitMessage -notmatch '^merge branch') {
             $script:LogChangesMerged = $true
+            if ($gitLogOut.CommitMessage -match '^Merge pull request \#(?<Num>\d+)') {
+                $gitLogOut.PullRequestNumber = [int]$matches.Num
+            }
+            if ($gitLogOut.CommitMessage -match 'from[\r\n\s]{0,}(?<Src>\S+)') {
+                $gitLogOut.Source = $matches.Src
+            }
+        } 
+        elseif (
+            $gitLogOut.MergeHash
+        ) {
+            if ($gitLogOut.CommitMessage -match "^merge branch '(?<Branch>[^']+)'") {
+                $gitLogOut.Source = $matches.Branch
+            }
+            if ($gitLogOut.CommitMessage -match 'into (?<Branch>.+)$') {
+                $gitLogOut.Destination = $matches.Branch
+            }
         }
+        
         $gitLogOut.Merged = $script:LogChangesMerged
         $gitLogOut.GitRoot = $GitRoot
         [PSCustomObject]$gitLogOut
