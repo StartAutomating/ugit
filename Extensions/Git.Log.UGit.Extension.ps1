@@ -3,19 +3,36 @@
     Log Extension
 .Description
     Outputs git log as objects.
-.EXAMPLE
-    git log -n 1 | Get-Member
 .Example
-    git log | Group-Object GitUserEmail -NoElement | Sort-Object Count -Descending
-.EXAMPLE
-    git log | Where-Object -Not Merged
-.EXAMPLE
-    git log | Group-Object { $_.CommitDate.DayOfWeek } -NoElement
-.EXAMPLE
+    # Get all logs
+    git log | 
+        # until the first merged pull request
+        Where-Object -Not Merged
+.Example
+    # Get a single log entry
+    git log -n 1 | 
+        # and see what the log object can do.
+        Get-Member
+.Example
+    # Get all logs
     git log |
-        Where-Object PullRequestNumber | 
+        # Group them by the author
+        Group-Object GitUserEmail -NoElement |
+        # sort them by count
+        Sort-Object Count -Descending    
+.Example
+    # Get all logs
+    git log |
+        # Group them by day of week 
+        Group-Object { $_.CommitDate.DayOfWeek } -NoElement
+.Example
+    # Get all logs
+    git log |
+        # where there is a pull request number
+        Where-Object PullRequestNumber |
+        # pick out the PullRequestNumber and CommitDate
         Select PullRequestNumber, CommitDate
-.EXAMPLE
+.Example
     git log --merges
 #>
 [Management.Automation.Cmdlet("Out","Git")]        # It's an extension for Out-Git
