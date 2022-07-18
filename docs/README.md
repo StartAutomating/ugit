@@ -72,7 +72,6 @@ Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/
 * git reflog
 * git shortlog
 * git status
-* git stash
 
 ### Extensions that may apply to any git command:
 
