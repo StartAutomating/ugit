@@ -1,3 +1,7 @@
+## 0.2.6:
+* Fixing git diff for binary files (#47)
+---
+
 ## 0.2.5:
 * Improving .Merged support for git log (#68)
 * git log now also returns:
