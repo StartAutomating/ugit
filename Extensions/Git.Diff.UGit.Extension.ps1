@@ -20,7 +20,7 @@ begin {
         if (-not $OutputLines) { return }
         $outputLineCount = 0
         $diffRange  = $null
-        $diffObject = [Ordered]@{PSTypeName='git.diff';ChangeSet=@()}
+        $diffObject = [Ordered]@{PSTypeName='git.diff';ChangeSet=@();GitOutputLines = $OutputLines;Binary=$false}
         foreach ($outputLine in $OutputLines) {
             $outputLineCount++
             if ($outputLineCount -eq 1) {
@@ -28,6 +28,9 @@ begin {
             }
             if (-not $diffRange -and $outputline -match 'index\s(?<fromhash>[0-9a-f]+)..(?<tohash>[0-9a-f]+)') {
                 $diffObject.FromHash, $diffObject.ToHash = $Matches.fromhash, $Matches.tohash
+            }
+            if ($outputLine -like 'Binary files *differ') {
+                $diffObject.Binary = $true
             }
             if ($outputLine -like "@@*@@*") {
                 if ($diffRange) {
