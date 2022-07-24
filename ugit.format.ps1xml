@@ -1148,9 +1148,11 @@ $BackgroundColor
             } while ($false)
             
         
-
-        @(
-        . ${ugit_SetOutputStyle} -ForegroundColor Verbose
+@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Verbose' -NoClear) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>
+        @(        
         '@ '
         if ($_.From -eq $_.To) {
             $_.From
@@ -1160,9 +1162,25 @@ $BackgroundColor
 
         ' @'
         " ($($_.FromHash)..$($_.ToHash)) "
-        . ${ugit_ClearOutputStyle}
         ) -join ''
     </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Verbose' ) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Warning' -NoClear) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Binary </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        "Binary files differ"
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Warning' ) -join ''</ScriptBlock>
               </ExpressionBinding>
               <ExpressionBinding>
                 <ScriptBlock> $_.ChangeSet </ScriptBlock>
