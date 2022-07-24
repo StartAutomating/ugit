@@ -1,7 +1,6 @@
 Write-FormatView -TypeName Git.Diff -Action {
     Write-FormatViewExpression -ScriptBlock {
-        @(
-        . $SetOutputStyle -ForegroundColor Verbose
+        @(        
         '@ '
         if ($_.From -eq $_.To) {
             $_.From
@@ -11,9 +10,12 @@ Write-FormatView -TypeName Git.Diff -Action {
 
         ' @'
         " ($($_.FromHash)..$($_.ToHash)) "
-        . $ClearOutputStyle
         ) -join ''
-    }
+    } -ForegroundColor Verbose
+
+    Write-FormatViewExpression -If { $_.Binary } -ScriptBlock {
+        "Binary files differ"
+    } -ForegroundColor Warning
             
     Write-FormatViewExpression -ControlName Git.Diff.ChangeSet -Enumerate -ScriptBlock { $_.ChangeSet }
 }
