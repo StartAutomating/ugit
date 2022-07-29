@@ -1,3 +1,7 @@
+## 0.2.7:
+* Adding support for git mv (#70, thanks @ninmonkey !)
+---
+
 ## 0.2.6:
 * Fixing git diff for binary files (#47)
 ---
