@@ -1,5 +1,5 @@
 @{
-    ModuleVersion    = '0.2.6'
+    ModuleVersion    = '0.2.7'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -16,6 +16,10 @@ PrivateData   = @{
         ProjectURI = 'https://github.com/StartAutomating/ugit'
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
         ReleaseNotes = @'
+## 0.2.7:
+* Adding support for git mv (#70, thanks @ninmonkey !)
+---
+
 ## 0.2.6:
 * Fixing git diff for binary files (#47)
 ---
