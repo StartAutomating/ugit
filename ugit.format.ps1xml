@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-16"?>
-<!-- Generated with EZOut 1.8.6: Install-Module EZOut or https://github.com/StartAutomating/EZOut -->
+<!-- Generated with EZOut 1.9.0: Install-Module EZOut or https://github.com/StartAutomating/EZOut -->
 <Configuration>
   <Controls>
     <Control>
@@ -1720,6 +1720,30 @@ $BackgroundColor
               </TableColumnItem>
               <TableColumnItem>
                 <PropertyName>Message</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+    <View>
+      <Name>git.removal</Name>
+      <ViewSelectedBy>
+        <TypeName>git.removal</TypeName>
+      </ViewSelectedBy>
+      <GroupBy>
+        <PropertyName>GitRoot</PropertyName>
+      </GroupBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>RemovedFile</PropertyName>
               </TableColumnItem>
             </TableColumnItems>
           </TableRowEntry>

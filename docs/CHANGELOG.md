@@ -1,3 +1,7 @@
+## 0.2.8:
+* Adding support for git rm (Fixes #73)
+---
+
 ## 0.2.7:
 * Adding support for git mv (#70, thanks @ninmonkey !)
 ---
