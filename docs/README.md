@@ -67,11 +67,14 @@ Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/
 * git commit
 * git diff
 * git log
+* git mv
 * git pull
 * git push
 * git reflog
+* git rm
 * git shortlog
 * git status
+* git stash
 
 ### Extensions that may apply to any git command:
 
