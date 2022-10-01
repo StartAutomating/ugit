@@ -18,7 +18,9 @@ git reflog
 
 ---
 ### Outputs
-git.reference.log
+* git.reference.log
+
+
 
 
 ---
@@ -27,5 +29,6 @@ git.reference.log
 Extensions/Git.RefLog.UGit.Extension.ps1 [<CommonParameters>]
 ```
 ---
+
 
 
