@@ -26,13 +26,15 @@ git branch |                                          # Get all branches
 
 ---
 ### Outputs
-git.branch
+* git.branch
 
 
-git.branch.deleted
+* git.branch.deleted
 
 
-git.branch.detail
+* git.branch.detail
+
+
 
 
 ---
@@ -41,5 +43,6 @@ git.branch.detail
 Extensions/Git.Branch.UGit.Extension.ps1 [<CommonParameters>]
 ```
 ---
+
 
 
