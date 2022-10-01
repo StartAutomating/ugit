@@ -25,7 +25,9 @@ git clone https://github.com/Azure/azure-quickstart-templates --progress
 
 ---
 ### Outputs
-git.clone
+* git.clone
+
+
 
 
 ---
@@ -34,5 +36,6 @@ git.clone
 Extensions/Git.Clone.UGit.Extension.ps1 [<CommonParameters>]
 ```
 ---
+
 
 
