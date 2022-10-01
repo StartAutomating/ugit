@@ -21,6 +21,9 @@ Use-Git will combine errors and output, so that git output to standard error is 
 ---
 ### Related Links
 * [Out-Git](Out-Git.md)
+
+
+
 ---
 ### Examples
 #### EXAMPLE 1
@@ -55,9 +58,16 @@ Any arguments passed to git.  All positional arguments will automatically be pas
 
 
 
-|Type            |Requried|Postion|PipelineInput|
-|----------------|--------|-------|-------------|
-|```[String[]]```|false   |named  |false        |
+> **Type**: ```[String[]]```
+
+> **Required**: false
+
+> **Position**: named
+
+> **PipelineInput**:false
+
+
+
 ---
 #### **InputObject**
 
@@ -67,9 +77,16 @@ Otherwise, it will be passed as a postional argument (after any other arguments)
 
 
 
-|Type              |Requried|Postion|PipelineInput |
-|------------------|--------|-------|--------------|
-|```[PSObject[]]```|false   |named  |true (ByValue)|
+> **Type**: ```[PSObject[]]```
+
+> **Required**: false
+
+> **Position**: named
+
+> **PipelineInput**:true (ByValue)
+
+
+
 ---
 #### **WhatIf**
 -WhatIf is an automatic variable that is created when a command has ```[CmdletBinding(SupportsShouldProcess)]```.
