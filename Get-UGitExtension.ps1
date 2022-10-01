@@ -1,4 +1,4 @@
-#region Piecemeal [ 0.3.3 ] : Easy Extensible Plugins for PowerShell
+#region Piecemeal [ 0.3.5 ] : Easy Extensible Plugins for PowerShell
 # Install-Module Piecemeal -Scope CurrentUser 
 # Import-Module Piecemeal -Force 
 # Install-Piecemeal -ExtensionModule 'ugit' -ExtensionModuleAlias 'git' -ExtensionNoun 'UGitExtension' -ExtensionTypeName 'ugit.extension' -OutputPath '.\Get-UGitExtension.ps1'
@@ -232,7 +232,7 @@ function Get-UGitExtension
                 }
 
             $extCmd.PSObject.Methods.Add([psscriptmethod]::new('GetExtendedCommands', {
-
+                param([Management.Automation.CommandInfo[]]$CommandList)
                 $extendedCommandNames = @(
                     foreach ($attr in $this.ScriptBlock.Attributes) {
                         if ($attr -isnot [Management.Automation.CmdletAttribute]) { continue }
@@ -246,13 +246,16 @@ function Get-UGitExtension
                     $this | Add-Member NoteProperty ExtensionCommands @() -Force
                     return    
                 }
-                $allLoadedCmds = $ExecutionContext.SessionState.InvokeCommand.GetCommands('*','All', $true)
+                if (-not $CommandList) {
+                    $commandList = $ExecutionContext.SessionState.InvokeCommand.GetCommands('*','Function,Alias,Cmdlet', $true)
+                }
                 $extends = @{}
-                foreach ($loadedCmd in $allLoadedCmds) {
+                :nextCommand foreach ($loadedCmd in $commandList) {
                     foreach ($extensionCommandName in $extendedCommandNames) {
                         if ($extensionCommandName -and $loadedCmd.Name -match $extensionCommandName) {
                             $loadedCmd
                             $extends[$loadedCmd.Name] = $loadedCmd
+                            continue nextCommand
                         }
                     }
                 }
@@ -265,7 +268,12 @@ function Get-UGitExtension
                 $this | Add-Member NoteProperty ExtensionCommands $extends.Values -Force
             }))
 
-            $null = $extCmd.GetExtendedCommands()
+            if (-not $script:AllCommands) {
+                $script:AllCommands = $ExecutionContext.SessionState.InvokeCommand.GetCommands('*','Function,Alias,Cmdlet', $true)
+            }
+            
+
+            $null = $extCmd.GetExtendedCommands($script:AllCommands)
 
             $inheritanceLevel = [ComponentModel.InheritanceLevel]::Inherited
 
@@ -826,9 +834,8 @@ function Get-UGitExtension
                     return $allDynamicParameters
                 }
             }
-        }
-        #endregion Define Inner Functions
-
+        }        
+        #endregion Define Inner Functions        
 
         $extensionFullRegex =
             [Regex]::New($(
@@ -849,7 +856,8 @@ function Get-UGitExtension
         $getCmd    = $ExecutionContext.SessionState.InvokeCommand.GetCommand
 
         if ($Force) {
-            $script:UGitExtensions = $null
+            $script:UGitExtensions  = $null
+            $script:AllCommands = @()
         }
         if (-not $script:UGitExtensions)
         {
@@ -919,5 +927,5 @@ function Get-UGitExtension
         }
     }
 }
-#endregion Piecemeal [ 0.3.3 ] : Easy Extensible Plugins for PowerShell
+#endregion Piecemeal [ 0.3.5 ] : Easy Extensible Plugins for PowerShell
 
