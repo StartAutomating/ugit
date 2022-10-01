@@ -24,7 +24,9 @@ $commitMessage.Amend("Committing stuff") # that's better
 
 ---
 ### Outputs
-git.commit.info
+* git.commit.info
+
+
 
 
 ---
@@ -33,5 +35,7 @@ git.commit.info
 Extensions/Git.Commit.UGit.Extension.ps1 [<CommonParameters>]
 ```
 ---
+
+
 
 

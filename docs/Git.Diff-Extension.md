@@ -11,10 +11,12 @@ Outputs git diff entries as objects
 
 ---
 ### Outputs
-Git.Diff
+* Git.Diff
 
 
-Git.Diff.ChangeSet
+* Git.Diff.ChangeSet
+
+
 
 
 ---
@@ -23,5 +25,7 @@ Git.Diff.ChangeSet
 Extensions/Git.Diff.UGit.Extension.ps1 [<CommonParameters>]
 ```
 ---
+
+
 
 

@@ -18,7 +18,9 @@ git push
 
 ---
 ### Outputs
-git.push.info
+* git.push.info
+
+
 
 
 ---
@@ -27,5 +29,7 @@ git.push.info
 Extensions/Git.Push.UGit.Extension.ps1 [<CommonParameters>]
 ```
 ---
+
+
 
 

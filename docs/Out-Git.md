@@ -21,6 +21,9 @@ Extensions use two attributes to indicate if they should be run:
 ---
 ### Related Links
 * [Invoke-Git](Invoke-Git.md)
+
+
+
 ---
 ### Examples
 #### EXAMPLE 1
@@ -55,9 +58,16 @@ One or more output lines from Git.
 
 
 
-|Type            |Requried|Postion|PipelineInput |
-|----------------|--------|-------|--------------|
-|```[String[]]```|false   |named  |true (ByValue)|
+> **Type**: ```[String[]]```
+
+> **Required**: false
+
+> **Position**: named
+
+> **PipelineInput**:true (ByValue)
+
+
+
 ---
 #### **GitArgument**
 
@@ -65,9 +75,16 @@ The arguments that were passed to git.
 
 
 
-|Type            |Requried|Postion|PipelineInput|
-|----------------|--------|-------|-------------|
-|```[String[]]```|false   |named  |false        |
+> **Type**: ```[String[]]```
+
+> **Required**: false
+
+> **Position**: named
+
+> **PipelineInput**:false
+
+
+
 ---
 #### **GitRoot**
 
@@ -75,9 +92,16 @@ The root of the current git repository.
 
 
 
-|Type          |Requried|Postion|PipelineInput|
-|--------------|--------|-------|-------------|
-|```[String]```|false   |named  |false        |
+> **Type**: ```[String]```
+
+> **Required**: false
+
+> **Position**: named
+
+> **PipelineInput**:false
+
+
+
 ---
 #### **TimeStamp**
 
@@ -85,9 +109,16 @@ The timestamp.   This can be used for tracking.  Defaults to [DateTime]::Now
 
 
 
-|Type            |Requried|Postion|PipelineInput|
-|----------------|--------|-------|-------------|
-|```[DateTime]```|false   |named  |false        |
+> **Type**: ```[DateTime]```
+
+> **Required**: false
+
+> **Position**: named
+
+> **PipelineInput**:false
+
+
+
 ---
 ### Syntax
 ```PowerShell

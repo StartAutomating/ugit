@@ -1,3 +1,7 @@
+## 0.2.9:
+* Adding support for git init (Fixes #75)
+---
+
 ## 0.2.8:
 * Adding support for git rm (Fixes #73)
 ---

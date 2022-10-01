@@ -23,7 +23,9 @@ git mv .\OldName.txt .\NewName.txt --verbose
 
 ---
 ### Outputs
-System.IO.FileInfo
+* [IO.FileInfo](https://learn.microsoft.com/en-us/dotnet/api/System.IO.FileInfo)
+
+
 
 
 ---
@@ -32,5 +34,7 @@ System.IO.FileInfo
 Extensions/Git.Mv.UGit.Extension.ps1 [<CommonParameters>]
 ```
 ---
+
+
 
 

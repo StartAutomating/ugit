@@ -82,3 +82,5 @@ Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/
 
 This applies to an git command that uses the -o flag.
 It will attempt to locate any output specified by -o and return it as a file or directory.
+
+

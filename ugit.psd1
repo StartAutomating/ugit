@@ -1,5 +1,5 @@
 @{
-    ModuleVersion    = '0.2.8'
+    ModuleVersion    = '0.2.9'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -16,6 +16,10 @@ PrivateData   = @{
         ProjectURI = 'https://github.com/StartAutomating/ugit'
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
         ReleaseNotes = @'
+## 0.2.9:
+* Adding support for git init (Fixes #75)
+---
+
 ## 0.2.8:
 * Adding support for git rm (Fixes #73)
 ---
