@@ -410,6 +410,8 @@ jobs:
         run: |
           $Parameters = @{}
           $Parameters.ModulePath = ${env:ModulePath}
+          $Parameters.Exclude = ${env:Exclude}
+          $Parameters.Exclude = $parameters.Exclude -split ';' -replace '^[''"]' -replace  '[''"]$'
           foreach ($k in @($parameters.Keys)) {
               if ([String]::IsNullOrEmpty($parameters[$k])) {
                   $parameters.Remove($k)
@@ -418,16 +420,30 @@ jobs:
           Write-Host "::debug:: PublishPowerShellGallery $(@(foreach ($p in $Parameters.GetEnumerator()) {'-' + $p.Key + ' ' + $p.Value}) -join ' ')"
           & {param(
           [string]
-          $ModulePath
+          $ModulePath,
+          
+          [string[]]
+          $Exclude = @('*.png', '*.mp4', '*.jpg','*.jpeg', '*.gif', 'docs[/\]*')
           )
+          
           $gitHubEvent = if ($env:GITHUB_EVENT_PATH) {
               [IO.File]::ReadAllText($env:GITHUB_EVENT_PATH) | ConvertFrom-Json
           } else { $null }
+          
+          if (-not $Exclude) {
+              $Exclude = @('*.png', '*.mp4', '*.jpg','*.jpeg', '*.gif','docs[/\]*')
+          }
           
           
           @"
           ::group::GitHubEvent
           $($gitHubEvent | ConvertTo-Json -Depth 100)
+          ::endgroup::
+          "@ | Out-Host
+          
+          @"
+          ::group::PSBoundParameters
+          $($PSBoundParameters | ConvertTo-Json -Depth 100)
           ::endgroup::
           "@ | Out-Host
           
@@ -448,9 +464,9 @@ jobs:
           
           if (-not $imported) { return } 
           
-          $foundModule = try { Find-Module -Name $imported.Name -ErrorAction SilentlyContinue } catch {}
+          $foundModule = try { Find-Module -Name $imported.Name -ErrorAction SilentlyContinue} catch {}
           
-          if ($foundModule -and $foundModule.Version -ge $imported.Version) {
+          if ($foundModule -and (([Version]$foundModule.Version) -ge ([Version]$imported.Version))) {
               "::warning::Gallery Version of $moduleName is more recent ($($foundModule.Version) >= $($imported.Version))" | Out-Host        
           } else {
               
@@ -473,9 +489,24 @@ jobs:
               if (Test-Path $moduleGitPath) {
                   Remove-Item -Recurse -Force $moduleGitPath
               }
+          
+              if ($Exclude) {
+                  "::notice::Attempting to Exlcude $exclude" | Out-Host
+                  Get-ChildItem $moduleTempPath -Recurse |
+                      Where-Object {                
+                          foreach ($ex in $exclude) {
+                              if ($_.FullName -like $ex) {
+                                  "::notice::Excluding $($_.FullName)" | Out-Host
+                                  return $true
+                              }
+                          }
+                      } | 
+                      Remove-Item
+              }
+          
               Write-Host "Module Files:"
               Get-ChildItem $moduleTempPath -Recurse
-              Write-Host "Publishing $moduleName [$($imported.Version)] to Gallery"
+              Write-Host "Publishing $moduleName [$($imported.Version)] to Gallery"    
               Publish-Module -Path $moduleTempPath -NuGetApiKey $gk
               if ($?) {
                   Write-Host "Published to Gallery"
@@ -485,31 +516,16 @@ jobs:
               }
           }
           } @Parameters
-  UsePiecemeal: 
+  BuildModule: 
     runs-on: ubuntu-latest
     if: ${{ success() }}
     steps: 
       - name: Check out repository
         uses: actions/checkout@v2
-      - name: UsePiecemeal
-        uses: StartAutomating/Piecemeal@main
-  RunEZOut: 
-    runs-on: ubuntu-latest
-    if: ${{ success() }}
-    steps: 
-      - name: Check out repository
-        uses: actions/checkout@v2
+      - name: BuildPipeScript
+        uses: StartAutomating/PipeScript@main
       - name: UseEZOut
         uses: StartAutomating/EZOut@master
-      - name: Push Changes
-        shell: pwsh
-        run: git push; exit 0
-  HelpOut: 
-    runs-on: ubuntu-latest
-    if: ${{ success() }}
-    steps: 
-      - name: Check out repository
-        uses: actions/checkout@v2
       - name: UseHelpOut
         uses: StartAutomating/HelpOut@master
 
