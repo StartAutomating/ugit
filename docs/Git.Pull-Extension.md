@@ -20,15 +20,24 @@ git pull
 ### Parameters
 #### **GitOut**
 
-|Type          |Requried|Postion|PipelineInput |
-|--------------|--------|-------|--------------|
-|```[String]```|false   |1      |true (ByValue)|
+> **Type**: ```[String]```
+
+> **Required**: false
+
+> **Position**: 1
+
+> **PipelineInput**:true (ByValue)
+
+
+
 ---
 ### Outputs
-git.pull.fastforward
+* git.pull.fastforward
 
 
-git.pull.nochange
+* git.pull.nochange
+
+
 
 
 ---
@@ -37,5 +46,6 @@ git.pull.nochange
 Extensions/Git.Pull.UGit.Extension.ps1 [[-GitOut] <String>] [<CommonParameters>]
 ```
 ---
+
 
 
