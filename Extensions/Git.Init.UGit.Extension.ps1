@@ -18,9 +18,10 @@ begin {
     $SkipIf = 'q', '-quiet' -join '|'    
     if ($gitCommand -match "\s-(?>$SkipIf)")      { break }
 }
+
 process {
     if ($gitOut -match 'Initialized empty Git repository in (?<Location>.+$)') {
-        $fixPath = $matches.Location -replace '[\\/]', ([IO.Path]::DirectorySeparatorChar)
+        $fixPath = $matches.Location -replace '[\\/]', ([IO.Path]::DirectorySeparatorChar) -replace '\.git[\\/]$'
         $gitInitOut = [Ordered]@{
             PSTypeName     = 'git.init'
             GitRoot        = "$fixPath"
