@@ -94,7 +94,7 @@
 
         $progId = Get-Random
         $dirCount = 0
-        $RepoNotRequired = 'clone','init'  # A small number of git operations do not require a repo.  List them here.
+        $RepoNotRequired = 'clone','init','version','help'  # A small number of git operations do not require a repo.  List them here.
     }
     process {
         # First, we need to take any input and figure out what directories we are going into.
