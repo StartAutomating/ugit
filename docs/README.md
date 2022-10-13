@@ -1,4 +1,7 @@
-# ugit
+<div align='center'>
+<img src='assets/ugit.svg' />
+</div>
+
 Updated Git: A powerful PowerShell wrapper for git that lets you extend git, automate multiple repos, and output git as objects.
 
 
@@ -61,20 +64,52 @@ Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/
 
 ## Git Commands Extended
 
-* git branch
-* git checkout
-* git clone
-* git commit
-* git diff
-* git log
-* git mv
-* git pull
-* git push
-* git reflog
-* git rm
-* git shortlog
-* git status
-* git stash
+
+* [Git Branch](Git.Branch-Extension.md)
+
+ 
+* [Git Checkout](Git.Checkout-Extension.md)
+
+ 
+* [Git Clone](Git.Clone-Extension.md)
+
+ 
+* [Git Commit](Git.Commit-Extension.md)
+
+ 
+* [Git Diff](Git.Diff-Extension.md)
+
+ 
+* [Git Init](Git.Init-Extension.md)
+
+ 
+* [Git Log](Git.Log-Extension.md)
+
+ 
+* [Git Mv](Git.Mv-Extension.md)
+
+ 
+* [Git Pull](Git.Pull-Extension.md)
+
+ 
+* [Git Push](Git.Push-Extension.md)
+
+ 
+* [Git RefLog](Git.RefLog-Extension.md)
+
+ 
+* [Git Rm](Git.Rm-Extension.md)
+
+ 
+* [Git Shortlog](Git.Shortlog-Extension.md)
+
+ 
+* [Git Stash](Git.Stash-Extension.md)
+
+ 
+* [Git Status](Git.Status-Extension.md)
+
+
 
 ### Extensions that may apply to any git command:
 
@@ -82,5 +117,236 @@ Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/
 
 This applies to an git command that uses the -o flag.
 It will attempt to locate any output specified by -o and return it as a file or directory.
+
+## ugit examples
+
+### Git.Branch Example 1
+
+
+~~~PowerShell
+    git branch  # Get a list of branches
+~~~
+
+### Git.Branch Example 2
+
+
+~~~PowerShell
+    git branch |                                          # Get all branches
+        Where-Object -Not IsCurrentBranch |               # where it is not the current branch
+        Where-Object BranchName -NotIn 'main', 'master' | # and the name is not either main or master
+        git branch -d                                     # then attempt to delete the branch.
+~~~
+
+### Git.Checkout Example 1
+
+
+~~~PowerShell
+    git checkout -b CreateNewBranch
+~~~
+
+### Git.Checkout Example 2
+
+
+~~~PowerShell
+    git checkout main
+~~~
+
+### Git.Clone Example 1
+
+
+~~~PowerShell
+    git clone https://github.com/StartAutomating/ugit.git
+~~~
+
+### Git.Clone Example 2
+
+
+~~~PowerShell
+    # Clone a large repo.
+    # When --progress is provided, Write-Progress will be called.
+    git clone https://github.com/Azure/azure-quickstart-templates --progress
+~~~
+
+### Git.Commit Example 1
+
+
+~~~PowerShell
+    git commit -m "Updating #123"
+~~~
+
+### Git.Commit Example 2
+
+
+~~~PowerShell
+    $committedMessage = git commit -m "Committting Stuff" # Whoops, this commit had a typo
+    $commitMessage.Amend("Committing stuff") # that's better
+~~~
+
+### Git.FileOutput Example 1
+
+
+~~~PowerShell
+    git archive -o My.zip
+~~~
+
+### Git.Init Example 1
+
+
+~~~PowerShell
+    git init # Initialize the current directory as a repository
+~~~
+
+### Git.Log Example 1
+
+
+~~~PowerShell
+    # Get all logs
+    git log | 
+        # until the first merged pull request
+        Where-Object -Not Merged
+~~~
+
+### Git.Log Example 2
+
+
+~~~PowerShell
+    # Get a single log entry
+    git log -n 1 | 
+        # and see what the log object can do.
+        Get-Member
+~~~
+
+### Git.Log Example 3
+
+
+~~~PowerShell
+    # Get all logs
+    git log |
+        # Group them by the author
+        Group-Object GitUserEmail -NoElement |
+        # sort them by count
+        Sort-Object Count -Descending
+~~~
+
+### Git.Log Example 4
+
+
+~~~PowerShell
+    # Get all logs
+    git log |
+        # Group them by day of week 
+        Group-Object { $_.CommitDate.DayOfWeek } -NoElement
+~~~
+
+### Git.Log Example 5
+
+
+~~~PowerShell
+    # Get all logs
+    git log |
+        # where there is a pull request number
+        Where-Object PullRequestNumber |
+        # pick out the PullRequestNumber and CommitDate
+        Select PullRequestNumber, CommitDate
+~~~
+
+### Git.Log Example 6
+
+
+~~~PowerShell
+    git log --merges
+~~~
+
+### Git.Mv Example 1
+
+
+~~~PowerShell
+    git mv .\OldName.txt .\NewName.txt
+~~~
+
+### Git.Mv Example 2
+
+
+~~~PowerShell
+    git mv .\OldName.txt .\NewName.txt --verbose
+~~~
+
+### Git.Pull Example 1
+
+
+~~~PowerShell
+    git pull
+~~~
+
+### Git.Push Example 1
+
+
+~~~PowerShell
+    git push
+~~~
+
+### Git.RefLog Example 1
+
+
+~~~PowerShell
+    git reflog
+~~~
+
+### Git.Rm Example 1
+
+
+~~~PowerShell
+    git rm .\FileIDontCareAbout.txt
+~~~
+
+### Git.Shortlog Example 1
+
+
+~~~PowerShell
+    git shortlog  # Get a shortlog
+~~~
+
+### Git.Shortlog Example 2
+
+
+~~~PowerShell
+    git shortlog --email # Get a shortlog with email information
+~~~
+
+### Git.Shortlog Example 3
+
+
+~~~PowerShell
+    git shortlog --summary # Get a shortlog summary
+~~~
+
+### Git.Shortlog Example 4
+
+
+~~~PowerShell
+    git shortlog --sumary --email # Get a shortlog summary, with email.
+~~~
+
+### Git.Stash Example 1
+
+
+~~~PowerShell
+    git stash list
+~~~
+
+### Git.Status Example 1
+
+
+~~~PowerShell
+    git status
+~~~
+
+### Git.Status Example 2
+
+
+~~~PowerShell
+    git status | Select-Object -ExpandProperty Untracked
+~~~
+
 
 
