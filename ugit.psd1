@@ -1,5 +1,5 @@
 @{
-    ModuleVersion    = '0.3'
+    ModuleVersion    = '0.3.1'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -16,6 +16,14 @@ PrivateData   = @{
         ProjectURI = 'https://github.com/StartAutomating/ugit'
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
         ReleaseNotes = @'
+## 0.3.1:
+
+* git help --all now returns as objects (Fixes #88)
+* (git log .\filename).Diff() now only diffs the selected files (Fixes #87)
+* git -C is permitted in any direectory (Fixes #85)
+
+---
+
 ## 0.3:
 
 * Adding git version and git help to list of commands that do not require a repo (Fixes #79) (Thanks @charltonstanley!)

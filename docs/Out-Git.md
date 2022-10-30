@@ -1,4 +1,3 @@
-
 Out-Git
 -------
 ### Synopsis
@@ -127,6 +126,3 @@ Out-Git [-GitOutputLine <String[]>] [-GitArgument <String[]>] [-GitRoot <String>
 ---
 ### Notes
 Out-Git will generate two events upon completion.  They will have the source identifiers of "Out-Git" and "Out-Git $GitArgument"
-
-
-

@@ -1,4 +1,3 @@
-
 Use-Git
 -------
 ### Synopsis
@@ -108,6 +107,3 @@ Use-Git [-GitArgument <String[]>] [-InputObject <PSObject[]>] [-WhatIf] [-Confir
 ---
 ### Notes
 Use-Git will generate two events before git runs.  They will have the source identifiers of "Use-Git" and "Use-Git $GitArgument"
-
-
-

@@ -80,6 +80,9 @@ Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/
 * [Git Diff](Git.Diff-Extension.md)
 
  
+* [Git Help All](Git.Help.All-Extension.md)
+
+ 
 * [Git Init](Git.Init-Extension.md)
 
  
@@ -187,6 +190,20 @@ It will attempt to locate any output specified by -o and return it as a file or 
 
 ~~~PowerShell
     git archive -o My.zip
+~~~
+
+### Git.Help.All Example 1
+
+
+~~~PowerShell
+    git help -a
+~~~
+
+### Git.Help.All Example 2
+
+
+~~~PowerShell
+    git help --all
 ~~~
 
 ### Git.Init Example 1

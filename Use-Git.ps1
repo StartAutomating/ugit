@@ -77,26 +77,32 @@
             }
         
         $argumentNumber = 0
+
+        $gitArgsArray = [Collections.ArrayList]::new($GitArgument)
+        
         foreach ($commandElement in $callingContext.CommandElements) {
-            if ($commandElement.parameterName -in 'd', 'v') {
-                # If they passed -d/-D or -v/-V, they probably don't mean -Debug/-Verbose
-                $beforeArgs = @(if ($argumentNumber) { $GitArgument[0..$argumentNumber]})
-                $afterArgs  = @(if ($argumentNumber + 1 -le $gitArgument.Length) {
-                    $GitArgument[($argumentNumber + 1)..($GitArgument.Length - 1)]
-                })
-                $GitArgument = @($beforeArgs) + @("$($commandElement.Extent)") + @($afterArgs)
-                if ($commandElement.parameterName -eq 'd') { # Also, if they passed -d/-D, they probably don't want to be confirmed
+            if ($commandElement.parameterName -in 'd', 'v', 'c') {
+                # Insert the argument into the list
+                $gitArgsArray.Insert(
+                    $argumentNumber - 1, # ( don't forget to subtract one, because the command is an element)
+                    $commandElement.Extent.ToString()
+                )
+                if ($commandElement.parameterName -in 'd', 'c') { 
                     $ConfirmPreference ='none' # so set confirm impact to none
-                }
+                }                
             }
             $argumentNumber++
         }
 
+        $GitArgument = $gitArgsArray.ToArray()
+
         $progId = Get-Random
         $dirCount = 0
-        $RepoNotRequired = 'clone','init','version','help'  # A small number of git operations do not require a repo.  List them here.
+        # A small number of git operations do not require a repo.  List them here.
+        $RepoNotRequired = 'clone','init','version','help','-C'
     }
-    process {
+
+    process {        
         # First, we need to take any input and figure out what directories we are going into.
         $directories = @()
         $inputObject = 
@@ -122,16 +128,24 @@
 
         # Before we process each directory, make a copy of the bound parameters.
         $paramCopy = ([Ordered]@{} + $PSBoundParameters)
-
+        if ($GitArgument -contains '-c' -or $GitArgument -contains '-C') {
+            $paramCopy.Remove('Confirm')
+        }
         
         # Now, we will force there to be at least one directory (the current path).
         # This makes the code simpler, because we are always going thru a loop.
-        if (-not $directories) {
-            $directories = @($pwd)
+        if (-not $directories) {            
+            if ($GitArgument -ccontains '-C') {
+                $directories = $gitArgument[$GitArgument.IndexOf('-C') + 1]
+            } else {
+                $directories = @($pwd)
+            }
         } else {
             # It also gives us a change to normalize the directories into their full paths.
             $directories = @(foreach ($dir in $directories) { $dir.Fullname }) 
         }
+
+        
 
 
         # For each directory we know of, we
@@ -163,7 +177,8 @@
                 Write-Progress -PercentComplete (($dirCount * 5) % 100) -Status "git $allGitArgs " -Activity "$($dir) " -Id $progId
             }
         
-            if (($ConfirmPreference -eq 'None' -and -not $paramCopy.Confirm) -or # If we have indicated we do not care about -Confirmation, don't prompt
+            # If we have indicated we do not care about -Confirmation, don't prompt
+            if (($ConfirmPreference -eq 'None' -and (-not $paramCopy.Confirm)) -or
                 $PSCmdlet.ShouldProcess("$pwd : git $allGitArgs") # otherwise, as for confirmation to run.
             ) {
                 $eventSourceIds = @("Use-Git","Use-Git $allGitArgs")

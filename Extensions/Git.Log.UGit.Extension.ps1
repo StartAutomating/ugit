@@ -72,7 +72,7 @@ begin {
         $gitLogMatch = $Git_Log.Match($OutputLines -join [Environment]::NewLine)
         if (-not $gitLogMatch.Success) { return }
         
-        $gitLogOut = [Ordered]@{PSTypeName='git.log'}
+        $gitLogOut = [Ordered]@{PSTypeName='git.log';GitArgument=$gitArgument}
         if ($gitCommand -like '*--merges*') {
             $gitLogOut.PSTypeName = 'git.merge.log'
         }
