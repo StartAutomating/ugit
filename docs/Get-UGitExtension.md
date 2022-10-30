@@ -1,4 +1,3 @@
-
 Get-UGitExtension
 -----------------
 ### Synopsis
@@ -409,5 +408,3 @@ If set, will output the help for the extensions
 Get-UGitExtension [[-UGitExtensionPath] <String>] [-Force] [[-CommandName] <String[]>] [[-UGitExtensionName] <String[]>] [-Like] [-Match] [-DynamicParameter] [-CouldRun] [[-CouldPipe] <PSObject>] [-Run] [-Stream] [[-DynamicParameterSetName] <String>] [[-DynamicParameterPositionOffset] <Int32>] [-NoMandatoryDynamicParameter] [-RequireUGitExtensionAttribute] [[-ValidateInput] <PSObject>] [-AllValid] [[-ParameterSetName] <String>] [[-Parameter] <IDictionary>] [-SteppablePipeline] [-Help] [<CommonParameters>]
 ```
 ---
-
-
