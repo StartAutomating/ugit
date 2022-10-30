@@ -1016,6 +1016,36 @@ $BackgroundColor
       </CustomControl>
     </View>
     <View>
+      <Name>git.command</Name>
+      <ViewSelectedBy>
+        <TypeName>git.command</TypeName>
+      </ViewSelectedBy>
+      <GroupBy>
+        <PropertyName>Category</PropertyName>
+      </GroupBy>
+      <TableControl>
+        <AutoSize />
+        <TableHeaders>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>Name</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Description</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+    <View>
       <Name>Git.Commit.Info</Name>
       <ViewSelectedBy>
         <TypeName>Git.Commit.Info</TypeName>
