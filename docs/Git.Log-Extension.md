@@ -69,4 +69,3 @@ Extensions/Git.Log.UGit.Extension.ps1 [<CommonParameters>]
 
 
 
-
