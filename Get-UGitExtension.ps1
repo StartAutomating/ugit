@@ -1,4 +1,4 @@
-#region Piecemeal [ 0.3.5 ] : Easy Extensible Plugins for PowerShell
+#region Piecemeal [ 0.3.7 ] : Easy Extensible Plugins for PowerShell
 # Install-Module Piecemeal -Scope CurrentUser 
 # Import-Module Piecemeal -Force 
 # Install-Piecemeal -ExtensionModule 'ugit' -ExtensionModuleAlias 'git' -ExtensionNoun 'UGitExtension' -ExtensionTypeName 'ugit.extension' -OutputPath '.\Get-UGitExtension.ps1'
@@ -420,7 +420,7 @@ function Get-UGitExtension
                         }
                     }
                     elseif ($attr -is [Management.Automation.ValidatePatternAttribute]) {
-                        $matched = [Regex]::new($attr.RegexPattern, $attr.Options, [Timespan]::FromSeconds(1)).Match($ValidateInput)
+                        $matched = [Regex]::new($attr.RegexPattern, $attr.Options, [Timespan]::FromSeconds(1)).Match("$ValidateInput")
                         if (-not $matched.Success) {
                             if ($allValid) {
                                 if ($ErrorActionPreference -eq 'ignore') {
@@ -604,11 +604,20 @@ function Get-UGitExtension
                     $params = @{}
                     $mappedParams = [Ordered]@{} # Create a collection of mapped parameters
                     # Walk thru each parameter of this command
-                    foreach ($myParam in $paramSet.Parameters) {
+                    :nextParameter foreach ($myParam in $paramSet.Parameters) {
                         # If the parameter is ValueFromPipeline
                         if ($myParam.ValueFromPipeline) {
+                            $potentialPSTypeNames = @($myParam.Attributes.PSTypeName) -ne ''
+                            if ($potentialPSTypeNames)  {                                
+                                foreach ($potentialTypeName in $potentialPSTypeNames) {
+                                    if ($potentialTypeName -and $InputObject.pstypenames -contains $potentialTypeName) {
+                                        $mappedParams[$myParam.Name] = $params[$myParam.Name] = $InputObject
+                                        continue nextParameter
+                                    }
+                                }                                    
+                            }
                             # and we have an input object
-                            if ($null -ne $inputObject -and
+                            elseif ($null -ne $inputObject -and
                                 (
                                     # of the exact type
                                     $myParam.ParameterType -eq $inputObject.GetType() -or
@@ -927,5 +936,5 @@ function Get-UGitExtension
         }
     }
 }
-#endregion Piecemeal [ 0.3.5 ] : Easy Extensible Plugins for PowerShell
+#endregion Piecemeal [ 0.3.7 ] : Easy Extensible Plugins for PowerShell
 
