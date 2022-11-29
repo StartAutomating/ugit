@@ -14,7 +14,7 @@ Outputs git log as objects.
 #### EXAMPLE 1
 ```PowerShell
 # Get all logs
-git log | 
+git log |
     # until the first merged pull request
     Where-Object -Not Merged
 ```
@@ -22,7 +22,7 @@ git log |
 #### EXAMPLE 2
 ```PowerShell
 # Get a single log entry
-git log -n 1 | 
+git log -n 1 |
     # and see what the log object can do.
     Get-Member
 ```
@@ -41,7 +41,7 @@ git log |
 ```PowerShell
 # Get all logs
 git log |
-    # Group them by day of week 
+    # Group them by day of week
     Group-Object { $_.CommitDate.DayOfWeek } -NoElement
 ```
 
@@ -66,7 +66,6 @@ git log --merges
 Extensions/Git.Log.UGit.Extension.ps1 [<CommonParameters>]
 ```
 ---
-
 
 
 
