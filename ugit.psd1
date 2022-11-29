@@ -15,6 +15,7 @@ PrivateData   = @{
         Tags       = 'PowerShell', 'git'
         ProjectURI = 'https://github.com/StartAutomating/ugit'
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
+        BuildModule  = @('EZOut', 'Piecemeal', 'PipeScript')
         ReleaseNotes = @'
 ## 0.3.1:
 
