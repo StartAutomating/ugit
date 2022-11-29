@@ -1,4 +1,4 @@
-<#
+﻿<#
 .Synopsis
     Git Move Extension
 .Description
@@ -14,7 +14,7 @@
 param(   )
 
 begin {
-    $moveLines = @()    
+    $moveLines = @()
 }
 
 process {
@@ -26,17 +26,17 @@ end {
         return $moveLines
     }
 
-    # Take all non-dashed arguments to git.  
+    # Take all non-dashed arguments to git.
     $cmd,                 # The first is 'mv'
-        $source,          # The second is the source 
+        $source,          # The second is the source
             $dest,        # The third is the detination.
                 $null   = # (ignore anything else)
                 $gitArgument -notlike '-*'
 
     if (-not (Test-Path $dest)) { return $moveLines }
 
-    $destItem = Get-Item $dest -ErrorAction SilentlyContinue    
-    @(if ($destItem -is [IO.DirectoryInfo]) {        
+    $destItem = Get-Item $dest -ErrorAction SilentlyContinue
+    @(if ($destItem -is [IO.DirectoryInfo]) {
         $destItem = Get-Item (Join-Path $destItem $source)
         $destItem
     } elseif ($destItem) {

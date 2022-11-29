@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     git branch extension
 .DESCRIPTION
@@ -20,7 +20,7 @@ begin {
     <#
     If any of these parameters are used, we will skip processing.
     #>
-    $SkipIf = 'm', 'c', 'column','format', 'show-current' -join '|'    
+    $SkipIf = 'm', 'c', 'column','format', 'show-current' -join '|'
     if ($gitCommand -match "\s-(?>$SkipIf)")      { continue }
     $allBranches = @()
 }
@@ -44,7 +44,7 @@ process {
 
     # Current branches will start with an asterisk.  Convert this to a boolean.
     $IsCurrentBranch = ("$gitOut" -match '^\*\s' -as [bool])
-        
+
     # If the -verbose flag was passed, we have more information in a more predictable fashion.
     if ($gitCommand -match '\s-(?:v|-verbose)'){
         # The branch name and hash are each separated by spaces.  Everything else is a commit message.
@@ -57,12 +57,12 @@ process {
             CommitMessage    = $lastCommitMessage -join ' '
             IsCurrentBranch  = $IsCurrentBranch
             GitRoot          = $GitRoot
-        }        
+        }
     } else {
         # If verbose wasn't passed, the branchname is any whitepsace.
         # If remotes were passed, then they may start with origin.  We can replace this.
         $branchName      = "$gitOut" -replace '^[\s\*]+' -replace '^origin/'
-        
+
         # Add the output to the list of all branches
         $allBranches += [PSCustomObject][Ordered]@{
             PSTypeName       = 'git.branch'
@@ -71,19 +71,19 @@ process {
             GitRoot          = $GitRoot
         }
     }
-    # If the user passed their own --sort parameter, 
+    # If the user passed their own --sort parameter,
     if ($gitCommand -match '\s--sort') {
         $allBranches[-1]    # don't sort for them and output the branch,
         $allBranches = @()  # and reset the list of all branches.
-    }    
+    }
 }
 
 end {
-    # If no --sort was passed, 
-    $allBranches | 
+    # If no --sort was passed,
+    $allBranches |
         Sort-Object @{ # then put the current branch first
                 Expression='IsCurrentBranch'
                 Descending=$true
-            }, 
+            },
             BranchName # and sort the rest alphabetically.
 }

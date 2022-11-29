@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     git shortlog extension
 .DESCRIPTION
@@ -54,8 +54,8 @@ end {
             $shortLogExtract.Commits = @()
             $shortLogExtract.GitRoot = $GitRoot
             $shortLogExtract.PSTypeName = 'Git.Shortlog'
-            $currentCommitter = $shortLogExtract            
-        } elseif ($currentCommitter -and 
+            $currentCommitter = $shortLogExtract
+        } elseif ($currentCommitter -and
             $shortlogLine -match $CommitMessageLineRegex) {
             $currentCommitter.Commits += $matches.CommitMessage
         }

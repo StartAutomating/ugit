@@ -5,12 +5,12 @@
     Outputs git log as objects.
 .Example
     # Get all logs
-    git log | 
+    git log |
         # until the first merged pull request
         Where-Object -Not Merged
 .Example
     # Get a single log entry
-    git log -n 1 | 
+    git log -n 1 |
         # and see what the log object can do.
         Get-Member
 .Example
@@ -19,11 +19,11 @@
         # Group them by the author
         Group-Object GitUserEmail -NoElement |
         # sort them by count
-        Sort-Object Count -Descending    
+        Sort-Object Count -Descending
 .Example
     # Get all logs
     git log |
-        # Group them by day of week 
+        # Group them by day of week
         Group-Object { $_.CommitDate.DayOfWeek } -NoElement
 .Example
     # Get all logs
@@ -71,7 +71,7 @@ begin {
         if (-not $OutputLines) { return }
         $gitLogMatch = $Git_Log.Match($OutputLines -join [Environment]::NewLine)
         if (-not $gitLogMatch.Success) { return }
-        
+
         $gitLogOut = [Ordered]@{PSTypeName='git.log';GitArgument=$gitArgument}
         if ($gitCommand -like '*--merges*') {
             $gitLogOut.PSTypeName = 'git.merge.log'
@@ -82,7 +82,7 @@ begin {
                 $gitLogOut[$group.Name]  = $group.Value
             } else {
                 $gitLogOut[$group.Name]  = @( $gitLogOut[$group.Name] ) + $group.Value
-            }            
+            }
         }
         $gitLogOut.Remove("HexDigits")
         if ($gitLogOut.CommitDate) {
@@ -91,7 +91,7 @@ begin {
         if ($gitLogOut.CommitMessage) {
             $gitLogOut.CommitMessage = $gitLogOut.CommitMessage.Trim()
         }
-        if ($gitLogOut.MergeHash -and 
+        if ($gitLogOut.MergeHash -and
             $gitLogOut.CommitMessage -notmatch '^merge branch') {
             $script:LogChangesMerged = $true
             if ($gitLogOut.CommitMessage -match '^Merge pull request \#(?<Num>\d+)') {
@@ -100,7 +100,7 @@ begin {
             if ($gitLogOut.CommitMessage -match 'from[\r\n\s]{0,}(?<Src>\S+)') {
                 $gitLogOut.Source = $matches.Src
             }
-        } 
+        }
         elseif (
             $gitLogOut.MergeHash
         ) {
@@ -111,7 +111,7 @@ begin {
                 $gitLogOut.Destination = $matches.Branch
             }
         }
-        
+
         $gitLogOut.Merged = $script:LogChangesMerged
         $gitLogOut.GitRoot = $GitRoot
         [PSCustomObject]$gitLogOut
@@ -120,10 +120,10 @@ begin {
 
 
 process {
-    
+
     if ("$gitOut" -like 'Commit*' -and $lines) {
         OutGitLog $lines
-        
+
         $lines = @()
     }
     $lines += "$gitOut"

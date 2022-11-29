@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     git push
 .DESCRIPTION
@@ -28,7 +28,7 @@ end {
     $IsFirst  = ($pushLines -match $pushFirstCommitRegex) -as [bool]
     $IsUpdate = ($pushLines -match $pushCommitHashRegex) -as [bool]
     # If the push has no lines with a commit hash and is not an update
-    if (-not ($IsFirst -or $IsUpdate)) { 
+    if (-not ($IsFirst -or $IsUpdate)) {
         $pushLines # output directly.
         return
     }
@@ -36,14 +36,14 @@ end {
     if ($IsUpdate) {
         # Create a hashtable to store output
         $pushOutput = [Ordered]@{PSTypeName='git.push.info'}
-        
+
         foreach ($pl in $pushLines) {
             if ($pl -match '^To http') {
                 $to, $GitUrl = $pl -split ' '
                 # Pick out the url from the line starting with To http
                 $pushOutput.GitUrl = $GitUrl -join ' '
             }
-            
+
             if ($pl -match $pushCommitHashRegex) {
                 # The line with the commit hash has the prior hash and the current has
                 $pushOutput.LastCommitHash = $matches.o

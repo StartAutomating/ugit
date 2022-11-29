@@ -1,5 +1,5 @@
 @{
-    ModuleVersion    = '0.3.1'
+    ModuleVersion    = '0.3.2'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -15,7 +15,15 @@ PrivateData   = @{
         Tags       = 'PowerShell', 'git'
         ProjectURI = 'https://github.com/StartAutomating/ugit'
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
+        BuildModule  = @('EZOut', 'Piecemeal', 'PipeScript')
         ReleaseNotes = @'
+## 0.3.2:
+
+* git diff now includes .File and .GitRoot (Fixes #93)
+* git pull no longer includes 'files changed' when no files change (Fixes #92)
+
+---
+
 ## 0.3.1:
 
 * git help --all now returns as objects (Fixes #88)

@@ -44,7 +44,7 @@ Write-FormatView -TypeName Git.Pull.FastForward, Git.Pull.Strategy -Action {
     Write-FormatViewExpression -Newline
     Write-FormatViewExpression -ScriptBlock {
         " $($_.FilesChanged) files changed"
-    } -ForegroundColor verbose
+    } -ForegroundColor verbose -If { $_.Changes }
     Write-FormatViewExpression -If {
         $_.Insertions
     } -ScriptBlock {

@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     git init extension
 .DESCRIPTION
@@ -15,7 +15,7 @@ begin {
     <#
     If any of these parameters are used, we will skip processing.
     #>
-    $SkipIf = 'q', '-quiet' -join '|'    
+    $SkipIf = 'q', '-quiet' -join '|'
     if ($gitCommand -match "\s-(?>$SkipIf)")      { break }
 }
 

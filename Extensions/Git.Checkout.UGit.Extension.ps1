@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     git checkout extension
 .DESCRIPTION
@@ -21,15 +21,15 @@ process {
 }
 
 end {
-    
+
     if ($($gitCheckoutLines) -match "^Switched to a new branch '(?<b>[^']+)'") {
         [PSCustomObject]@{
             BranchName = $matches.b
             PSTypeName = 'git.checkout.newbranch'
             GitRoot    = $GitRoot
         }
-    } 
-    elseif ($gitCheckoutLines -match "Switched to branch '(?<b>[^']+)'") 
+    }
+    elseif ($gitCheckoutLines -match "Switched to branch '(?<b>[^']+)'")
     {
         $gitCheckoutInfo = @{PSTypeName='git.checkout.switchbranch';GitRoot=$GitRoot;GitOutputLines=$gitCheckoutLines;Modified=@()}
         foreach ($checkoutLine in $gitCheckoutLines) {
@@ -39,10 +39,10 @@ end {
             elseif ($checkoutLine -match '^Your branch') {
                 $gitCheckoutInfo.Status = $checkoutLine
             }
-            elseif ($checkoutLine -match '^(?<ct>\w)\s+(?<fn>\S+)') {                
+            elseif ($checkoutLine -match '^(?<ct>\w)\s+(?<fn>\S+)') {
                 if ($matches.ct -eq 'M') {
                     $gitCheckoutInfo.modified += (Get-Item $matches.fn -ErrorAction SilentlyContinue)
-                }                
+                }
             }
         }
         [PSCustomObject]$gitCheckoutInfo
@@ -55,7 +55,7 @@ end {
             }
             elseif ($checkoutLine -match '^Your branch') {
                 $gitCheckoutInfo.Status = $checkoutLine
-            }            
+            }
         }
         [PSCustomObject]$gitCheckoutInfo
     }

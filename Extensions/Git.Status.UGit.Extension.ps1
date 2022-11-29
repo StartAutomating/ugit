@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     git status extension
 .DESCRIPTION
@@ -18,7 +18,7 @@ begin {
     <#
     If any of these parameters are used, we will skip processing.
     #>
-    $SkipIf = 'porcelain' -join '|' 
+    $SkipIf = 'porcelain' -join '|'
     if ($gitCommand -match "\s-(?>$SkipIf)")      { break }
 
     $statusLines = @()
@@ -43,7 +43,7 @@ end {
 
     for ($sln = 0; $sln -lt $statusLines.Length; $sln++) {
         if ($sln -eq 0) {
-            $gitStatusOut.BranchName = @($statusLines[$sln] -split ' ' -ne '')[-1] 
+            $gitStatusOut.BranchName = @($statusLines[$sln] -split ' ' -ne '')[-1]
             continue
         }
         if ($statusLines[$sln] -like '*not staged for commit:*') {
@@ -58,7 +58,7 @@ end {
             $inPhase = 'Untracked'
             continue
         }
-        
+
         if ($sln -eq 1 -and -not $inPhase) {
             $gitStatusOut.Status = $statusLines[$sln]
             continue
@@ -67,7 +67,7 @@ end {
         if ($statusLines[$sln] -match '^\s+\(') { continue }
         if ($statusLines[$sln] -match '^\s+' -and $inPhase) {
             $trimmedLine = $statusLines[$sln].Trim()
-            $changeType = 
+            $changeType =
                 if ( $trimmedLine -match "^([\w\s]+):") {
                     $matches.1
                 } else {
@@ -83,7 +83,7 @@ end {
                     File       = Get-Item -ErrorAction SilentlyContinue -Path $changePath
                 }
             }
-            
+
         }
     }
 
