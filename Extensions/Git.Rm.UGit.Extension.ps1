@@ -1,4 +1,4 @@
-<#
+﻿<#
 .Synopsis
     Git Remove Extension
 .Description
@@ -12,7 +12,7 @@
 param(   )
 
 begin {
-    $removeLines = @()    
+    $removeLines = @()
 }
 
 process {
@@ -37,6 +37,6 @@ end {
             }
         } else {
             $line
-        }        
-    }    
+        }
+    }
 }

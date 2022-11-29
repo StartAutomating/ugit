@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     git commit extension
 .DESCRIPTION
@@ -26,8 +26,8 @@ end {
     # If it doesn't look like the commit lines had a commit hash, output them directly
     if (-not ($commitLines -match '[a-f0-9]+\]')) {
         $commitLines
-    }    
-    else 
+    }
+    else
     {
         # Otherwise initialize commit information
         $commitInfo = [Ordered]@{
@@ -40,33 +40,33 @@ end {
         # and walk over each line in the commit output.
         for ($cln = 0; $cln -lt $commitLines.Length; $cln++) {
             # If the line has the branch name and hash
-            if ($commitLines[$cln] -match '^\[(?<n>\S+)\s(?<h>[a-f0-9]+)\]') { 
+            if ($commitLines[$cln] -match '^\[(?<n>\S+)\s(?<h>[a-f0-9]+)\]') {
                 $commitInfo.BranchName    = $matches.n # set .BranchName,
-                $commitInfo.CommitHash    = $matches.h # set .CommitHash                                                       
+                $commitInfo.CommitHash    = $matches.h # set .CommitHash
                 $commitInfo.CommitMessage =            # and set .CommitMessage to the rest of the line.
-                    $commitLines[$cln] -replace '^\[[^\]]+\]\s+' 
+                    $commitLines[$cln] -replace '^\[[^\]]+\]\s+'
             }
-            elseif ($commitLines[$cln] -match '^\s\d+') # If the line starts with a space and digits 
-            { 
+            elseif ($commitLines[$cln] -match '^\s\d+') # If the line starts with a space and digits
+            {
                 # It's the summary.  Split it on commas and remove most of the rest of the text.
                 foreach ($commitLinePart in $commitLines[$cln] -split ',' -replace '[\s\w\(\)-[\d]]') {
-                    
-                    if ($commitLinePart.Contains('+')) { 
+
+                    if ($commitLinePart.Contains('+')) {
                         # If the part contains +, it's insertions.
                         $commitInfo.Insertions = $commitLinePart -replace '\+' -as [int]
-                    }                     
-                    elseif ($commitLinePart.Contains('-')) 
+                    }
+                    elseif ($commitLinePart.Contains('-'))
                     {
                         # If the part contains -, it's deletions.
                         $commitInfo.Deletions = $commitLinePart -replace '\-' -as [int]
-                    } 
+                    }
                     else
                     {
                         # Otherwise, its the file change count.
                         $commitInfo.FilesChanged = $commitLinePart -as [int]
                     }
-                }                
-            } 
+                }
+            }
             elseif ($commitInfo.BranchName) # Otherwise, if we already know the branch name
             {
                 # add the line to the commit message.

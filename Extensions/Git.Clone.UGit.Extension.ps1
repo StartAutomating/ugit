@@ -1,4 +1,4 @@
-<#
+﻿<#
 .Synopsis
     git clone extension
 .Description
@@ -29,7 +29,7 @@ process {
         $dest = $matches.dest
         $progressMsg = $matches.0
         if (-not $progId) {
-            $progId = Get-Random        
+            $progId = Get-Random
         }
         Write-Progress $progressMsg "  " -Id $ProgId
     }
@@ -47,7 +47,7 @@ end {
         Write-Progress $progressMsg "$status $($matches.c) / $($matches.t)" -Completed -Id $ProgId
     }
 
-    
+
     if ($dest) {
         $destPath = Join-Path $pwd $dest
         $gitUrl = $gitArgument | Where-Object { $_ -like '*.git' -and $_ -as [uri]}
@@ -56,7 +56,7 @@ end {
             GitRoot    = $destPath
             Directory  = Get-Item -Path $destPath
             GitUrl     = $gitUrl
-        }        
+        }
     } else {
         $gitCloneLines
     }

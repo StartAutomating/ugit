@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     git stash extension
 .DESCRIPTION
@@ -24,13 +24,13 @@ end {
     # If we don't know how to handle output, we want to output normally.
     # So keep track if we know.
     $stashOutputHandled = $false
-    
+
     # If the command is stash show --patch,
     if ($GitCommand -match 'stash show(?:\s\d+)? -(?>p|-patch)') {
-        # the diff extension will actually be handling things.        
+        # the diff extension will actually be handling things.
         return
     }
-    
+
     # Create a base output object
     $gitStashOut     = [Ordered]@{
         GitRoot = $GitRoot
@@ -60,7 +60,7 @@ end {
         if ($stashLine -eq 'No local changes to save') {
             # return a 'git.stash.nothing' object.
             return [PSCustomObject]([Ordered]@{
-                PSTypeName = 'git.stash.nothing'                
+                PSTypeName = 'git.stash.nothing'
             } + $gitStashOut)
         }
 
@@ -89,7 +89,7 @@ end {
                 PSTypeName = 'git.stash.entry'
                 Number  = [int]0
                 Message = $matches.Message
-            } + $gitStashOut)                                     
+            } + $gitStashOut)
         }
 
         # If we are popping or applying a stash
@@ -97,7 +97,7 @@ end {
             # The first line contains the branch name
             if ($stashLineNumber -eq 1) {
                 # (in the last word).
-                $gitStashOut.BranchName = @($stashLine -split ' ' -ne '')[-1] 
+                $gitStashOut.BranchName = @($stashLine -split ' ' -ne '')[-1]
             }
             # Everything else returns like git status.
             # use certain lines to indicate we are changing phases
@@ -107,7 +107,7 @@ end {
                 continue
             }
             if ($stashLine -like "Changes to be committed:*") {
-                
+
                 $inPhase = 'Staged'
                 continue
             }
@@ -127,7 +127,7 @@ end {
             # Lines that start with whitespace tell us what files were applied
             if ($stashLine -match '^\s+' -and $inPhase) {
                 $trimmedLine = $stashLine.Trim()
-                $changeType = 
+                $changeType =
                     # The changetype will be in parenthesis
                     if ( $trimmedLine -match "^([\w\s]+):") {
                         $matches.1
@@ -145,7 +145,7 @@ end {
                         Path       = $changePath
                         File       = Get-Item -ErrorAction SilentlyContinue -Path $changePath
                     }
-                }                
+                }
             }
         }
 
@@ -156,7 +156,7 @@ end {
                 Number = [int]$matches.Number
                 CommitHash = $matches.CommitHash
             }
-            
+
             # If the command was 'git stash drop'
             if ($GitCommand -match '^git stash drop') {
                 # return the drop info
@@ -166,7 +166,7 @@ end {
             } else {
                 # Otherwise, add this to the gitStashOutput.
                 $gitStashOut.Dropped = [PSCustomObject]([Ordered]@{
-                    PSTypeName = 'git.stash.drop'                    
+                    PSTypeName = 'git.stash.drop'
                 } + $dropInfo)
             }
         }

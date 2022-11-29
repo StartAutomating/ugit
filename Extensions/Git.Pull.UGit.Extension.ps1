@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     git pull extension
 .DESCRIPTION
@@ -28,8 +28,8 @@ end {
         [PSCustomObject]@{UpToDate=$true;GitRoot=$GitRoot;PSTypeName='git.pull.no.update'}
     }
     elseif ($pullLines -match '^Fast-forward$' -or $pullLines -match "'(?<strategy>[^']+)'\s{1}strategy\.$") {
-        
-        $gitPullOut = 
+
+        $gitPullOut =
             if ($pullLines -match '^Fast-forward$') {
                 @{PSTypeName='git.pull.fastforward';GitRoot=$gitRoot;Changes=@();NewFiles=@()}
             } else {
@@ -44,9 +44,9 @@ end {
                             }
                         break
                     }
-                }                
+                }
             }
-        
+
         foreach ($pl in $pullLines) {
             if ($pl -match '^From http') {
                 $null, $gitPullOut.GitUrl = $pl -split ' '
@@ -66,34 +66,34 @@ end {
                 $gitPullOut.LastCommitHash = $matches.o
                 $gitPullOut.CommitHash = $matches.n
             }
-            elseif ($pl -match '^\s\d+') # If the line starts with a space and digits 
-            { 
+            elseif ($pl -match '^\s\d+') # If the line starts with a space and digits
+            {
                 # It's the summary.  Split it on commas and remove most of the rest of the text.
                 foreach ($linePart in $pl -split ',' -replace '[\s\w\(\)-[\d]]') {
-                    
-                    if ($linePart.Contains('+')) { 
+
+                    if ($linePart.Contains('+')) {
                         # If the part contains +, it's insertions.
                         $gitPullout.Insertions = $linePart -replace '\+' -as [int]
-                    }                     
-                    elseif ($linePart.Contains('-')) 
+                    }
+                    elseif ($linePart.Contains('-'))
                     {
                         # If the part contains -, it's deletions.
                         $gitPullout.Deletions = $linePart -replace '\-' -as [int]
-                    } 
+                    }
                     else
                     {
                         # Otherwise, its the file change count.
                         $gitPullout.FilesChanged = $linePart -as [int]
                     }
-                }                
+                }
             }
             elseif ($pl -match 'create\smode\s(?<mode>\d+)\s(?<FilePath>\S+)') {
                 $gitPullOut.NewFiles += $matches.FilePath
             }
-            
+
             if ($pl -like ' *|*') {
                 $nameOfFile, $fileChanges =  $pl -split '\|'
-                $nameOfFile = $nameOfFile -replace '^\s+' -replace '\s+$'                
+                $nameOfFile = $nameOfFile -replace '^\s+' -replace '\s+$'
                 $match = [Regex]::Match($fileChanges, "(?<c>\d+)\s(?<i>\+{0,})(?<d>\-{0,})")
                 $linesChanged  = $match.Groups["c"].Value -as [int]
                 $linesInserted = $match.Groups["i"].Length
@@ -108,8 +108,8 @@ end {
             }
         }
         $gitPullOut.NewFiles = @(foreach ($nf in $gitPullOut.NewFiles) {
-            
-            try { Get-Item (Join-Path $gitPullOut.GitRoot $nf ) -ErrorAction SilentlyContinue } catch { $null } 
+
+            try { Get-Item (Join-Path $gitPullOut.GitRoot $nf ) -ErrorAction SilentlyContinue } catch { $null }
         })
         $gitPullOut.GitOutputLines = $pullLines
         [PSCustomObject]$gitPullOut

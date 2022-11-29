@@ -1,4 +1,4 @@
-<#
+﻿<#
 .Synopsis
     Diff Extension
 .Description
@@ -10,17 +10,17 @@
 param()
 
 begin {
-    # Diff messages are spread across many lines, so we need to keep track of them.    
+    # Diff messages are spread across many lines, so we need to keep track of them.
     $lines = [Collections.Queue]::new()
     $allDiffLines = [Collections.Queue]::new()
     function OutDiff {
         param([string[]]$OutputLines)
 
-        
+
         if (-not $OutputLines) { return }
         $outputLineCount = 0
         $diffRange  = $null
-        
+
         $diffObject = [Ordered]@{
             PSTypeName='git.diff'
             ChangeSet=@()
@@ -51,7 +51,7 @@ begin {
                 if ($diffRange) {
                     $diffObject.ChangeSet += [PSCustomObject]$diffRange
                 }
-                
+
                 $extendedHeader = $outputLine -replace '^@@[^@]+@@' -replace '^\s+'
                 $diffRange = [Ordered]@{
                     PSTypeName='git.diff.range';
@@ -62,7 +62,7 @@ begin {
                 $diffRange.LineStart,
                 $diffRange.LineCount,
                 $diffRange.NewLineStart,
-                $diffRange.NewLineCount = 
+                $diffRange.NewLineCount =
                     @($outputLine -replace '\s' -split '[-@+]' -ne '' -split ',')[0..3] -as [int[]]
                 continue
             }
@@ -86,7 +86,7 @@ begin {
 }
 
 
-process {    
+process {
     if ("$gitOut" -like 'diff*' -and $lines) {
         OutDiff $lines.ToArray()
         $lines.Clear()

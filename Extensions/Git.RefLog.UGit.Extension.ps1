@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     git reflog
 .DESCRIPTION
@@ -35,5 +35,5 @@ end {
         $refExtract.GitRoot = $GitRoot
         $refExtract.PSTypeName = 'Git.Reference.Log'
         [PSCustomObject]$refExtract
-    }        
+    }
 }
