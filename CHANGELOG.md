@@ -1,3 +1,10 @@
+## 0.3.2:
+
+* git diff now includes .File and .GitRoot (Fixes #93)
+* git pull no longer includes 'files changed' when no files change (Fixes #92)
+
+---
+
 ## 0.3.1:
 
 * git help --all now returns as objects (Fixes #88)
