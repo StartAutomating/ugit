@@ -218,7 +218,7 @@ It will attempt to locate any output specified by -o and return it as a file or 
 
 ~~~PowerShell
     # Get all logs
-    git log | 
+    git log |
         # until the first merged pull request
         Where-Object -Not Merged
 ~~~
@@ -228,7 +228,7 @@ It will attempt to locate any output specified by -o and return it as a file or 
 
 ~~~PowerShell
     # Get a single log entry
-    git log -n 1 | 
+    git log -n 1 |
         # and see what the log object can do.
         Get-Member
 ~~~
@@ -251,7 +251,7 @@ It will attempt to locate any output specified by -o and return it as a file or 
 ~~~PowerShell
     # Get all logs
     git log |
-        # Group them by day of week 
+        # Group them by day of week
         Group-Object { $_.CommitDate.DayOfWeek } -NoElement
 ~~~
 
@@ -364,7 +364,6 @@ It will attempt to locate any output specified by -o and return it as a file or 
 ~~~PowerShell
     git status | Select-Object -ExpandProperty Untracked
 ~~~
-
 
 
 
