@@ -20,11 +20,26 @@ begin {
         if (-not $OutputLines) { return }
         $outputLineCount = 0
         $diffRange  = $null
-        $diffObject = [Ordered]@{PSTypeName='git.diff';ChangeSet=@();GitOutputLines = $OutputLines;Binary=$false}
+        
+        $diffObject = [Ordered]@{
+            PSTypeName='git.diff'
+            ChangeSet=@()
+            GitOutputLines = $OutputLines
+            Binary=$false
+            GitRoot = $gitRoot
+        }
+
         foreach ($outputLine in $OutputLines) {
             $outputLineCount++
             if ($outputLineCount -eq 1) {
                 $diffObject.From, $diffObject.To  = $outputLine -replace '^diff --git ' -split '[ab]/' -ne ''
+                $fromPath = Join-Path $gitRoot $diffObject.From
+                $toPath   = Join-Path $gitRoot $diffObject.To
+                if (Test-Path $toPath) {
+                    $diffObject.File = Get-Item $toPath
+                } elseif (Test-Path $fromPath) {
+                    $diffObject.File = Get-Item $fromPath
+                }
             }
             if (-not $diffRange -and $outputline -match 'index\s(?<fromhash>[0-9a-f]+)..(?<tohash>[0-9a-f]+)') {
                 $diffObject.FromHash, $diffObject.ToHash = $Matches.fromhash, $Matches.tohash
