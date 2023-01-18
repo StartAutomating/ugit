@@ -1331,6 +1331,118 @@ $BackgroundColor
       </CustomControl>
     </View>
     <View>
+      <Name>Git.Grep.Match</Name>
+      <ViewSelectedBy>
+        <TypeName>Git.Grep.Match</TypeName>
+      </ViewSelectedBy>
+      <CustomControl>
+        <CustomEntries>
+          <CustomEntry>
+            <CustomItem>
+              <ExpressionBinding>
+                <ScriptBlock>$moduleName = 'ugit'
+
+            do {
+                $lm = Get-Module -Name $moduleName -ErrorAction Ignore
+                if (-not $lm) { continue } 
+                if ($lm.FormatPartsLoaded) { break }
+                $wholeScript = @(foreach ($formatFilePath in $lm.exportedFormatFiles) {         
+                    foreach ($partNodeName in Select-Xml -LiteralPath $formatFilePath -XPath "/Configuration/Controls/Control/Name[starts-with(., '$')]") {
+                        $ParentNode = $partNodeName.Node.ParentNode
+                        "$($ParentNode.Name)={
+            $($ParentNode.CustomControl.CustomEntries.CustomEntry.CustomItem.ExpressionBinding.ScriptBlock)}"
+                    }
+                }) -join [Environment]::NewLine
+                New-Module -Name "${ModuleName}.format.ps1xml" -ScriptBlock ([ScriptBlock]::Create(($wholeScript + ';Export-ModuleMember -Variable *'))) |
+                    Import-Module -Global
+                $onRemove = [ScriptBlock]::Create("Remove-Module '${ModuleName}.format.ps1xml'")
+                
+                if (-not $lm.OnRemove) {
+                    $lm.OnRemove = $onRemove
+                } else {
+                    $lm.OnRemove = [ScriptBlock]::Create($onRemove.ToString() + ''  + [Environment]::NewLine + $lm.OnRemove)
+                }
+                $lm | Add-Member NoteProperty FormatPartsLoaded $true -Force
+            
+            } while ($false)
+            
+        
+@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Magenta' -NoClear) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <PropertyName>GitPath</PropertyName>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Magenta' ) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Cyan' -NoClear) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <Text>:</Text>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Cyan' ) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Green' -NoClear) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock>
+        # LineNumber in green (if present)
+        $_.LineNumber
+    </ScriptBlock>
+                </ItemSelectionCondition>
+                <PropertyName>LineNumber</PropertyName>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Green' ) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Cyan' -NoClear) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <Text>:</Text>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Cyan' ) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Green' -NoClear) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock>
+        # ColumnNumber in green (if present)
+        $_.ColumnNumber
+    </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        '' + $_.LineNumber
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Green' ) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Cyan' -NoClear) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <Text>:</Text>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Cyan' ) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>
+        # Higlight the match with a replacer.
+        [Regex]::Replace($_.Line, $_.Pattern, {
+            param($match)
+            &amp; ${ugit_Format-RichText} -ForegroundColor Error -InputObject "$match"
+        }, $(if ($_.CaseSensitive) { 'None'} else { 'IgnoreCase' }))        
+    </ScriptBlock>
+              </ExpressionBinding>
+            </CustomItem>
+          </CustomEntry>
+        </CustomEntries>
+      </CustomControl>
+    </View>
+    <View>
       <Name>git.init</Name>
       <ViewSelectedBy>
         <TypeName>git.init</TypeName>
