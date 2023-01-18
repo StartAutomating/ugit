@@ -17,6 +17,9 @@ PrivateData   = @{
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
         BuildModule  = @('EZOut', 'Piecemeal', 'PipeScript')
         ReleaseNotes = @'
+## 0.3.3:
+
+
 ## 0.3.2:
 
 * git diff now includes .File and .GitRoot (Fixes #93)
