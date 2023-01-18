@@ -20,13 +20,12 @@ git pull
 ### Parameters
 #### **GitOut**
 
-> **Type**: ```[String]```
 
-> **Required**: false
 
-> **Position**: 1
 
-> **PipelineInput**:true (ByValue)
+|Type      |Required|Position|PipelineInput |
+|----------|--------|--------|--------------|
+|`[String]`|false   |1       |true (ByValue)|
 
 
 

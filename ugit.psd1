@@ -1,5 +1,5 @@
 @{
-    ModuleVersion    = '0.3.2'
+    ModuleVersion    = '0.3.3'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -17,6 +17,16 @@ PrivateData   = @{
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
         BuildModule  = @('EZOut', 'Piecemeal', 'PipeScript')
         ReleaseNotes = @'
+## 0.3.3:
+
+* New Extensions:
+  * git grep (Fixes #101)
+  * --name-only support (Fixes #103)
+* -WhatIf now returns a [ScriptBlock] (Fixes #90)
+* Git.FileOutput: Test-Path before Get-Item (Fixes #106)
+
+---
+
 ## 0.3.2:
 
 * git diff now includes .File and .GitRoot (Fixes #93)

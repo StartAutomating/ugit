@@ -80,6 +80,12 @@ Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/
 * [Git Diff](Git.Diff-Extension.md)
 
  
+* [Git FileName](Git.FileName-Extension.md)
+
+ 
+* [Git Grep](Git.Grep-Extension.md)
+
+ 
 * [Git Help All](Git.Help.All-Extension.md)
 
  
@@ -116,10 +122,16 @@ Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/
 
 ### Extensions that may apply to any git command:
 
-* git.fileoutput
+* Git.FileName
+
+This applies to any git command that uses --name-only.
+It will attempt to return the name as a file, or as an object containing the name.
+
+* Git.FileOutput
 
 This applies to an git command that uses the -o flag.
 It will attempt to locate any output specified by -o and return it as a file or directory.
+
 
 ## ugit examples
 
@@ -183,6 +195,13 @@ It will attempt to locate any output specified by -o and return it as a file or 
 ~~~PowerShell
     $committedMessage = git commit -m "Committting Stuff" # Whoops, this commit had a typo
     $commitMessage.Amend("Committing stuff") # that's better
+~~~
+
+### Git.FileName Example 1
+
+
+~~~PowerShell
+    git archive -o My.zip
 ~~~
 
 ### Git.FileOutput Example 1
