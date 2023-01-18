@@ -80,6 +80,9 @@ Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/
 * [Git Diff](docs/Git.Diff-Extension.md)
 
  
+* [Git Grep](docs/Git.Grep-Extension.md)
+
+ 
 * [Git Help All](docs/Git.Help.All-Extension.md)
 
  
