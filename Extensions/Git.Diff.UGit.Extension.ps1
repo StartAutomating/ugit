@@ -12,7 +12,8 @@ param()
 begin {
     # Diff messages are spread across many lines, so we need to keep track of them.
     $lines = [Collections.Queue]::new()
-    $allDiffLines = [Collections.Queue]::new()
+    $allDiffLines = [Collections.Queue]::new()    
+
     function OutDiff {
         param([string[]]$OutputLines)
 
@@ -87,6 +88,7 @@ begin {
 
 
 process {
+    if ($gitCommand -match '--name-only') { return  }
     if ("$gitOut" -like 'diff*' -and $lines) {
         OutDiff $lines.ToArray()
         $lines.Clear()
@@ -96,6 +98,7 @@ process {
 }
 
 end {
+    if ($gitCommand -match '--name-only') { return  }
     OutDiff $lines.ToArray()
 }
 

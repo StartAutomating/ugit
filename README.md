@@ -80,6 +80,9 @@ Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/
 * [Git Diff](docs/Git.Diff-Extension.md)
 
  
+* [Git FileName](docs/Git.FileName-Extension.md)
+
+ 
 * [Git Grep](docs/Git.Grep-Extension.md)
 
  
@@ -186,6 +189,13 @@ It will attempt to locate any output specified by -o and return it as a file or 
 ~~~PowerShell
     $committedMessage = git commit -m "Committting Stuff" # Whoops, this commit had a typo
     $commitMessage.Amend("Committing stuff") # that's better
+~~~
+
+### Git.FileName Example 1
+
+
+~~~PowerShell
+    git archive -o My.zip
 ~~~
 
 ### Git.FileOutput Example 1
