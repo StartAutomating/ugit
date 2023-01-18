@@ -57,13 +57,12 @@ Any arguments passed to git.  All positional arguments will automatically be pas
 
 
 
-> **Type**: ```[String[]]```
 
-> **Required**: false
 
-> **Position**: named
 
-> **PipelineInput**:false
+|Type        |Required|Position|PipelineInput|
+|------------|--------|--------|-------------|
+|`[String[]]`|false   |named   |false        |
 
 
 
@@ -76,13 +75,12 @@ Otherwise, it will be passed as a postional argument (after any other arguments)
 
 
 
-> **Type**: ```[PSObject[]]```
 
-> **Required**: false
 
-> **Position**: named
 
-> **PipelineInput**:true (ByValue)
+|Type          |Required|Position|PipelineInput |
+|--------------|--------|--------|--------------|
+|`[PSObject[]]`|false   |named   |true (ByValue)|
 
 
 
