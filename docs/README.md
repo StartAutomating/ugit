@@ -80,6 +80,9 @@ Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/
 * [Git Diff](Git.Diff-Extension.md)
 
  
+* [Git Grep](Git.Grep-Extension.md)
+
+ 
 * [Git Help All](Git.Help.All-Extension.md)
 
  
@@ -364,7 +367,6 @@ It will attempt to locate any output specified by -o and return it as a file or 
 ~~~PowerShell
     git status | Select-Object -ExpandProperty Untracked
 ~~~
-
 
 
 
