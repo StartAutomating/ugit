@@ -82,6 +82,8 @@ Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/
  
 * [Git FileName](Git.FileName-Extension.md)
 
+* [Git Grep](Git.Grep-Extension.md)
+
  
 * [Git Help All](Git.Help.All-Extension.md)
 
