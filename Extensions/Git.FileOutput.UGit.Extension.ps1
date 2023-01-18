@@ -9,7 +9,7 @@
     git archive -o My.zip
 #>
 [Management.Automation.Cmdlet("Out","Git")]   # It's an extension for Out-Git
-[ValidatePattern("-o\s{0}")]                  # that is run when the switch -o is used.
+[ValidatePattern("-o\s{0}",Options='None')]   # that is run when the switch -o is used.
 param(
 )
 
@@ -20,7 +20,9 @@ end {
             $i -lt ($GitArgument.Length - 1) # and it's not the last argument
         ) {
             $fileName = $GitArgument[$i + 1] # treat the next argument as the filename
-            Get-Item $fileName -ErrorAction SilentlyContinue # and attempt to get the file.
+            if (Test-Path $fileName) {
+                Get-Item $fileName -ErrorAction SilentlyContinue # and attempt to get the file.
+            }
         }
     }
 }
