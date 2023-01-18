@@ -154,7 +154,7 @@
             $OutGitParams = @{GitArgument=$AllGitArgs}      # and prepare a splat (to save precious space when reporting errors).
             $dirCount++
             if ($WhatIfPreference) {
-                @{} + $PSBoundParameters
+                [ScriptBlock]::Create("git $($allGitArgs -join ' ')")
                 continue
             }
 
