@@ -97,18 +97,34 @@
         $GitArgument = $gitArgsArray.ToArray()
 
         $progId = Get-Random
-        $dirCount = 0
+        
         # A small number of git operations do not require a repo.  List them here.
         $RepoNotRequired = 'clone','init','version','help','-C'
+
+        $AllInputObjects = @()
     }
 
-    process {        
+    process {
+        $AllInputObjects += $InputObject
+    }
+
+    end {
         # First, we need to take any input and figure out what directories we are going into.
         $directories = @()
-        $inputObject = 
-            @(foreach ($in in $inputObject) {
+        # 
+        $InputDirectories = [Ordered]@{}
+
+        $inputObject =
+            @(foreach ($in in $AllInputObjects) {
                 if ($in -is [IO.FileInfo]) { # If the input is a file
                     $in.Fullname             # return the full name of that file.
+                    if ($directories) {      # If we have directories
+                        # Store this file in the input object by each directory.
+                        $InputDirectories[$directories[-1]] = 
+                            # by forcing an existing entry into a list
+                            @($InputDirectories[$directories[-1]]) + 
+                            $in.Fullname # and adding this file name.
+                    }
                 } elseif ($in -is [IO.DirectoryInfo]) {
                     $directories += Get-Item -LiteralPath $in.Fullname # If the input was a directory, keep track of it.
                 } else {
@@ -117,7 +133,13 @@
                         (Get-Item $in -ErrorAction SilentlyContinue) -is [IO.DirectoryInfo]) {
                         $directories += Get-Item $in
                     } else {
-                        $in
+                        if ($directories) {      # If we have directories
+                            # Store this file in the input object by each directory.
+                            $InputDirectories[$directories[-1]] = 
+                                # by forcing an existing entry into a list
+                                @($InputDirectories[$directories[-1]]) + 
+                                $in.Fullname # and adding this file name.
+                        }                        
                     }
                 }
             })
@@ -146,11 +168,11 @@
         }
 
         
-
+        $dirCount, $dirTotal = 0, $AllInputObjects.Length
 
         # For each directory we know of, we
         foreach ($dir in $directories) {
-            $AllGitArgs = @(@($GitArgument) + $InputObject) # collect the combined arguments
+            $AllGitArgs = @(@($GitArgument) + $InputDirectories[$dir]) # collect the combined arguments
             $OutGitParams = @{GitArgument=$AllGitArgs}      # and prepare a splat (to save precious space when reporting errors).
             $dirCount++
             if ($WhatIfPreference) {
@@ -174,8 +196,10 @@
                         
             $OutGitParams.GitRoot = "$($script:RepoRoots[$dir])"
             Write-Verbose "Calling git with $AllGitArgs"
-            if ($dirCount -gt 1) {                
-                Write-Progress -PercentComplete (($dirCount * 5) % 100) -Status "git $allGitArgs " -Activity "$($dir) " -Id $progId
+
+            if ($dirCount -gt 1) {
+                $percentageComplete = [Math]::Round(([double]$dirCount / $dirTotal) * 100)
+                Write-Progress -PercentComplete $percentageComplete -Status "git $allGitArgs " -Activity "$($dir) " -Id $progId
             }
         
             # If we have indicated we do not care about -Confirmation, don't prompt
@@ -200,10 +224,7 @@
                     # If Out-Git finds one or more extensions to run, these can parse the output.
             }
             Pop-Location # After we have run, Pop back out of the location.
-        }        
-    }
-
-    end {
+        }
         if ($dirCount -gt 1) {
             Write-Progress -completed -Status "$allGitArgs " -Activity " " -Id $progId
         }
