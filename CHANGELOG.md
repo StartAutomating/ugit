@@ -1,3 +1,10 @@
+## 0.3.4:
+
+* Improving pipeling behavior (Fixes #110)
+* Adding tests for pipelining
+
+---
+
 ## 0.3.3:
 
 * New Extensions:
