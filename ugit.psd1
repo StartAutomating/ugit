@@ -1,5 +1,5 @@
 @{
-    ModuleVersion    = '0.3.3'
+    ModuleVersion    = '0.3.4'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -17,6 +17,13 @@ PrivateData   = @{
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
         BuildModule  = @('EZOut', 'Piecemeal', 'PipeScript')
         ReleaseNotes = @'
+## 0.3.4:
+
+* Improving pipeling behavior (Fixes #110)
+* Adding tests for pipelining
+
+---
+
 ## 0.3.3:
 
 * New Extensions:

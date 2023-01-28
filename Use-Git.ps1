@@ -97,18 +97,43 @@
         $GitArgument = $gitArgsArray.ToArray()
 
         $progId = Get-Random
-        $dirCount = 0
+        
         # A small number of git operations do not require a repo.  List them here.
         $RepoNotRequired = 'clone','init','version','help','-C'
+
+        $AllInputObjects = @()
     }
 
-    process {        
+    process {
+        # If there was piped in input
+        if ($InputObject) {
+            $AllInputObjects += $InputObject # accumulate it.
+        }        
+    }
+
+    end {
         # First, we need to take any input and figure out what directories we are going into.
         $directories = @()
-        $inputObject = 
-            @(foreach ($in in $inputObject) {
+        # 
+        $InputDirectories = [Ordered]@{}
+
+        $inputObject =
+            @(foreach ($in in $AllInputObjects) {
                 if ($in -is [IO.FileInfo]) { # If the input is a file
                     $in.Fullname             # return the full name of that file.
+                    # If there are no directories
+                    if (-not $directories) {
+                        # initialize the collection to contain the current directory
+                        $directories += @("$pwd")
+                    }
+
+                    if ($directories) {      # If we have directories
+                        # Store this file in the input object by each directory.
+                        $InputDirectories[$directories[-1]] = 
+                            # by forcing an existing entry into a list
+                            @($InputDirectories[$directories[-1]]) + 
+                            $in.Fullname # and adding this file name.
+                    }
                 } elseif ($in -is [IO.DirectoryInfo]) {
                     $directories += Get-Item -LiteralPath $in.Fullname # If the input was a directory, keep track of it.
                 } else {
@@ -117,7 +142,19 @@
                         (Get-Item $in -ErrorAction SilentlyContinue) -is [IO.DirectoryInfo]) {
                         $directories += Get-Item $in
                     } else {
-                        $in
+
+                        # If there are no directories
+                        if (-not $directories) {
+                            # initialize the collection to contain the current directory
+                            $directories += @("$pwd")
+                        }
+                        if ($directories) {      # If we have directories
+                            # Store this file in the input object by each directory.
+                            $InputDirectories[$directories[-1]] = 
+                                # by forcing an existing entry into a list
+                                @($InputDirectories[$directories[-1]]) + 
+                                $in.Fullname # and adding this file name.
+                        }                        
                     }
                 }
             })
@@ -142,68 +179,97 @@
             }
         } else {
             # It also gives us a change to normalize the directories into their full paths.
-            $directories = @(foreach ($dir in $directories) { $dir.Fullname }) 
+            $directories = @(foreach ($dir in $directories) {
+                if ($dir.Fullname) {
+                    $dir.Fullname
+                } elseif ($dir.Path) {
+                    $dir.Path
+                } else {
+                    $dir
+                }
+            }) 
         }
 
         
-
+        $dirCount, $dirTotal = 0, $AllInputObjects.Length
 
         # For each directory we know of, we
-        foreach ($dir in $directories) {
-            $AllGitArgs = @(@($GitArgument) + $InputObject) # collect the combined arguments
-            $OutGitParams = @{GitArgument=$AllGitArgs}      # and prepare a splat (to save precious space when reporting errors).
-            $dirCount++
-            if ($WhatIfPreference) {
-                [ScriptBlock]::Create("git $($allGitArgs -join ' ')") |
-                    Add-Member NoteProperty GitRoot $dir -Force -PassThru
-                continue
+        :nextDirectory foreach ($dir in $directories) {
+            Push-Location -LiteralPath $dir                 # push into that directory.
+
+            # If there was no directory
+            if (-not $InputDirectories[$dir]) {
+                $InputDirectories[$dir] = @($null) # go over an empty collection
             }
 
-            Push-Location -LiteralPath $dir                 # Then we Push into that directory.
-            if (-not $script:RepoRoots[$dir]) {             # and see if we have a repo root
-                $script:RepoRoots[$dir] = 
-                    @("$(& $script:CachedGitCmd rev-parse --show-toplevel *>&1)") -like "*/*" -replace '/', [io.path]::DirectorySeparatorChar
-                if (-not $script:RepoRoots[$dir] -and      # If we did not have a repo root
-                    -not ($gitArgument -match "(?>$($RepoNotRequired -join '|'))") # and we are not doing an operation that does not require one 
-                ) {
-                    Write-Warning "'$($dir)' is not a git repository" # warn that there is no repo (#21)
-                    Pop-Location # pop back out of the directory                   
-                    continue # and continue to the next one.
+            foreach ($inObject in $InputDirectories[$dir]) {
+                $AllGitArgs = @(@($GitArgument) + $inObject)    # Then we collect the combined arguments
+                $AllGitArgs = @($AllGitArgs -ne '')             # (skipping any empty arguments)
+                $OutGitParams = @{GitArgument=$AllGitArgs}      # and prepare a splat (to save precious space when reporting errors).
+                $dirCount++
+                
+                if ($WhatIfPreference) {
+                    [ScriptBlock]::Create("git $($allGitArgs -join ' ')") |
+                        Add-Member NoteProperty GitRoot $dir -Force -PassThru
+                    Pop-Location
+                    continue
                 }
-            }
-                        
-            $OutGitParams.GitRoot = "$($script:RepoRoots[$dir])"
-            Write-Verbose "Calling git with $AllGitArgs"
-            if ($dirCount -gt 1) {                
-                Write-Progress -PercentComplete (($dirCount * 5) % 100) -Status "git $allGitArgs " -Activity "$($dir) " -Id $progId
-            }
-        
-            # If we have indicated we do not care about -Confirmation, don't prompt
-            if (($ConfirmPreference -eq 'None' -and (-not $paramCopy.Confirm)) -or
-                $PSCmdlet.ShouldProcess("$pwd : git $allGitArgs") # otherwise, as for confirmation to run.
-            ) {
-                $eventSourceIds = @("Use-Git","Use-Git $allGitArgs")
-                $messageData = @{
-                    GitRoot = "$pwd"
-                    GitCommand = @(@("git") + $AllGitArgs) -join ' '
-                }
-                $null =
-                    foreach ($sourceIdentifier in $eventSourceIds) {
-                        New-Event -SourceIdentifier $sourceIdentifier -MessageData $messageData
+    
+    
+                if (-not $script:RepoRoots[$dir]) {             # and see if we have a repo root
+                    $script:RepoRoots[$dir] = 
+                        @("$(& $script:CachedGitCmd rev-parse --show-toplevel *>&1)") -like "*/*" -replace '/', [io.path]::DirectorySeparatorChar
+                    if (-not $script:RepoRoots[$dir] -and      # If we did not have a repo root
+                        -not ($gitArgument -match "(?>$($RepoNotRequired -join '|'))") # and we are not doing an operation that does not require one 
+                    ) {
+                        Write-Warning "'$($dir)' is not a git repository" # warn that there is no repo (#21)
+                        Pop-Location # pop back out of the directory                   
+                        continue nextDirectory # and continue to the next directory.
                     }
-                & $script:CachedGitCmd @AllGitArgs *>&1       | # Then we run git, combining all streams into output.
-                                                                # then pipe to Out-Git, which will
-                    Out-Git @OutGitParams # output git as objects.
-                                        
-                    # These objects are decorated for the PowerShell Extended Type System.
-                    # This makes them easy to extend and customize their display.
-                    # If Out-Git finds one or more extensions to run, these can parse the output.
-            }
-            Pop-Location # After we have run, Pop back out of the location.
-        }        
-    }
+                }
+                            
+                $OutGitParams.GitRoot = "$($script:RepoRoots[$dir])"
+                Write-Verbose "Calling git with $AllGitArgs"
+    
+                if ($dirCount -gt 1) {
+                    # Clamp percentage complete within 0-100
+                    $percentageComplete = [Math]::Max(
+                        [Math]::Min(
+                            [Math]::Round(
+                                ([double]$dirCount / $dirTotal) * 100
+                            ), 100
+                        ), 
+                    0)
+                    Write-Progress -PercentComplete $percentageComplete -Status "git $allGitArgs " -Activity "$($dir) " -Id $progId
+                }
+            
+                # If we have indicated we do not care about -Confirmation, don't prompt
+                if (($ConfirmPreference -eq 'None' -and (-not $paramCopy.Confirm)) -or
+                    $PSCmdlet.ShouldProcess("$pwd : git $allGitArgs") # otherwise, as for confirmation to run.
+                ) {
+                    $eventSourceIds = @("Use-Git","Use-Git $allGitArgs")
+                    $messageData = @{
+                        GitRoot = "$pwd"
+                        GitCommand = @(@("git") + $AllGitArgs) -join ' '
+                    }
+                    $null =
+                        foreach ($sourceIdentifier in $eventSourceIds) {
+                            New-Event -SourceIdentifier $sourceIdentifier -MessageData $messageData
+                        }
+                    & $script:CachedGitCmd @AllGitArgs *>&1       | # Then we run git, combining all streams into output.
+                                                                    # then pipe to Out-Git, which will
+                        Out-Git @OutGitParams # output git as objects.
+                                            
+                        # These objects are decorated for the PowerShell Extended Type System.
+                        # This makes them easy to extend and customize their display.
+                        # If Out-Git finds one or more extensions to run, these can parse the output.
+                }
 
-    end {
+            }
+
+            
+            Pop-Location # After we have run, Pop back out of the location.
+        }
         if ($dirCount -gt 1) {
             Write-Progress -completed -Status "$allGitArgs " -Activity " " -Id $progId
         }
