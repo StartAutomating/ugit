@@ -207,6 +207,7 @@
                 $AllGitArgs = @($AllGitArgs -ne '')             # (skipping any empty arguments)
                 $OutGitParams = @{GitArgument=$AllGitArgs}      # and prepare a splat (to save precious space when reporting errors).
                 $dirCount++
+                
                 if ($WhatIfPreference) {
                     [ScriptBlock]::Create("git $($allGitArgs -join ' ')") |
                         Add-Member NoteProperty GitRoot $dir -Force -PassThru
