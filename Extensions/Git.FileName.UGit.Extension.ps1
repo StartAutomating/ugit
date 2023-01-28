@@ -8,7 +8,7 @@
     
     If that fails, it will output a Git.Object.Name.
 .EXAMPLE
-    git archive -o My.zip
+    git diff --name-only
 #>
 [Management.Automation.Cmdlet("Out","Git")]   # It's an extension for Out-Git
 [ValidatePattern("\s{1,}--name-only")]        # that is run when the --name-only switch is used
