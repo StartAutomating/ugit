@@ -10,7 +10,7 @@ describe ugit {
             git branch |
                 Select-Object -ExpandProperty BranchName |
                 Should -BeLike '*'
-        }
+        }        
     }
     
     context 'git init' {
@@ -31,6 +31,15 @@ describe ugit {
             $logEntry.CommitDate | Should -BeLessThan ([DateTime]::now)
             Get-Event -SourceIdentifier "Out-Git"
             Get-Event -SourceIdentifier "Use-Git"
+        }
+
+        it 'Can accept files via the pipeline' {
+            Push-Location (Get-Module ugit | Split-Path)
+            $filesToGit = @(Get-ChildItem -Path $pwd -Filter *.*.ps1)
+            $fileArgs = @($filesToGit.Name)
+            $lastAmongstAll = @(git log -n 1 @fileArgs)
+            @($filesToGit | git log -n 1).Length | Should -BeGreaterThan $lastAmongstAll.Length
+            Pop-Location
         }
     }
 }
