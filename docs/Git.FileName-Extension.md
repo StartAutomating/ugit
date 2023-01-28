@@ -17,7 +17,7 @@ If that fails, it will output a Git.Object.Name.
 ### Examples
 #### EXAMPLE 1
 ```PowerShell
-git archive -o My.zip
+git diff --name-only
 ```
 
 ---
@@ -39,7 +39,6 @@ git archive -o My.zip
 Extensions/Git.FileName.UGit.Extension.ps1 [<CommonParameters>]
 ```
 ---
-
 
 
 
