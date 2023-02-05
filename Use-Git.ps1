@@ -108,14 +108,22 @@
         # If there was piped in input
         if ($InputObject) {
             $AllInputObjects += $InputObject # accumulate it.
-        }        
+        }
     }
 
     end {
         # First, we need to take any input and figure out what directories we are going into.
         $directories = @()
-        # 
+        # Next, we need to create a collection of input object from each directory.
         $InputDirectories = [Ordered]@{}
+         
+         
+        if (
+            $AllInputObjects.Length -eq 0 -and # If we had no input objects and
+            $myInv.PipelinePosition -gt 1 # are not the first step in the pipeline,
+        ) {
+            return # we're done.
+        }
 
         $inputObject =
             @(foreach ($in in $AllInputObjects) {
@@ -153,7 +161,7 @@
                             $InputDirectories[$directories[-1]] = 
                                 # by forcing an existing entry into a list
                                 @($InputDirectories[$directories[-1]]) + 
-                                $in.Fullname # and adding this file name.
+                                $in # and adding this item.
                         }                        
                     }
                 }
@@ -203,6 +211,7 @@
             }
 
             foreach ($inObject in $InputDirectories[$dir]) {
+                if (-not $inObject -and $myInv.PipelinePosition -gt 1) { continue }
                 $AllGitArgs = @(@($GitArgument) + $inObject)    # Then we collect the combined arguments
                 $AllGitArgs = @($AllGitArgs -ne '')             # (skipping any empty arguments)
                 $OutGitParams = @{GitArgument=$AllGitArgs}      # and prepare a splat (to save precious space when reporting errors).
