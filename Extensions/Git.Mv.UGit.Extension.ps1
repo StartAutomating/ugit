@@ -37,7 +37,6 @@ end {
 
     $destItem = Get-Item $dest -ErrorAction SilentlyContinue
     @(if ($destItem -is [IO.DirectoryInfo]) {
-        $destItem = Get-Item (Join-Path $destItem $source)
         $destItem
     } elseif ($destItem) {
         $destItem
