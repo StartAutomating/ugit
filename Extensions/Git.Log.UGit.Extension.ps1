@@ -41,6 +41,8 @@ param(
 )
 
 begin {
+    # TODO: Support git log --shortstat (#102)
+    # TODO: Support git log trailers (#112)
     $script:LogChangesMerged = $false
     $Git_Log = [Regex]::new(@'
 (?m)^commit                                                             # Commits start with 'commit'
@@ -72,7 +74,7 @@ begin {
         $gitLogMatch = $Git_Log.Match($OutputLines -join [Environment]::NewLine)
         if (-not $gitLogMatch.Success) { return }
 
-        $gitLogOut = [Ordered]@{PSTypeName='git.log';GitArgument=$gitArgument}
+        $gitLogOut = [Ordered]@{PSTypeName='git.log';GitCommand=$gitCommand}
         if ($gitCommand -like '*--merges*') {
             $gitLogOut.PSTypeName = 'git.merge.log'
         }
