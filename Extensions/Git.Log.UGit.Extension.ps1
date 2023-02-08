@@ -114,6 +114,7 @@ begin {
             }
         }
 
+        $gitLogOut.GitOutputLines = $OutputLines
         $gitLogOut.Merged = $script:LogChangesMerged
         $gitLogOut.GitRoot = $GitRoot
         [PSCustomObject]$gitLogOut
