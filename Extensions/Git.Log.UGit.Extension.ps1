@@ -41,7 +41,6 @@ param(
 )
 
 begin {
-    # TODO: Support git log --shortstat (#102)
     # TODO: Support git log trailers (#112)
     $script:LogChangesMerged = $false
     $Git_Log = [Regex]::new(@'
@@ -114,7 +113,7 @@ begin {
             }
         }
 
-        if ($GitArgument -contains '--shortstat') {
+        if ($GitArgument -contains '--shortstat' -or $GitArgument -contains '--stat') {
             foreach ($linePart in $OutputLines[-2] -split ',' -replace '[\s\w\(\)-[\d]]') {
                 if ($linePart.Contains('+')) {
                     # If the part contains +, it's insertions.
@@ -137,6 +136,26 @@ begin {
             if (-not $gitLogOut.Insertions) {
                 $gitLogOut.Insertions = 0
             }
+        }
+
+        if ($gitArgument -contains '--stat') {
+            $gitLogOut.Changes = @()    
+            foreach ($outLine in $OutputLines) {
+                if ($outLine -notlike ' *|*') { continue }
+                $nameOfFile, $fileChanges =  $outLine -split '\|'
+                $nameOfFile = $nameOfFile -replace '^\s+' -replace '\s+$'
+                $match = [Regex]::Match($fileChanges, "(?<c>\d+)\s(?<i>\+{0,})(?<d>\-{0,})")
+                $linesChanged  = $match.Groups["c"].Value -as [int]
+                $linesInserted = $match.Groups["i"].Length
+                $linesDeleted  = $match.Groups["d"].Length
+                $gitLogOut.Changes +=
+                    [PSCustomObject][Ordered]@{
+                        FilePath      = $nameOfFile
+                        LinesChanged  = $linesChanged
+                        LinesInserted = $linesInserted
+                        LinesDeleted  = $linesDeleted
+                    }
+            }            
         }
 
         $gitLogOut.GitOutputLines = $OutputLines
