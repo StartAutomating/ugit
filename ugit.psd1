@@ -1,5 +1,5 @@
 @{
-    ModuleVersion    = '0.3.5'
+    ModuleVersion    = '0.3.6'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -17,6 +17,17 @@ PrivateData   = @{
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
         BuildModule  = @('EZOut', 'Piecemeal', 'PipeScript')
         ReleaseNotes = @'
+## 0.3.6:
+
+* git log
+  * Supporting --stat (Fixes #123)
+  * Supporting --shortstat (Fixes #102)
+  * Adding .GitOutputLines (Fixes #122)
+* git diff 
+  * Fixing subdirectory issue (Fixes #121)
+
+---
+
 ## 0.3.5:
 
 * Use-Git:  Fixing pipeline behavior for non-file input (Fixes #119)
