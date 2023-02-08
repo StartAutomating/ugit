@@ -33,12 +33,12 @@ begin {
         foreach ($outputLine in $OutputLines) {
             $outputLineCount++
             if ($outputLineCount -eq 1) {
-                $diffObject.From, $diffObject.To  = $outputLine -replace '^diff --git ' -split '[ab]/' -ne ''
-                $fromPath = Join-Path $gitRoot $diffObject.From
-                $toPath   = Join-Path $gitRoot $diffObject.To
-                if (Test-Path $toPath) {
+                $diffObject.From, $diffObject.To = $outputLine -replace '^diff --git' -split '\s[ab]/' -ne ''
+                $fromPath = if ($diffObject.From) { Join-Path $gitRoot $diffObject.From }
+                $toPath   = if ($diffObject.To) { Join-Path $gitRoot $diffObject.To } 
+                if ($toPath -and (Test-Path $toPath)) {
                     $diffObject.File = Get-Item $toPath
-                } elseif (Test-Path $fromPath) {
+                } elseif ($fromPath -and (Test-Path $fromPath)) {
                     $diffObject.File = Get-Item $fromPath
                 }
             }
