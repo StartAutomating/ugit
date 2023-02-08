@@ -114,6 +114,31 @@ begin {
             }
         }
 
+        if ($GitArgument -contains '--shortstat') {
+            foreach ($linePart in $OutputLines[-2] -split ',' -replace '[\s\w\(\)-[\d]]') {
+                if ($linePart.Contains('+')) {
+                    # If the part contains +, it's insertions.
+                    $gitLogOut.Insertions = $linePart -replace '\+' -as [int]
+                }
+                elseif ($linePart.Contains('-'))
+                {
+                    # If the part contains -, it's deletions.
+                    $gitLogOut.Deletions = $linePart -replace '\-' -as [int]
+                }
+                else
+                {
+                    # Otherwise, its the file change count.
+                    $gitLogOut.FilesChanged = $linePart -as [int]
+                }
+            }
+            if (-not $gitLogOut.Deletions) {
+                $gitLogOut.Deletions = 0
+            }
+            if (-not $gitLogOut.Insertions) {
+                $gitLogOut.Insertions = 0
+            }
+        }
+
         $gitLogOut.GitOutputLines = $OutputLines
         $gitLogOut.Merged = $script:LogChangesMerged
         $gitLogOut.GitRoot = $GitRoot
