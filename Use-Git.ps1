@@ -87,8 +87,10 @@
                     $argumentNumber - 1, # ( don't forget to subtract one, because the command is an element)
                     $commandElement.Extent.ToString()
                 )
-                if ($commandElement.parameterName -in 'd', 'c') { 
-                    $ConfirmPreference ='none' # so set confirm impact to none
+                if ($commandElement.parameterName -in 'd', 'c', 'v') { 
+                    $ConfirmPreference = 'none' # so set confirm impact to none
+                    $VerbosePreference = 'silentlyContinue'
+                    $DebugPreference   = 'silentlyContinue'
                 }                
             }
             $argumentNumber++
