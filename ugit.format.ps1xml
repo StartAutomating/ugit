@@ -2044,6 +2044,59 @@ $BackgroundColor
       </TableControl>
     </View>
     <View>
+      <Name>Git.Remote.Name</Name>
+      <ViewSelectedBy>
+        <TypeName>Git.Remote.Name</TypeName>
+      </ViewSelectedBy>
+      <GroupBy>
+        <PropertyName>GitRoot</PropertyName>
+      </GroupBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>RemoteName</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+    <View>
+      <Name>Git.Remote.Url</Name>
+      <ViewSelectedBy>
+        <TypeName>Git.Remote.Url</TypeName>
+      </ViewSelectedBy>
+      <GroupBy>
+        <PropertyName>GitRoot</PropertyName>
+      </GroupBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>RemoteName</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>RemoteUrl</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+    <View>
       <Name>git.removal</Name>
       <ViewSelectedBy>
         <TypeName>git.removal</TypeName>
