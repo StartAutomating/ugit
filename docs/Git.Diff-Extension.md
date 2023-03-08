@@ -1,15 +1,27 @@
 
 Extensions/Git.Diff.UGit.Extension.ps1
 --------------------------------------
+
+
+
+
 ### Synopsis
 Diff Extension
 
+
+
 ---
+
+
 ### Description
 
 Outputs git diff entries as objects
 
+
+
 ---
+
+
 ### Outputs
 * Git.Diff
 
@@ -19,13 +31,15 @@ Outputs git diff entries as objects
 
 
 
+
+
 ---
+
+
 ### Syntax
 ```PowerShell
 Extensions/Git.Diff.UGit.Extension.ps1 [<CommonParameters>]
 ```
----
-
 
 
 
