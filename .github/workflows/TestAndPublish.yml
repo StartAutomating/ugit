@@ -586,6 +586,6 @@ jobs:
       - name: UseEZOut
         uses: StartAutomating/EZOut@master
       - name: Run HelpOut
-        uses: StartAutomating/RunHelpOut@HelpOut-Actions
+        uses: StartAutomating/HelpOut@HelpOut-Actions
         id: HelpOut
 
