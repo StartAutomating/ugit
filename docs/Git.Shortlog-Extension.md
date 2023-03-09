@@ -1,15 +1,27 @@
 
 Extensions/Git.Shortlog.UGit.Extension.ps1
 ------------------------------------------
+
+
+
+
 ### Synopsis
 git shortlog extension
 
+
+
 ---
+
+
 ### Description
 
 Outputs git shortlog as objects
 
+
+
 ---
+
+
 ### Examples
 #### EXAMPLE 1
 ```PowerShell
@@ -31,13 +43,15 @@ git shortlog --summary # Get a shortlog summary
 git shortlog --sumary --email # Get a shortlog summary, with email.
 ```
 
+
+
 ---
+
+
 ### Syntax
 ```PowerShell
 Extensions/Git.Shortlog.UGit.Extension.ps1 [<CommonParameters>]
 ```
----
-
 
 
 
