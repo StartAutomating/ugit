@@ -16,7 +16,7 @@ Use Git
 
 Calls the git application, with whatever arguments are provided.
 
-Arguments can be provided with -GitArgument, which will automatically be bound to all parameters provided without a name.        
+Arguments can be provided with -GitArgument, which will automatically be bound to all parameters provided without a name.
 
 Input can also be piped in.
 
