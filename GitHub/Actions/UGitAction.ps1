@@ -27,6 +27,10 @@ $UGitScript,
 [switch]
 $SkipUGitPS1,
 
+# A list of modules to be installed from the PowerShell gallery before scripts run.
+[string[]]
+$InstallModule,
+
 # If provided, will commit any remaining changes made to the workspace with this commit message.
 [string]
 $CommitMessage,
@@ -54,6 +58,24 @@ if ($env:GITHUB_ACTION_PATH) {
 } elseif (-not (Get-Module ugit)) {    
     throw "Action Path not found"
 }
+
+#region -InstallModule
+if ($InstallModule) {
+    "::group::Installing Modules" | Out-Host
+    foreach ($moduleToInstall in $InstallModule) {
+        $moduleInWorkspace = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Recurse -File |
+            Where-Object Name -eq "$($moduleToInstall).psd1" |
+            Where-Object { 
+                $(Get-Content $_.FullName -Raw) -match 'ModuleVersion'
+            }
+        if (-not $moduleInWorkspace) {
+            Install-Module $moduleToInstall -Scope CurrentUser -Force
+            Import-Module $moduleToInstall -Force -PassThru | Out-Host
+        }
+    }
+    "::endgroup::" | Out-Host
+}
+#endregion -InstallModule
 
 "::notice title=ModuleLoaded::ugit Loaded from Path - $($ugitModulePath)" | Out-Host
 
@@ -96,7 +118,7 @@ if ($ugitScript) {
         Out-Host
 }
 $ugitScriptTook = [Datetime]::Now - $ugitScriptStart
-"::set-output name=ugitScriptRuntime::$($ugitScriptTook.TotalMilliseconds)"   | Out-Host
+"::notice title=ugitScriptRuntime::$($ugitScriptTook.TotalMilliseconds)"   | Out-Host
 
 $ugitPS1Start = [DateTime]::Now
 $ugitPS1List  = @()
@@ -115,9 +137,9 @@ if (-not $SkipugitPS1) {
 }
 $ugitPS1EndStart = [DateTime]::Now
 $ugitPS1Took = [Datetime]::Now - $ugitPS1Start
-"::set-output name=ugitPS1Count::$($ugitPS1List.Length)"   | Out-Host
-"::set-output name=ugitPS1Files::$($ugitPS1List -join ';')"   | Out-Host
-"::set-output name=ugitPS1Runtime::$($ugitPS1Took.TotalMilliseconds)"   | Out-Host
+"::notice title=ugitPS1Count::$($ugitPS1List.Length)"   | Out-Host
+"::notice title=ugitPS1Files::$($ugitPS1List -join ';')"   | Out-Host
+"::notice title=ugitPS1Runtime::$($ugitPS1Took.TotalMilliseconds)"   | Out-Host
 if ($CommitMessage -or $anyFilesChanged) {
     if ($CommitMessage) {
         dir $env:GITHUB_WORKSPACE -Recurse |

@@ -107,6 +107,9 @@ Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/
 * [Git RefLog](docs/Git.RefLog-Extension.md)
 
  
+* [Git Remote](docs/Git.Remote-Extension.md)
+
+ 
 * [Git Rm](docs/Git.Rm-Extension.md)
 
  
@@ -209,6 +212,13 @@ It will attempt to locate any output specified by -o and return it as a file or 
 
 ~~~PowerShell
     git archive -o My.zip
+~~~
+
+### Git.Grep Example 1
+
+
+~~~PowerShell
+    git grep '-i' example # look for all examples in the repository
 ~~~
 
 ### Git.Help.All Example 1
@@ -326,6 +336,27 @@ It will attempt to locate any output specified by -o and return it as a file or 
 
 ~~~PowerShell
     git reflog
+~~~
+
+### Git.Remote Example 1
+
+
+~~~PowerShell
+    git remote
+~~~
+
+### Git.Remote Example 2
+
+
+~~~PowerShell
+    git remote | git remote get-url
+~~~
+
+### Git.Remote Example 3
+
+
+~~~PowerShell
+    git remote | git remote show
 ~~~
 
 ### Git.Rm Example 1

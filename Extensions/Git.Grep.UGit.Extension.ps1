@@ -1,3 +1,15 @@
+<#
+.SYNOPSIS
+    git grep extension
+.DESCRIPTION
+    Outputs matches from git grep.
+    
+    When possible, the regular expression will be converted into PowerSEhll so that the .Match populates accurately.    
+.EXAMPLE
+    git grep '-i' example # look for all examples in the repository
+.LINK
+    Out-Git
+#>
 [Management.Automation.Cmdlet("Out","Git")]         # It  extends Out-Git
 [ValidatePattern("^git grep",Options='IgnoreCase')] # when the pattern is "git grep"
 [OutputType('Git.Grep.Match')]

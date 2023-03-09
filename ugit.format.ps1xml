@@ -76,6 +76,27 @@
       </CustomControl>
     </Control>
     <Control>
+      <Name>GitRemoteBranchList</Name>
+      <CustomControl>
+        <CustomEntries>
+          <CustomEntry>
+            <CustomItem>
+              <ExpressionBinding>
+                <ScriptBlock>
+    (' ' * 4) + @($_ | 
+        Format-Table -Property BranchName, Status |
+        Out-String -Width ($host.UI.RawUI.BufferSize.Width - 4)
+    ) -split [Environment]::NewLine -join (
+        [Environment]::NewLine + (' ' * 4)
+    )
+</ScriptBlock>
+              </ExpressionBinding>
+            </CustomItem>
+          </CustomEntry>
+        </CustomEntries>
+      </CustomControl>
+    </Control>
+    <Control>
       <Name>${ugit_Format-RichText}</Name>
       <CustomControl>
         <CustomEntries>
@@ -2042,6 +2063,154 @@ $BackgroundColor
           </TableRowEntry>
         </TableRowEntries>
       </TableControl>
+    </View>
+    <View>
+      <Name>Git.Remote.Name</Name>
+      <ViewSelectedBy>
+        <TypeName>Git.Remote.Name</TypeName>
+      </ViewSelectedBy>
+      <GroupBy>
+        <PropertyName>GitRoot</PropertyName>
+      </GroupBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>RemoteName</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+    <View>
+      <Name>Git.Remote.Url</Name>
+      <ViewSelectedBy>
+        <TypeName>Git.Remote.Url</TypeName>
+      </ViewSelectedBy>
+      <GroupBy>
+        <PropertyName>GitRoot</PropertyName>
+      </GroupBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>RemoteName</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>RemoteUrl</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+    <View>
+      <Name>Git.Remote.Show</Name>
+      <ViewSelectedBy>
+        <TypeName>Git.Remote.Show</TypeName>
+      </ViewSelectedBy>
+      <CustomControl>
+        <CustomEntries>
+          <CustomEntry>
+            <CustomItem>
+              <Text>* remote </Text>
+              <ExpressionBinding>
+                <ScriptBlock>$moduleName = 'ugit'
+
+            do {
+                $lm = Get-Module -Name $moduleName -ErrorAction Ignore
+                if (-not $lm) { continue } 
+                if ($lm.FormatPartsLoaded) { break }
+                $wholeScript = @(foreach ($formatFilePath in $lm.exportedFormatFiles) {         
+                    foreach ($partNodeName in Select-Xml -LiteralPath $formatFilePath -XPath "/Configuration/Controls/Control/Name[starts-with(., '$')]") {
+                        $ParentNode = $partNodeName.Node.ParentNode
+                        "$($ParentNode.Name)={
+            $($ParentNode.CustomControl.CustomEntries.CustomEntry.CustomItem.ExpressionBinding.ScriptBlock)}"
+                    }
+                }) -join [Environment]::NewLine
+                New-Module -Name "${ModuleName}.format.ps1xml" -ScriptBlock ([ScriptBlock]::Create(($wholeScript + ';Export-ModuleMember -Variable *'))) |
+                    Import-Module -Global
+                $onRemove = [ScriptBlock]::Create("Remove-Module '${ModuleName}.format.ps1xml'")
+                
+                if (-not $lm.OnRemove) {
+                    $lm.OnRemove = $onRemove
+                } else {
+                    $lm.OnRemove = [ScriptBlock]::Create($onRemove.ToString() + ''  + [Environment]::NewLine + $lm.OnRemove)
+                }
+                $lm | Add-Member NoteProperty FormatPartsLoaded $true -Force
+            
+            } while ($false)
+            
+        
+@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Verbose' -NoClear) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <PropertyName>RemoteName</PropertyName>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Verbose' ) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <NewLine />
+              <Text>  HEAD branch: </Text>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Verbose' -NoClear) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <PropertyName>HeadBranch</PropertyName>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Verbose' ) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <NewLine />
+              <Text>  URLS: </Text>
+              <NewLine />
+              <ExpressionBinding>
+                <ScriptBlock>        
+        (' ' * 4) + @(
+            $_.RemoteUrls | Out-String -Width ($host.UI.RawUI.BufferSize.Width - 4)
+        ) -split [Environment]::NewLine -join (
+            [Environment]::NewLine + (' ' * 4)
+        )
+    </ScriptBlock>
+              </ExpressionBinding>
+              <NewLine />
+              <Text>  Remote Branches:</Text>
+              <NewLine />
+              <ExpressionBinding>
+                <PropertyName>RemoteBranches</PropertyName>
+                <CustomControlName>GitRemoteBranchList</CustomControlName>
+              </ExpressionBinding>
+              <NewLine />
+              <Text>  Local Branches:</Text>
+              <NewLine />
+              <ExpressionBinding>
+                <PropertyName>LocalBranches</PropertyName>
+                <CustomControlName>GitRemoteBranchList</CustomControlName>
+              </ExpressionBinding>
+              <Text>  Tracked Upstreams:</Text>
+              <NewLine />
+              <ExpressionBinding>
+                <PropertyName>TrackedUpstreams</PropertyName>
+                <CustomControlName>GitRemoteBranchList</CustomControlName>
+              </ExpressionBinding>
+              <NewLine />
+            </CustomItem>
+          </CustomEntry>
+        </CustomEntries>
+      </CustomControl>
     </View>
     <View>
       <Name>git.removal</Name>

@@ -209,6 +209,17 @@ Pop-Location
     </Members>
   </Type>
   <Type>
+    <Name>git.remote.name</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>ToString</Name>
+        <Script>
+                        "$($this.RemoteName)"
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
     <Name>git.stash.entry</Name>
     <Members>
       <ScriptMethod>

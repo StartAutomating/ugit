@@ -1,4 +1,6 @@
 #requires -Module HelpOut
+
+Push-Location $PSScriptRoot
 $ugitLoaded = Get-Module ugit
 if (-not $ugitLoaded) {
     $ugitLoaded = Get-ChildItem -Recurse -Filter "*.psd1" | Where-Object Name -like 'ugit*' | Import-Module -Name { $_.FullName } -Force -PassThru
@@ -9,6 +11,12 @@ if ($ugitLoaded) {
     "::error:: ugit not loaded" |Out-Host
 }
 if ($ugitLoaded) {
-    Save-MarkdownHelp -Module $ugitLoaded.Name -PassThru -ScriptPath Extensions -ReplaceScriptName '\.UGit\.Extension\.ps1$' -ReplaceScriptNameWith "-Extension" |
-        Add-Member NoteProperty CommitMessage "Updating docs" -Force -PassThru
+    $SaveMarkdownHelpParams = @{
+        Module= $ugitLoaded.Name
+        ScriptPath='Extensions'
+        ReplaceScriptName='\.UGit\.Extension\.ps1$'
+        ReplaceScriptNameWith="-Extension"
+    }
+    Save-MarkdownHelp @SaveMarkdownHelpParams -PassThru
 }
+Pop-Location
