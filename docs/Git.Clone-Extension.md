@@ -58,4 +58,3 @@ Extensions/Git.Clone.UGit.Extension.ps1 [<CommonParameters>]
 
 
 
-
