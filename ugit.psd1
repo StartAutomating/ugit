@@ -1,5 +1,5 @@
 @{
-    ModuleVersion    = '0.3.6'
+    ModuleVersion    = '0.3.7'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -17,6 +17,23 @@ PrivateData   = @{
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
         BuildModule  = @('EZOut', 'Piecemeal', 'PipeScript')
         ReleaseNotes = @'
+## 0.3.7:
+
+* git remote
+ * Now supporting git remote! (Fixes #129)
+
+~~~PowerShell
+git remote | git remote show
+~~~
+
+Also, some improvements to the GitHub Action:
+
+* Icon Update (Fixes #132)
+* No longer using set-output (Fixes #131)
+* Adding -InstallModule to Action (Fixes #132)
+
+---
+
 ## 0.3.6:
 
 * git log
