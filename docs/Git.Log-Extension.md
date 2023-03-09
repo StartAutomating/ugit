@@ -1,15 +1,27 @@
 
 Extensions/Git.Log.UGit.Extension.ps1
 -------------------------------------
+
+
+
+
 ### Synopsis
 Log Extension
 
+
+
 ---
+
+
 ### Description
 
 Outputs git log as objects.
 
+
+
 ---
+
+
 ### Examples
 #### EXAMPLE 1
 ```PowerShell
@@ -60,12 +72,15 @@ git log |
 git log --merges
 ```
 
+
+
 ---
+
+
 ### Syntax
 ```PowerShell
 Extensions/Git.Log.UGit.Extension.ps1 [<CommonParameters>]
 ```
----
 
 
 

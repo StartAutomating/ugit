@@ -1,9 +1,17 @@
 Use-Git
 -------
+
+
+
+
 ### Synopsis
 Use Git
 
+
+
 ---
+
+
 ### Description
 
 Calls the git application, with whatever arguments are provided.
@@ -17,13 +25,21 @@ Otherwise, it will be passed as a positional argument (after any other arguments
 
 Use-Git will combine errors and output, so that git output to standard error is handled without difficulty.
 
+
+
 ---
+
+
 ### Related Links
 * [Out-Git](Out-Git.md)
 
 
 
+
+
 ---
+
+
 ### Examples
 #### EXAMPLE 1
 ```PowerShell
@@ -49,7 +65,11 @@ git status | Select-Object -ExpandProperty Untracked
 git branch
 ```
 
+
+
 ---
+
+
 ### Parameters
 #### **GitArgument**
 
@@ -60,13 +80,12 @@ Any arguments passed to git.  All positional arguments will automatically be pas
 
 
 
-|Type        |Required|Position|PipelineInput|
-|------------|--------|--------|-------------|
-|`[String[]]`|false   |named   |false        |
+|Type        |Required|Position|PipelineInput|Aliases     |
+|------------|--------|--------|-------------|------------|
+|`[String[]]`|false   |named   |false        |GitArguments|
 
 
 
----
 #### **InputObject**
 
 An optional input object.
@@ -84,24 +103,32 @@ Otherwise, it will be passed as a postional argument (after any other arguments)
 
 
 
----
 #### **WhatIf**
 -WhatIf is an automatic variable that is created when a command has ```[CmdletBinding(SupportsShouldProcess)]```.
 -WhatIf is used to see what would happen, or return operations without executing them
 #### **Confirm**
 -Confirm is an automatic variable that is created when a command has ```[CmdletBinding(SupportsShouldProcess)]```.
 -Confirm is used to -Confirm each operation.
-    
+
 If you pass ```-Confirm:$false``` you will not be prompted.
-    
-    
+
+
 If the command sets a ```[ConfirmImpact("Medium")]``` which is lower than ```$confirmImpactPreference```, you will not be prompted unless -Confirm is passed.
 
+
+
 ---
+
+
+### Notes
+Use-Git will generate two events before git runs.  They will have the source identifiers of "Use-Git" and "Use-Git $GitArgument"
+
+
+
+---
+
+
 ### Syntax
 ```PowerShell
 Use-Git [-GitArgument <String[]>] [-InputObject <PSObject[]>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
----
-### Notes
-Use-Git will generate two events before git runs.  They will have the source identifiers of "Use-Git" and "Use-Git $GitArgument"
