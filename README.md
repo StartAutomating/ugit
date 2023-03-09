@@ -214,6 +214,13 @@ It will attempt to locate any output specified by -o and return it as a file or 
     git archive -o My.zip
 ~~~
 
+### Git.Grep Example 1
+
+
+~~~PowerShell
+    git grep '-i' example # look for all examples in the repository
+~~~
+
 ### Git.Help.All Example 1
 
 
