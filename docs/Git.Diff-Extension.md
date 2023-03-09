@@ -43,4 +43,3 @@ Extensions/Git.Diff.UGit.Extension.ps1 [<CommonParameters>]
 
 
 
-
