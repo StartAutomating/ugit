@@ -5,7 +5,7 @@
         Outputs Git to PowerShell
     .Description
         Outputs Git as PowerShell Objects.
-        
+
         Git Output can be provided by any number of extensions to Out-Git.
 
         Extensions use two attributes to indicate if they should be run:
@@ -70,11 +70,11 @@
             $uGitExtensionParams = @{
                     CommandName   = $MyInvocation.MyCommand      # We want extensions for this command
                     ValidateInput = $gitCommand                  # that are valid, given $GitCommand.
-                    
+
             }
 
             # If -Verbose is -Debug is set, we will want to populate extensionValidationErrors
-            if ($VerbosePreference -ne 'silentlyContinue' -or 
+            if ($VerbosePreference -ne 'silentlyContinue' -or
                 $DebugPreference -ne 'silentlyContinue') {
                 $uGitExtensionParams.ErrorAction   = 'SilentlyContinue'           # We do not want to display errors
                 $uGitExtensionParams.ErrorVariable = 'extensionValidationErrors'  # we want to redirect them into $extensionValidationErrors.
@@ -97,7 +97,7 @@
         } else {
             # If there was already an extension cached, we can skip the previous steps and just reuse the cached extensions.
             $gitOutputExtensions = $script:GitExtensionMappingCache[$gitCommand]
-        }        
+        }
 
         # Next we want to create a collection of SteppablePipelines.
         # These allow us to run the begin/process/end blocks of each Extension.
@@ -116,7 +116,7 @@
         $spiToRemove = @()
         $beginIsRunning = $false
         # Walk over each steppable pipeline.
-        :NextExtension foreach ($steppable in $steppablePipelines) {            
+        :NextExtension foreach ($steppable in $steppablePipelines) {
             if ($beginIsRunning) { # If beginIsRunning is set, then the last steppable pipeline continued
                 $spiToRemove+=$steppablePipelines[$spi] # so mark it to be removed.
             }
@@ -131,7 +131,7 @@
         }
 
         # If this is still true, an extenion used 'break', which signals to stop processing of it any subsequent pipelines.
-        if ($beginIsRunning) {         
+        if ($beginIsRunning) {
             $spiToRemove += @(for (; $spi -lt $steppablePipelines.Count; $spi++) {
                 $steppablePipelines[$spi]
             })
@@ -149,11 +149,12 @@
     process {
         # Walk over each output.
         foreach ($out in $GitOutputLine) {
-            # If the out was a literal string of 'System.Management.Automation.RemoteException', 
-            if ("$out" -eq "System.Management.Automation.RemoteException") {                
+            # If the out was a literal string of 'System.Management.Automation.RemoteException',
+            if ("$out" -eq "System.Management.Automation.RemoteException") {
                 # ignore it and continue (these things happen with some exes from time to time).
                 continue
             }
+
             $AllGitOutput.Enqueue($out)
             # Wrap the output in a PSObject
             $gitOut = [PSObject]::new($out)
@@ -164,7 +165,7 @@
             # Thus, for example, git clone $repo
             # Would have the typenames of :"git.clone.$repo.output", "git.clone.output","git.output"
             $gitOut.pstypenames.clear()
-            for ($n = $GitArgument.Length - 1 ; $n -ge 0; $n--) { 
+            for ($n = $GitArgument.Length - 1 ; $n -ge 0; $n--) {
                 $gitOut.pstypenames.add(@('git') + $GitArgument[0..$n]  + @('output') -join '.')
             }
             $gitOut.pstypenames.add('git.output')
@@ -193,12 +194,12 @@
                 continue
             }
 
-            if (-not $steppablePipelines) {                
+            if (-not $steppablePipelines) {
                 # If we do not have steppable pipelines, output directly
-                $gitOut                
+                $gitOut
             }
-            else { 
-                # If we have steppable pipelines, then we have to do a similar operation as we did for begin.                
+            else {
+                # If we have steppable pipelines, then we have to do a similar operation as we did for begin.
                 $spi = 0
                 $spiToRemove = @()
                 $processIsRunning = $false
@@ -220,8 +221,8 @@
                     }
                     $processIsRunning = $false # Set $processIsRunning to $false for the next step.
                 }
-                
-                
+
+
                 if ($processIsRunning) {  # If $ProcessIsRunning was true, the extension used break
                     # which should signal cancellation of all subsequent extensions.
                     $spiToRemove += @(for (; $spi -lt $steppablePipelines.Count; $spi++) {
@@ -234,7 +235,7 @@
 
                 # Remove any steppable pipelines we need to remove.
                 foreach ($tr in $spiToRemove) { $steppablePipelines.Remove($tr) }
-            }            
+            }
         }
     }
 
@@ -254,7 +255,7 @@
             }
         }
 
-        if (-not $global:gitHistory -or 
+        if (-not $global:gitHistory -or
             $global:gitHistory -isnot [Collections.IDictionary]) {
             $global:gitHistory = [Ordered]@{}
         }
