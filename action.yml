@@ -11,6 +11,9 @@ inputs:
   SkipUGitPS1: 
     required: false
     description: 'If set, will not process any files named *.ugit.ps1'
+  InstallModule: 
+    required: false
+    description: A list of modules to be installed from the PowerShell gallery before scripts run.
   CommitMessage: 
     required: false
     description: If provided, will commit any remaining changes made to the workspace with this commit message.
@@ -21,22 +24,8 @@ inputs:
     required: false
     description: The user name associated with a git commit.
 branding: 
-  icon: github
+  icon: git-merge
   color: blue
-outputs: 
-  
-    ugitScriptRuntime: 
-      description: The time it took the .ugitScript parameter to run
-      value: ${{steps.ugitAction.outputs.ugitScriptRuntime}}
-    ugitPS1Runtime: 
-      description: The time it took all .ugit.ps1 files to run
-      value: ${{steps.ugitAction.outputs.ugitPS1Runtime}}
-    ugitPS1Files: 
-      description: The .ugit.ps1 files that were run (separated by semicolons)
-      value: ${{steps.ugitAction.outputs.ugitPS1Files}}
-    ugitPS1Count: 
-      description: The number of .ugit.ps1 files that were run
-      value: ${{steps.ugitAction.outputs.ugitPS1Count}}
 runs: 
   using: composite
   steps: 
@@ -44,16 +33,19 @@ runs:
       id: UGitAction
       shell: pwsh
       env: 
-        UserName: ${{inputs.UserName}}
-        CommitMessage: ${{inputs.CommitMessage}}
         UGitScript: ${{inputs.UGitScript}}
         SkipUGitPS1: ${{inputs.SkipUGitPS1}}
+        UserName: ${{inputs.UserName}}
         UserEmail: ${{inputs.UserEmail}}
+        CommitMessage: ${{inputs.CommitMessage}}
+        InstallModule: ${{inputs.InstallModule}}
       run: |
         $Parameters = @{}
         $Parameters.UGitScript = ${env:UGitScript}
         $Parameters.SkipUGitPS1 = ${env:SkipUGitPS1}
         $Parameters.SkipUGitPS1 = $parameters.SkipUGitPS1 -match 'true';
+        $Parameters.InstallModule = ${env:InstallModule}
+        $Parameters.InstallModule = $parameters.InstallModule -split ';' -replace '^[''"]' -replace  '[''"]$'
         $Parameters.CommitMessage = ${env:CommitMessage}
         $Parameters.UserEmail = ${env:UserEmail}
         $Parameters.UserName = ${env:UserName}
@@ -92,6 +84,10 @@ runs:
         [switch]
         $SkipUGitPS1,
         
+        # A list of modules to be installed from the PowerShell gallery before scripts run.
+        [string[]]
+        $InstallModule,
+        
         # If provided, will commit any remaining changes made to the workspace with this commit message.
         [string]
         $CommitMessage,
@@ -119,6 +115,24 @@ runs:
         } elseif (-not (Get-Module ugit)) {    
             throw "Action Path not found"
         }
+        
+        #region -InstallModule
+        if ($InstallModule) {
+            "::group::Installing Modules" | Out-Host
+            foreach ($moduleToInstall in $InstallModule) {
+                $moduleInWorkspace = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Recurse -File |
+                    Where-Object Name -eq "$($moduleToInstall).psd1" |
+                    Where-Object { 
+                        $(Get-Content $_.FullName -Raw) -match 'ModuleVersion'
+                    }
+                if (-not $moduleInWorkspace) {
+                    Install-Module $moduleToInstall -Scope CurrentUser -Force
+                    Import-Module $moduleToInstall -Force -PassThru | Out-Host
+                }
+            }
+            "::endgroup::" | Out-Host
+        }
+        #endregion -InstallModule
         
         "::notice title=ModuleLoaded::ugit Loaded from Path - $($ugitModulePath)" | Out-Host
         
@@ -161,7 +175,7 @@ runs:
                 Out-Host
         }
         $ugitScriptTook = [Datetime]::Now - $ugitScriptStart
-        "::set-output name=ugitScriptRuntime::$($ugitScriptTook.TotalMilliseconds)"   | Out-Host
+        "::notice title=ugitScriptRuntime::$($ugitScriptTook.TotalMilliseconds)"   | Out-Host
         
         $ugitPS1Start = [DateTime]::Now
         $ugitPS1List  = @()
@@ -180,9 +194,9 @@ runs:
         }
         $ugitPS1EndStart = [DateTime]::Now
         $ugitPS1Took = [Datetime]::Now - $ugitPS1Start
-        "::set-output name=ugitPS1Count::$($ugitPS1List.Length)"   | Out-Host
-        "::set-output name=ugitPS1Files::$($ugitPS1List -join ';')"   | Out-Host
-        "::set-output name=ugitPS1Runtime::$($ugitPS1Took.TotalMilliseconds)"   | Out-Host
+        "::notice title=ugitPS1Count::$($ugitPS1List.Length)"   | Out-Host
+        "::notice title=ugitPS1Files::$($ugitPS1List -join ';')"   | Out-Host
+        "::notice title=ugitPS1Runtime::$($ugitPS1Took.TotalMilliseconds)"   | Out-Host
         if ($CommitMessage -or $anyFilesChanged) {
             if ($CommitMessage) {
                 dir $env:GITHUB_WORKSPACE -Recurse |
