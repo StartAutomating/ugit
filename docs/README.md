@@ -32,7 +32,7 @@ git log -n 5 |
 
 ugit only has a few commands:
 
-### Use-Git
+### [Use-Git](Use-Git.md)
 
 After you've imported ugit, Use-Git is what will be called when you run "git".
 
@@ -44,7 +44,7 @@ This works in almost every scenario, except with some single character git optio
 
 When Use-Git outputs, it sets $global:LastGitOutput and then pipes to Out-Git.
 
-### Out-Git
+### [Out-Git](Out-Git.md)
 
 Out-Git will attempt to take git output and return it as a useful object.
 
@@ -383,7 +383,6 @@ It will attempt to locate any output specified by -o and return it as a file or 
 ~~~PowerShell
     git status | Select-Object -ExpandProperty Untracked
 ~~~
-
 
 
 
