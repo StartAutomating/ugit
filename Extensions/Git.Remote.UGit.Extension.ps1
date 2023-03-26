@@ -35,21 +35,32 @@ end {
     switch -Regex ($gitCommand) {
         'git remote\s{0,}$' {
             # With no other parameters, it returns the remote name.
-            return [PSCustomObject][Ordered]@{
-                PSTypename    = 'git.remote.name'
-                RemoteName = $remoteLines -join ' ' -replace '\s'
-                GitRoot       = $gitRoot
+            foreach ($remoteLine in $remoteLines) {
+                if (-not $remoteLine.Trim()) {
+                    continue
+                }
+                [PSCustomObject][Ordered]@{
+                    PSTypename    = 'git.remote.name'
+                    RemoteName = $remoteLine -join ' ' -replace '\s'
+                    GitRoot       = $gitRoot
+                }
             }
         }
         'git remote get-url (?<RemoteName>\S+)\s{0,}$' {
-            # With get-url, it returns the URL
-            return [PSCustomObject][Ordered]@{
-                PSTypename       = 'git.remote.url'
-                RemoteName    = $matches.RemoteName
-                RemoteUrl     = $remoteLines -join ' ' -replace '\s'
-                GitOutputLines   = $remoteLines                                
-                GitRoot          = $gitRoot
-            }
+
+            foreach ($remoteline in $remoteLines) {
+                if (-not $remoteLine.Trim()) {
+                    continue
+                }
+                # With get-url, it returns the URL
+                return [PSCustomObject][Ordered]@{
+                    PSTypename       = 'git.remote.url'
+                    RemoteName    = $matches.RemoteName
+                    RemoteUrl     = $remoteLines -join ' ' -replace '\s'
+                    GitOutputLines   = $remoteLines                                
+                    GitRoot          = $gitRoot
+                }
+            }            
         }
         'git remote show (?<RemoteName>\S+)\s{0,}$' {
             # With show, it returns _a lot_ of stuff.  We want to track: 
