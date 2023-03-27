@@ -1,4 +1,3 @@
-
 Extensions/Git.Clone.UGit.Extension.ps1
 ---------------------------------------
 
@@ -55,7 +54,3 @@ git clone https://github.com/Azure/azure-quickstart-templates --progress
 ```PowerShell
 Extensions/Git.Clone.UGit.Extension.ps1 [<CommonParameters>]
 ```
-
-
-
-
