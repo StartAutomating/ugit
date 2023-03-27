@@ -1,4 +1,3 @@
-
 Extensions/Git.Diff.UGit.Extension.ps1
 --------------------------------------
 
@@ -40,7 +39,3 @@ Outputs git diff entries as objects
 ```PowerShell
 Extensions/Git.Diff.UGit.Extension.ps1 [<CommonParameters>]
 ```
-
-
-
-
