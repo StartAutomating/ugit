@@ -1,4 +1,3 @@
-
 Extensions/Git.Help.All.UGit.Extension.ps1
 ------------------------------------------
 
@@ -53,7 +52,3 @@ git help --all
 ```PowerShell
 Extensions/Git.Help.All.UGit.Extension.ps1 [<CommonParameters>]
 ```
-
-
-
-
