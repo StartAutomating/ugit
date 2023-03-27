@@ -1,4 +1,3 @@
-
 Extensions/Git.Init.UGit.Extension.ps1
 --------------------------------------
 
@@ -48,7 +47,3 @@ git init # Initialize the current directory as a repository
 ```PowerShell
 Extensions/Git.Init.UGit.Extension.ps1 [<CommonParameters>]
 ```
-
-
-
-
