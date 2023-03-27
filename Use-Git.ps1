@@ -52,6 +52,40 @@
     $InputObject
     )
 
+    dynamicParam {
+        $myInv = $MyInvocation
+
+        $callstackPeek = @(Get-PSCallStack)[1]
+        $callingContext =
+            if ($callstackPeek.InvocationInfo.MyCommand.ScriptBlock) {
+                @($callstackPeek.InvocationInfo.MyCommand.ScriptBlock.Ast.FindAll({
+                    param($ast)
+                        $ast.Extent.StartLineNumber -eq $myInv.ScriptLineNumber -and
+                        $ast.Extent.StartColumnNumber -eq $myInv.OffsetInLine -and
+                        $ast -is [Management.Automation.Language.CommandAst]
+                },$true))[0]
+            }
+        
+        $ToValidate = 
+            if (-not $callingContext -and 
+                $callstackPeek.Command -like 'TabExpansion*' -and 
+                $callstackPeek.InvocationInfo.BoundParameters.InputScript
+                ) {
+                $callstackPeek.InvocationInfo.BoundParameters.InputScript.ToString()
+            } else {
+                $callingContext.CommandElements -join ' '
+            }
+
+        $dynamicParameterSplat = [Ordered]@{
+            CommandName='Use-Git'
+            ValidateInput=$ToValidate
+            DynamicParameter=$true
+            DynamicParameterSetName='__AllParameterSets'
+            NoMandatoryDynamicParameter=$true
+        }
+        Get-UGitExtension @dynamicParameterSplat
+    }
+
     begin {
         if (-not $script:CachedGitCmd) { # If we haven't cahced the git command
             # go get it.
@@ -212,9 +246,16 @@
                 $InputDirectories[$dir] = @($null) # go over an empty collection
             }
 
+            # Get any arguments from extensions
+            $extensionArgs = @(
+                Get-UGitExtension -CommandName Use-Git -Run -Parameter $paramCopy -Stream -ValidateInput "git $gitArgument"
+            )
+
+            # Walk over each input for each directory
             foreach ($inObject in $InputDirectories[$dir]) {
+                # Continue if there was no input and we were not the first step of the pipeline.
                 if (-not $inObject -and $myInv.PipelinePosition -gt 1) { continue }
-                $AllGitArgs = @(@($GitArgument) + $inObject)    # Then we collect the combined arguments
+                $AllGitArgs = @(@($GitArgument) + $extensionArgs + $inObject)    # Then we collect the combined arguments
                 $AllGitArgs = @($AllGitArgs -ne '')             # (skipping any empty arguments)
                 $OutGitParams = @{GitArgument=$AllGitArgs}      # and prepare a splat (to save precious space when reporting errors).
                 $dirCount++
