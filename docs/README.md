@@ -66,87 +66,10 @@ If this pattern matches the given git command, the extension will run.
 
 Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/Piecemeal)
 
-## Out-Git Extensions
-
-### Git Commands
-
-Most extensions handle output from a single git command.
-
-
-* [Git Branch](Git.Branch-Extension.md)
-
- 
-* [Git Checkout](Git.Checkout-Extension.md)
-
- 
-* [Git Clone](Git.Clone-Extension.md)
-
- 
-* [Git Commit](Git.Commit-Extension.md)
-
- 
-* [Git Diff](Git.Diff-Extension.md)
-
- 
-* [Git FileName](Git.FileName-Extension.md)
-
- 
-* [Git Grep](Git.Grep-Extension.md)
-
- 
-* [Git Help All](Git.Help.All-Extension.md)
-
- 
-* [Git Init](Git.Init-Extension.md)
-
- 
-* [Git Log](Git.Log-Extension.md)
-
- 
-* [Git Mv](Git.Mv-Extension.md)
-
- 
-* [Git Pull](Git.Pull-Extension.md)
-
- 
-* [Git Push](Git.Push-Extension.md)
-
- 
-* [Git RefLog](Git.RefLog-Extension.md)
-
- 
-* [Git Remote](Git.Remote-Extension.md)
-
- 
-* [Git Rm](Git.Rm-Extension.md)
-
- 
-* [Git Shortlog](Git.Shortlog-Extension.md)
-
- 
-* [Git Stash](Git.Stash-Extension.md)
-
- 
-* [Git Status](Git.Status-Extension.md)
-
-
-
-### Additional Output Extensions
-
-A few extensions handle output from any number of git commands, depending on the arguments.
-
-* Git.FileName
-
-This applies to any git command that uses --name-only.
-It will attempt to return the name as a file, or as an object containing the name.
-
-* Git.FileOutput
-
-This applies to an git command that uses the -o flag.
-It will attempt to locate any output specified by -o and return it as a file or directory.
-
-
 ## ugit examples
+
+ugit comes packed with many examples.
+You might want to try giving some of these a try.
 
 ### Git.Branch Example 1
 
@@ -431,3 +354,89 @@ It will attempt to locate any output specified by -o and return it as a file or 
 ~~~PowerShell
     git status | Select-Object -ExpandProperty Untracked
 ~~~
+
+## Out-Git Extensions
+
+### Git Commands
+
+Most extensions handle output from a single git command.
+
+
+* [Git Branch](Git.Branch-Extension.md)
+
+ 
+* [Git Checkout](Git.Checkout-Extension.md)
+
+ 
+* [Git Clone](Git.Clone-Extension.md)
+
+ 
+* [Git Commit](Git.Commit-Extension.md)
+
+ 
+* [Git Diff](Git.Diff-Extension.md)
+
+ 
+* [Git FileName](Git.FileName-Extension.md)
+
+ 
+* [Git Grep](Git.Grep-Extension.md)
+
+ 
+* [Git Help All](Git.Help.All-Extension.md)
+
+ 
+* [Git Init](Git.Init-Extension.md)
+
+ 
+* [Git Log](Git.Log-Extension.md)
+
+ 
+* [Git Mv](Git.Mv-Extension.md)
+
+ 
+* [Git Pull](Git.Pull-Extension.md)
+
+ 
+* [Git Push](Git.Push-Extension.md)
+
+ 
+* [Git RefLog](Git.RefLog-Extension.md)
+
+ 
+* [Git Remote](Git.Remote-Extension.md)
+
+ 
+* [Git Rm](Git.Rm-Extension.md)
+
+ 
+* [Git Shortlog](Git.Shortlog-Extension.md)
+
+ 
+* [Git Stash](Git.Stash-Extension.md)
+
+ 
+* [Git Status](Git.Status-Extension.md)
+
+
+
+### Additional Output Extensions
+
+A few extensions handle output from any number of git commands, depending on the arguments.
+
+* Git.FileName
+
+This applies to any git command that uses --name-only.
+It will attempt to return the name as a file, or as an object containing the name.
+
+* Git.FileOutput
+
+This applies to an git command that uses the -o flag.
+It will attempt to locate any output specified by -o and return it as a file or directory.
+
+## Use-Git Extensions
+
+ugit also allows you to extend the input for git.
+
+
+* [Git Clone Input](Git.Clone.Input-Extension.md)
