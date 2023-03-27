@@ -179,6 +179,13 @@ It will attempt to locate any output specified by -o and return it as a file or 
     git checkout main
 ~~~
 
+### Git.Clone.Input Example 1
+
+
+~~~PowerShell
+    git clone https://github.com/MDN/content.git # This is a big repo.  Progress bars will be very welcome.
+~~~
+
 ### Git.Clone Example 1
 
 
