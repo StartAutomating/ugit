@@ -1,4 +1,3 @@
-
 Extensions/Git.Grep.UGit.Extension.ps1
 --------------------------------------
 
@@ -60,7 +59,3 @@ git grep '-i' example # look for all examples in the repository
 ```PowerShell
 Extensions/Git.Grep.UGit.Extension.ps1 [<CommonParameters>]
 ```
-
-
-
-
