@@ -1,4 +1,3 @@
-
 Extensions/Git.Status.UGit.Extension.ps1
 ----------------------------------------
 
@@ -42,7 +41,3 @@ git status | Select-Object -ExpandProperty Untracked
 ```PowerShell
 Extensions/Git.Status.UGit.Extension.ps1 [<CommonParameters>]
 ```
-
-
-
-
