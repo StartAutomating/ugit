@@ -1,5 +1,8 @@
 <div align='center'>
-<img src='assets/ugit.svg' />
+<img src='assets/ugit.svg' alt='ugit' />
+<a href='https://www.powershellgallery.com/packages/ugit/'>
+<img src='https://img.shields.io/powershellgallery/dt/ugit' />
+</a>
 </div>
 
 Updated Git: A powerful PowerShell wrapper for git that lets you extend git, automate multiple repos, and output git as objects.
@@ -13,10 +16,12 @@ This enables _a lot_ of interesting scenarios, giving you and updated way to wor
 
 ## Getting started
 
-### Installing ugit
 ~~~PowerShell
+# Install ugit from the PowerShell Gallery
 Install-Module ugit -Scope CurrentUser
+# Then import it.
 Import-Module ugit -Force -PassThru
+
 # Once you've imported ugit, just run git commands normally.
 # If ugit has an extension for the command, it will output as an object.
 # These objects can be formatted by PowerShell
@@ -26,7 +31,6 @@ git log -n 5
 git log -n 5 |
   Get-Member
 ~~~
-
 
 ## How ugit works:
 
@@ -62,7 +66,11 @@ If this pattern matches the given git command, the extension will run.
 
 Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/Piecemeal)
 
-## Git Commands Extended
+## Out-Git Extensions
+
+### Git Commands
+
+Most extensions handle output from a single git command.
 
 
 * [Git Branch](Git.Branch-Extension.md)
@@ -123,7 +131,9 @@ Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/
 
 
 
-### Extensions that may apply to any git command:
+### Additional Output Extensions
+
+A few extensions handle output from any number of git commands, depending on the arguments.
 
 * Git.FileName
 
