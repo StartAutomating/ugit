@@ -1,4 +1,3 @@
-
 Extensions/Git.RefLog.UGit.Extension.ps1
 ----------------------------------------
 
@@ -48,7 +47,3 @@ git reflog
 ```PowerShell
 Extensions/Git.RefLog.UGit.Extension.ps1 [<CommonParameters>]
 ```
-
-
-
-
