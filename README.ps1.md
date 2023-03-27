@@ -72,6 +72,7 @@ ugit comes packed with many examples.
 You might want to try giving some of these a try.
 
 ~~~PipeScript {
+   $null = Import-Module .\ugit.psd1 -Global
     @(foreach ($ugitExt in Get-UGitExtension) {
         $examples = @($ugitExt.Examples)        
         for ($exampleNumber = 1; $exampleNumber -le $examples.Length; $exampleNumber++) {
@@ -91,8 +92,7 @@ You might want to try giving some of these a try.
 
 Most extensions handle output from a single git command.
 
-~~~PipeScript {
-  $null = Import-Module .\ugit.psd1 -Global
+~~~PipeScript {  
   Get-UGitExtension -CommandName Out-Git |
     Where-Object DisplayName -notIn 'Git.FileOutput' |
     .InputObject {
@@ -119,8 +119,7 @@ It will attempt to locate any output specified by -o and return it as a file or 
 
 ugit also allows you to extend the input for git.
 
-~~~PipeScript {
-  $null = Import-Module .\ugit.psd1 -Global
+~~~PipeScript {  
   Get-UGitExtension -CommandName Use-Git |
     .InputObject {
       "[$($_.DisplayName -replace '\.', ' ')]($('docs/' + $_.DisplayName + '-Extension.md'))"
