@@ -66,6 +66,25 @@ If this pattern matches the given git command, the extension will run.
 
 Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/Piecemeal)
 
+## ugit examples
+
+ugit comes packed with many examples.
+You might want to try giving some of these a try.
+
+~~~PipeScript {
+    @(foreach ($ugitExt in Get-UGitExtension) {
+        $examples = @($ugitExt.Examples)        
+        for ($exampleNumber = 1; $exampleNumber -le $examples.Length; $exampleNumber++) {
+            @("### $($ugitExt.DisplayName) Example $($exampleNumber)", 
+                [Environment]::Newline,
+                "~~~PowerShell",                
+                $examples[$exampleNumber - 1],                
+                "~~~") -join [Environment]::Newline
+        }        
+    }) -join ([Environment]::Newline * 2)
+}
+~~~
+
 ## Out-Git Extensions
 
 ### Git Commands
@@ -96,20 +115,16 @@ It will attempt to return the name as a file, or as an object containing the nam
 This applies to an git command that uses the -o flag.
 It will attempt to locate any output specified by -o and return it as a file or directory.
 
+## Use-Git Extensions
 
-## ugit examples
+ugit also allows you to extend the input for git.
 
 ~~~PipeScript {
-    @(foreach ($ugitExt in Get-UGitExtension) {
-        $examples = @($ugitExt.Examples)        
-        for ($exampleNumber = 1; $exampleNumber -le $examples.Length; $exampleNumber++) {
-            @("### $($ugitExt.DisplayName) Example $($exampleNumber)", 
-                [Environment]::Newline,
-                "~~~PowerShell",                
-                $examples[$exampleNumber - 1],                
-                "~~~") -join [Environment]::Newline
-        }        
-    }) -join ([Environment]::Newline * 2)
+  $null = Import-Module .\ugit.psd1 -Global
+  Get-UGitExtension -CommandName Use-Git |
+    .InputObject {
+      "[$($_.DisplayName -replace '\.', ' ')]($('docs/' + $_.DisplayName + '-Extension.md'))"
+    } .BulletPoint = { $true }
 }
 ~~~
 
