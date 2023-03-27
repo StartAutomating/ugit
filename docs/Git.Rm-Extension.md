@@ -1,4 +1,3 @@
-
 Extensions/Git.Rm.UGit.Extension.ps1
 ------------------------------------
 
@@ -48,7 +47,3 @@ git rm .\FileIDontCareAbout.txt
 ```PowerShell
 Extensions/Git.Rm.UGit.Extension.ps1 [<CommonParameters>]
 ```
-
-
-
-
