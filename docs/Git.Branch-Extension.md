@@ -1,4 +1,3 @@
-
 Extensions/Git.Branch.UGit.Extension.ps1
 ----------------------------------------
 
@@ -62,7 +61,3 @@ git branch |                                          # Get all branches
 ```PowerShell
 Extensions/Git.Branch.UGit.Extension.ps1 [<CommonParameters>]
 ```
-
-
-
-
