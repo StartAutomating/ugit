@@ -1,4 +1,3 @@
-
 Extensions/Git.Push.UGit.Extension.ps1
 --------------------------------------
 
@@ -48,7 +47,3 @@ git push
 ```PowerShell
 Extensions/Git.Push.UGit.Extension.ps1 [<CommonParameters>]
 ```
-
-
-
-
