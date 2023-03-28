@@ -182,6 +182,13 @@ You might want to try giving some of these a try.
     git init # Initialize the current directory as a repository
 ~~~
 
+### Git.Log.Input Example 1
+
+
+~~~PowerShell
+    git log -CurrentBranch
+~~~
+
 ### Git.Log Example 1
 
 
@@ -440,3 +447,6 @@ ugit also allows you to extend the input for git.
 
 
 * [Git Clone Input](Git.Clone.Input-Extension.md)
+
+ 
+* [Git Log Input](Git.Log.Input-Extension.md)
