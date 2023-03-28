@@ -246,39 +246,62 @@
                 $InputDirectories[$dir] = @($null) # go over an empty collection
             }
 
-            # Get any arguments from extensions
-            $extensionArgs = @(
-                Get-UGitExtension -CommandName Use-Git -Run -Parameter $paramCopy -Stream -ValidateInput "git $gitArgument"
-            )
+            $dirCount++
 
+            if (-not $script:RepoRoots[$dir]) {             # and see if we have a repo root
+                $script:RepoRoots[$dir] =
+                    @("$(& $script:CachedGitCmd rev-parse --show-toplevel *>&1)") -like "*/*" -replace '/', [io.path]::DirectorySeparatorChar
+                if (-not $script:RepoRoots[$dir] -and      # If we did not have a repo root
+                    -not ($gitArgument -match "(?>$($RepoNotRequired -join '|'))") # and we are not doing an operation that does not require one
+                ) {
+                    Write-Warning "'$($dir)' is not a git repository" # warn that there is no repo (#21)
+                    Pop-Location # pop back out of the directory
+                    continue nextDirectory # and continue to the next directory.
+                }
+            }
+            
             # Walk over each input for each directory
-            foreach ($inObject in $InputDirectories[$dir]) {
+            :nextInput foreach ($inObject in $InputDirectories[$dir]) {
                 # Continue if there was no input and we were not the first step of the pipeline.
-                if (-not $inObject -and $myInv.PipelinePosition -gt 1) { continue }
+                if (-not $inObject -and $myInv.PipelinePosition -gt 1) { continue }                
+                
+                $AllGitArgs = @(@($GitArgument) + $inObject)    # Then we collect the combined arguments
+
+                $GitCommand = "git $AllGitArgs"
+
+                # Get any arguments from extensions
+                $extensionOutputs = @(
+                    Get-UGitExtension -CommandName Use-Git -Run -Parameter $paramCopy -Stream -ValidateInput $GitCommand
+                )
+
+                # By default, we want to run git
+                $RunGit = $true
+                # with whatever strings came back from extensions as additional arguments.
+                $extensionArgs = @()
+                
+                # So we walk over each output from the extensions
+                foreach ($extensionOutput in $extensionOutputs) {
+                    if ($extensionOutput -is [string]) {
+                        # and accumulate string arguments.
+                        $extensionArgs += $extensionOutput
+                    } else {
+                        # However, if we have non-string arguments
+                        $extensionOutput
+                        $RunGit = $false
+                    }
+                }
+
+                if (-not $RunGit) { continue }
+
+                if ($inObject -isnot [string] -and 
+                    $inObject.ToString -isnot [Management.Automation.PSScriptMethod]) {
+                    Write-Verbose "Input was not a string or ugit object"
+                    $inObject = $null
+                }
+
                 $AllGitArgs = @(@($GitArgument) + $extensionArgs + $inObject)    # Then we collect the combined arguments
                 $AllGitArgs = @($AllGitArgs -ne '')             # (skipping any empty arguments)
                 $OutGitParams = @{GitArgument=$AllGitArgs}      # and prepare a splat (to save precious space when reporting errors).
-                $dirCount++
-
-                if ($WhatIfPreference) {
-                    [ScriptBlock]::Create("git $($allGitArgs -join ' ')") |
-                        Add-Member NoteProperty GitRoot $dir -Force -PassThru
-                    Pop-Location
-                    continue
-                }
-
-
-                if (-not $script:RepoRoots[$dir]) {             # and see if we have a repo root
-                    $script:RepoRoots[$dir] =
-                        @("$(& $script:CachedGitCmd rev-parse --show-toplevel *>&1)") -like "*/*" -replace '/', [io.path]::DirectorySeparatorChar
-                    if (-not $script:RepoRoots[$dir] -and      # If we did not have a repo root
-                        -not ($gitArgument -match "(?>$($RepoNotRequired -join '|'))") # and we are not doing an operation that does not require one
-                    ) {
-                        Write-Warning "'$($dir)' is not a git repository" # warn that there is no repo (#21)
-                        Pop-Location # pop back out of the directory
-                        continue nextDirectory # and continue to the next directory.
-                    }
-                }
 
                 $OutGitParams.GitRoot = "$($script:RepoRoots[$dir])"
                 Write-Verbose "Calling git with $AllGitArgs"
