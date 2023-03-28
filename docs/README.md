@@ -125,6 +125,20 @@ You might want to try giving some of these a try.
     git clone https://github.com/Azure/azure-quickstart-templates --progress
 ~~~
 
+### Git.Commit.Input Example 1
+
+
+~~~PowerShell
+    git commit -Title "Fixing Something"
+~~~
+
+### Git.Commit.Input Example 2
+
+
+~~~PowerShell
+    git commit -Title "Changing Stuff" -Trailers @{"Co-Authored-By"="SOMEONE ELSE <Someone@Else.com>"}
+~~~
+
 ### Git.Commit Example 1
 
 
@@ -447,6 +461,9 @@ ugit also allows you to extend the input for git.
 
 
 * [Git Clone Input](Git.Clone.Input-Extension.md)
+
+ 
+* [Git Commit Input](Git.Commit.Input-Extension.md)
 
  
 * [Git Log Input](Git.Log.Input-Extension.md)
