@@ -27,7 +27,7 @@ $Body,
 # Any git trailers to add to the commit.
 # git trailers are key-value pairs you can use to associate metadata with a commit.
 # As this uses --trailer, this requires git version 2.33 or greater.
-[Alias('Trailer','Metadata','CommitMetadata','GitMetadata')]
+[Alias('Trailer','CommitMetadata','GitMetadata')]
 [Collections.IDictionary]
 $Trailers,
 
