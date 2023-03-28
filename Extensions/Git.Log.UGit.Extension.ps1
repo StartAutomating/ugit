@@ -167,6 +167,9 @@ begin {
 
 
 process {
+    if ($gitCommand -match '--(?>pretty|format)') {
+        continue
+    }
 
     if ("$gitOut" -like 'Commit*' -and $lines) {
         OutGitLog $lines
