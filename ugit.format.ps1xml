@@ -2186,27 +2186,51 @@ $BackgroundColor
         )
     </ScriptBlock>
               </ExpressionBinding>
-              <NewLine />
-              <Text>  Remote Branches:</Text>
-              <NewLine />
               <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.RemoteBranches </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        [Environment]::NewLine +  '  Remote Branches:' + [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.RemoteBranches </ScriptBlock>
+                </ItemSelectionCondition>
                 <PropertyName>RemoteBranches</PropertyName>
                 <CustomControlName>GitRemoteBranchList</CustomControlName>
               </ExpressionBinding>
-              <NewLine />
-              <Text>  Local Branches:</Text>
-              <NewLine />
               <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.LocalBranches </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        [Environment]::NewLine +  '  Local Branches:' + [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.LocalBranches </ScriptBlock>
+                </ItemSelectionCondition>
                 <PropertyName>LocalBranches</PropertyName>
                 <CustomControlName>GitRemoteBranchList</CustomControlName>
               </ExpressionBinding>
-              <Text>  Tracked Upstreams:</Text>
-              <NewLine />
               <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.TrackedUpstreams </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        [Environment]::NewLine +  '  Tracked Upstreams:' + [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.TrackedUpstreams </ScriptBlock>
+                </ItemSelectionCondition>
                 <PropertyName>TrackedUpstreams</PropertyName>
                 <CustomControlName>GitRemoteBranchList</CustomControlName>
               </ExpressionBinding>
-              <NewLine />
             </CustomItem>
           </CustomEntry>
         </CustomEntries>
