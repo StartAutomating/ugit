@@ -113,6 +113,21 @@ begin {
             }
         }
 
+        if ($gitLogOut.CommitMessage) {
+            $gitTrailers = [Ordered]@{}
+            foreach ($commitMessageLine in $gitLogOut.CommitMessage -split '(?>\r\n|\n)') {
+                if ($commitMessageLine -notmatch '\s{0,}(?<k>\S+):\s(?<v>[\s\S]+$)') {
+                    continue
+                }
+                if (-not $gitTrailers[$matches.k]) {
+                    $gitTrailers[$matches.k] = $matches.v
+                } else {
+                    $gitTrailers[$matches.k] = @($gitTrailers[$matches.k]) + $v
+                }                 
+            }
+            $gitLogOut.Trailers = $gitTrailers
+        }
+
         if ($GitArgument -contains '--shortstat' -or $GitArgument -contains '--stat') {
             foreach ($linePart in $OutputLines[-2] -split ',' -replace '[\s\w\(\)-[\d]]') {
                 if ($linePart.Contains('+')) {
@@ -167,6 +182,9 @@ begin {
 
 
 process {
+    if ($gitCommand -match '--(?>pretty|format)') {
+        continue
+    }
 
     if ("$gitOut" -like 'Commit*' -and $lines) {
         OutGitLog $lines

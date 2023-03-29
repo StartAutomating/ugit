@@ -1,4 +1,3 @@
-
 Extensions/Git.FileName.UGit.Extension.ps1
 ------------------------------------------
 
@@ -58,7 +57,3 @@ git diff --name-only
 ```PowerShell
 Extensions/Git.FileName.UGit.Extension.ps1 [<CommonParameters>]
 ```
-
-
-
-

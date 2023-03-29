@@ -1,5 +1,8 @@
 <div align='center'>
-<img src='assets/ugit.svg' />
+<img src='assets/ugit.svg' alt='ugit' />
+<a href='https://www.powershellgallery.com/packages/ugit/'>
+<img src='https://img.shields.io/powershellgallery/dt/ugit' />
+</a>
 </div>
 
 Updated Git: A powerful PowerShell wrapper for git that lets you extend git, automate multiple repos, and output git as objects.
@@ -13,10 +16,12 @@ This enables _a lot_ of interesting scenarios, giving you and updated way to wor
 
 ## Getting started
 
-### Installing ugit
 ~~~PowerShell
+# Install ugit from the PowerShell Gallery
 Install-Module ugit -Scope CurrentUser
+# Then import it.
 Import-Module ugit -Force -PassThru
+
 # Once you've imported ugit, just run git commands normally.
 # If ugit has an extension for the command, it will output as an object.
 # These objects can be formatted by PowerShell
@@ -26,7 +31,6 @@ git log -n 5
 git log -n 5 |
   Get-Member
 ~~~
-
 
 ## How ugit works:
 
@@ -62,11 +66,34 @@ If this pattern matches the given git command, the extension will run.
 
 Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/Piecemeal)
 
-## Git Commands Extended
+## ugit examples
+
+ugit comes packed with many examples.
+You might want to try giving some of these a try.
 
 ~~~PipeScript {
-  $null = Import-Module .\ugit.psd1 -Global
-  Get-UGitExtension |
+   $null = Import-Module .\ugit.psd1 -Global
+    @(foreach ($ugitExt in Get-UGitExtension) {
+        $examples = @($ugitExt.Examples)        
+        for ($exampleNumber = 1; $exampleNumber -le $examples.Length; $exampleNumber++) {
+            @("### $($ugitExt.DisplayName) Example $($exampleNumber)", 
+                [Environment]::Newline,
+                "~~~PowerShell",                
+                $examples[$exampleNumber - 1],                
+                "~~~") -join [Environment]::Newline
+        }        
+    }) -join ([Environment]::Newline * 2)
+}
+~~~
+
+## Out-Git Extensions
+
+### Git Commands
+
+Most extensions handle output from a single git command.
+
+~~~PipeScript {  
+  Get-UGitExtension -CommandName Out-Git |
     Where-Object DisplayName -notIn 'Git.FileOutput' |
     .InputObject {
       "[$($_.DisplayName -replace '\.', ' ')]($('docs/' + $_.DisplayName + '-Extension.md'))"
@@ -74,7 +101,9 @@ Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/
 }
 ~~~
 
-### Extensions that may apply to any git command:
+### Additional Output Extensions
+
+A few extensions handle output from any number of git commands, depending on the arguments.
 
 * Git.FileName
 
@@ -86,20 +115,15 @@ It will attempt to return the name as a file, or as an object containing the nam
 This applies to an git command that uses the -o flag.
 It will attempt to locate any output specified by -o and return it as a file or directory.
 
+## Use-Git Extensions
 
-## ugit examples
+ugit also allows you to extend the input for git.
 
-~~~PipeScript {
-    @(foreach ($ugitExt in Get-UGitExtension) {
-        $examples = @($ugitExt.Examples)        
-        for ($exampleNumber = 1; $exampleNumber -le $examples.Length; $exampleNumber++) {
-            @("### $($ugitExt.DisplayName) Example $($exampleNumber)", 
-                [Environment]::Newline,
-                "~~~PowerShell",                
-                $examples[$exampleNumber - 1],                
-                "~~~") -join [Environment]::Newline
-        }        
-    }) -join ([Environment]::Newline * 2)
+~~~PipeScript {  
+  Get-UGitExtension -CommandName Use-Git |
+    .InputObject {
+      "[$($_.DisplayName -replace '\.', ' ')]($('docs/' + $_.DisplayName + '-Extension.md'))"
+    } .BulletPoint = { $true }
 }
 ~~~
 

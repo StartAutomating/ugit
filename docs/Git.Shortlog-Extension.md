@@ -1,4 +1,3 @@
-
 Extensions/Git.Shortlog.UGit.Extension.ps1
 ------------------------------------------
 
@@ -52,7 +51,3 @@ git shortlog --sumary --email # Get a shortlog summary, with email.
 ```PowerShell
 Extensions/Git.Shortlog.UGit.Extension.ps1 [<CommonParameters>]
 ```
-
-
-
-

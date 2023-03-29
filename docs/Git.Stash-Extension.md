@@ -1,4 +1,3 @@
-
 Extensions/Git.Stash.UGit.Extension.ps1
 ---------------------------------------
 
@@ -37,7 +36,3 @@ git stash list
 ```PowerShell
 Extensions/Git.Stash.UGit.Extension.ps1 [<CommonParameters>]
 ```
-
-
-
-

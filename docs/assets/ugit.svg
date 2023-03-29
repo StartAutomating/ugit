@@ -3,6 +3,9 @@
   <symbol id="psChevron" viewBox="0 0 100 100" preserveAspectRatio="False">
     <polygon points="40,20 45,20 60,50 35,80 32.5,80 55,50" />
   </symbol>
-  <use href="#psChevron" fill="#4488ff" x="120" y="37.5%" width="10%" height="25%" />
-  <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-family="serif" fill="#4488ff">ugit</text>
+  <use href="#psChevron" fill="#4488ff" x="30%" y="37.5%" width="10%" height="25%" />
+  <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-family="serif" fill="#4488ff" font-size="4em">
+    <tspan font-size=".5em">u</tspan>
+    <tspan font-size="1em" dx="-.25em">git</tspan>
+  </text>
 </svg>

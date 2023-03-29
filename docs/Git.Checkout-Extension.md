@@ -1,4 +1,3 @@
-
 Extensions/Git.Checkout.UGit.Extension.ps1
 ------------------------------------------
 
@@ -42,7 +41,3 @@ git checkout main
 ```PowerShell
 Extensions/Git.Checkout.UGit.Extension.ps1 [<CommonParameters>]
 ```
-
-
-
-

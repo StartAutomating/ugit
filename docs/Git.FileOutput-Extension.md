@@ -1,4 +1,3 @@
-
 Extensions/Git.FileOutput.UGit.Extension.ps1
 --------------------------------------------
 
@@ -39,7 +38,3 @@ git archive -o My.zip
 ```PowerShell
 Extensions/Git.FileOutput.UGit.Extension.ps1 [<CommonParameters>]
 ```
-
-
-
-

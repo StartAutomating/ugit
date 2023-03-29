@@ -1,4 +1,3 @@
-
 Extensions/Git.Pull.UGit.Extension.ps1
 --------------------------------------
 
@@ -68,7 +67,3 @@ git pull
 ```PowerShell
 Extensions/Git.Pull.UGit.Extension.ps1 [[-GitOut] <String>] [<CommonParameters>]
 ```
-
-
-
-

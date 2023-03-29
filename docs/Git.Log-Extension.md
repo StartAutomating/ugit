@@ -1,4 +1,3 @@
-
 Extensions/Git.Log.UGit.Extension.ps1
 -------------------------------------
 
@@ -81,7 +80,3 @@ git log --merges
 ```PowerShell
 Extensions/Git.Log.UGit.Extension.ps1 [<CommonParameters>]
 ```
-
-
-
-

@@ -1,4 +1,3 @@
-
 Extensions/Git.Mv.UGit.Extension.ps1
 ------------------------------------
 
@@ -53,7 +52,3 @@ git mv .\OldName.txt .\NewName.txt --verbose
 ```PowerShell
 Extensions/Git.Mv.UGit.Extension.ps1 [<CommonParameters>]
 ```
-
-
-
-

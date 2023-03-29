@@ -1,3 +1,19 @@
+## 0.3.8:
+
+* Use-Git can now be extended (#140, #97), letting you add PowerShell parameters to any git command
+* Initial input extensions
+  * git.clone.input (#141) (--progress is inferred so Write-Progress happens automagically)
+  * git.log.input (#142) (Added -Before/-After/-Author/-CurrentBranch)
+  * git.commit.input (#144) (Added -Message/-Body/-Title/-Trailer)
+* Other Improvements:
+  * git log will not process --pretty/--format (Fixes #143)
+  * git log now supports .Trailers (Fixes #112)
+  * git remote formatting improved (Fixes #145)
+  * git remote now works for multiple remotes (Fixes #136)
+  * Updated logo (#139)
+
+---
+
 ## 0.3.7:
 
 * git remote

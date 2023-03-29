@@ -1,5 +1,8 @@
 <div align='center'>
-<img src='assets/ugit.svg' />
+<img src='assets/ugit.svg' alt='ugit' />
+<a href='https://www.powershellgallery.com/packages/ugit/'>
+<img src='https://img.shields.io/powershellgallery/dt/ugit' />
+</a>
 </div>
 
 Updated Git: A powerful PowerShell wrapper for git that lets you extend git, automate multiple repos, and output git as objects.
@@ -13,10 +16,12 @@ This enables _a lot_ of interesting scenarios, giving you and updated way to wor
 
 ## Getting started
 
-### Installing ugit
 ~~~PowerShell
+# Install ugit from the PowerShell Gallery
 Install-Module ugit -Scope CurrentUser
+# Then import it.
 Import-Module ugit -Force -PassThru
+
 # Once you've imported ugit, just run git commands normally.
 # If ugit has an extension for the command, it will output as an object.
 # These objects can be formatted by PowerShell
@@ -26,7 +31,6 @@ git log -n 5
 git log -n 5 |
   Get-Member
 ~~~
-
 
 ## How ugit works:
 
@@ -62,81 +66,10 @@ If this pattern matches the given git command, the extension will run.
 
 Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/Piecemeal)
 
-## Git Commands Extended
-
-
-* [Git Branch](Git.Branch-Extension.md)
-
- 
-* [Git Checkout](Git.Checkout-Extension.md)
-
- 
-* [Git Clone](Git.Clone-Extension.md)
-
- 
-* [Git Commit](Git.Commit-Extension.md)
-
- 
-* [Git Diff](Git.Diff-Extension.md)
-
- 
-* [Git FileName](Git.FileName-Extension.md)
-
- 
-* [Git Grep](Git.Grep-Extension.md)
-
- 
-* [Git Help All](Git.Help.All-Extension.md)
-
- 
-* [Git Init](Git.Init-Extension.md)
-
- 
-* [Git Log](Git.Log-Extension.md)
-
- 
-* [Git Mv](Git.Mv-Extension.md)
-
- 
-* [Git Pull](Git.Pull-Extension.md)
-
- 
-* [Git Push](Git.Push-Extension.md)
-
- 
-* [Git RefLog](Git.RefLog-Extension.md)
-
- 
-* [Git Remote](Git.Remote-Extension.md)
-
- 
-* [Git Rm](Git.Rm-Extension.md)
-
- 
-* [Git Shortlog](Git.Shortlog-Extension.md)
-
- 
-* [Git Stash](Git.Stash-Extension.md)
-
- 
-* [Git Status](Git.Status-Extension.md)
-
-
-
-### Extensions that may apply to any git command:
-
-* Git.FileName
-
-This applies to any git command that uses --name-only.
-It will attempt to return the name as a file, or as an object containing the name.
-
-* Git.FileOutput
-
-This applies to an git command that uses the -o flag.
-It will attempt to locate any output specified by -o and return it as a file or directory.
-
-
 ## ugit examples
+
+ugit comes packed with many examples.
+You might want to try giving some of these a try.
 
 ### Git.Branch Example 1
 
@@ -169,6 +102,13 @@ It will attempt to locate any output specified by -o and return it as a file or 
     git checkout main
 ~~~
 
+### Git.Clone.Input Example 1
+
+
+~~~PowerShell
+    git clone https://github.com/MDN/content.git # This is a big repo.  Progress bars will be very welcome.
+~~~
+
 ### Git.Clone Example 1
 
 
@@ -183,6 +123,20 @@ It will attempt to locate any output specified by -o and return it as a file or 
     # Clone a large repo.
     # When --progress is provided, Write-Progress will be called.
     git clone https://github.com/Azure/azure-quickstart-templates --progress
+~~~
+
+### Git.Commit.Input Example 1
+
+
+~~~PowerShell
+    git commit -Title "Fixing Something"
+~~~
+
+### Git.Commit.Input Example 2
+
+
+~~~PowerShell
+    git commit -Title "Changing Stuff" -Trailers @{"Co-Authored-By"="SOMEONE ELSE <Someone@Else.com>"}
 ~~~
 
 ### Git.Commit Example 1
@@ -240,6 +194,13 @@ It will attempt to locate any output specified by -o and return it as a file or 
 
 ~~~PowerShell
     git init # Initialize the current directory as a repository
+~~~
+
+### Git.Log.Input Example 1
+
+
+~~~PowerShell
+    git log -CurrentBranch
 ~~~
 
 ### Git.Log Example 1
@@ -415,6 +376,94 @@ It will attempt to locate any output specified by -o and return it as a file or 
     git status | Select-Object -ExpandProperty Untracked
 ~~~
 
+## Out-Git Extensions
+
+### Git Commands
+
+Most extensions handle output from a single git command.
+
+
+* [Git Branch](Git.Branch-Extension.md)
+
+ 
+* [Git Checkout](Git.Checkout-Extension.md)
+
+ 
+* [Git Clone](Git.Clone-Extension.md)
+
+ 
+* [Git Commit](Git.Commit-Extension.md)
+
+ 
+* [Git Diff](Git.Diff-Extension.md)
+
+ 
+* [Git FileName](Git.FileName-Extension.md)
+
+ 
+* [Git Grep](Git.Grep-Extension.md)
+
+ 
+* [Git Help All](Git.Help.All-Extension.md)
+
+ 
+* [Git Init](Git.Init-Extension.md)
+
+ 
+* [Git Log](Git.Log-Extension.md)
+
+ 
+* [Git Mv](Git.Mv-Extension.md)
+
+ 
+* [Git Pull](Git.Pull-Extension.md)
+
+ 
+* [Git Push](Git.Push-Extension.md)
+
+ 
+* [Git RefLog](Git.RefLog-Extension.md)
+
+ 
+* [Git Remote](Git.Remote-Extension.md)
+
+ 
+* [Git Rm](Git.Rm-Extension.md)
+
+ 
+* [Git Shortlog](Git.Shortlog-Extension.md)
+
+ 
+* [Git Stash](Git.Stash-Extension.md)
+
+ 
+* [Git Status](Git.Status-Extension.md)
 
 
 
+### Additional Output Extensions
+
+A few extensions handle output from any number of git commands, depending on the arguments.
+
+* Git.FileName
+
+This applies to any git command that uses --name-only.
+It will attempt to return the name as a file, or as an object containing the name.
+
+* Git.FileOutput
+
+This applies to an git command that uses the -o flag.
+It will attempt to locate any output specified by -o and return it as a file or directory.
+
+## Use-Git Extensions
+
+ugit also allows you to extend the input for git.
+
+
+* [Git Clone Input](Git.Clone.Input-Extension.md)
+
+ 
+* [Git Commit Input](Git.Commit.Input-Extension.md)
+
+ 
+* [Git Log Input](Git.Log.Input-Extension.md)

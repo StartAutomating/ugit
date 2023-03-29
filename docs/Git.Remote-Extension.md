@@ -1,4 +1,3 @@
-
 Extensions/Git.Remote.UGit.Extension.ps1
 ----------------------------------------
 
@@ -64,7 +63,3 @@ git remote | git remote show
 ```PowerShell
 Extensions/Git.Remote.UGit.Extension.ps1 [<CommonParameters>]
 ```
-
-
-
-

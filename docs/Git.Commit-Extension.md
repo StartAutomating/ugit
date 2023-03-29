@@ -1,4 +1,3 @@
-
 Extensions/Git.Commit.UGit.Extension.ps1
 ----------------------------------------
 
@@ -54,7 +53,3 @@ $commitMessage.Amend("Committing stuff") # that's better
 ```PowerShell
 Extensions/Git.Commit.UGit.Extension.ps1 [<CommonParameters>]
 ```
-
-
-
-
