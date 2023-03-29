@@ -20,18 +20,24 @@ Write-FormatView -TypeName Git.Remote.Show -Action {
             [Environment]::NewLine + (' ' * 4)
         )
     }
-    Write-FormatViewExpression -Newline
-    Write-FormatViewExpression -Text '  Remote Branches:'
-    Write-FormatViewExpression -Newline
-    Write-FormatViewExpression -ControlName GitRemoteBranchList -Property RemoteBranches
-    Write-FormatViewExpression -Newline
-    Write-FormatViewExpression -Text '  Local Branches:' 
-    Write-FormatViewExpression -Newline
-    Write-FormatViewExpression -ControlName GitRemoteBranchList -Property LocalBranches
-    Write-FormatViewExpression -Text '  Tracked Upstreams:'
-    Write-FormatViewExpression -Newline
-    Write-FormatViewExpression -ControlName GitRemoteBranchList -Property TrackedUpstreams
-    Write-FormatViewExpression -Newline
+    Write-FormatViewExpression -If { $_.RemoteBranches } -ScriptBlock {
+        [Environment]::NewLine +  '  Remote Branches:' + [Environment]::NewLine
+    }
+
+    Write-FormatViewExpression -If { $_.RemoteBranches } -ControlName GitRemoteBranchList -Property RemoteBranches         
+    
+    Write-FormatViewExpression -If { $_.LocalBranches } -ScriptBlock {
+        [Environment]::NewLine +  '  Local Branches:' + [Environment]::NewLine
+    }
+
+    Write-FormatViewExpression -If { $_.LocalBranches } -ControlName GitRemoteBranchList -Property LocalBranches
+    
+
+    Write-FormatViewExpression -If { $_.TrackedUpstreams } -ScriptBlock {
+        [Environment]::NewLine +  '  Tracked Upstreams:' + [Environment]::NewLine
+    }
+    
+    Write-FormatViewExpression -If { $_.TrackedUpstreams } -ControlName GitRemoteBranchList -Property TrackedUpstreams    
 }
 
 Write-FormatView -TypeName n/a -Name GitRemoteBranchList -AsControl -Action {
