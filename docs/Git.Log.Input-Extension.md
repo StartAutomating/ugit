@@ -164,22 +164,6 @@ This is especially useful when finding references to or changes to a given funct
 
 
 
-#### **IgnoreSearchPattern**
-
-If provided, will ignore specific patterns within the change sets of a commit.
-This is especially useful when finding references to or changes to a given function or structure.
-
-
-
-
-
-
-|Type        |Required|Position|PipelineInput        |
-|------------|--------|--------|---------------------|
-|`[String[]]`|false   |named   |true (ByPropertyName)|
-
-
-
 
 
 ---
@@ -187,5 +171,5 @@ This is especially useful when finding references to or changes to a given funct
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Log.Input.UGit.Extension.ps1 [-After <DateTime>] [-Before <DateTime>] [-Author <String>] [-CurrentBranch] [-IssueNumber <Int32[]>] [-Statistics] [-SearchString <String>] [-SearchPattern <String>] [-IgnoreSearchPattern <String[]>] [<CommonParameters>]
+Extensions/Git.Log.Input.UGit.Extension.ps1 [-After <DateTime>] [-Before <DateTime>] [-Author <String>] [-CurrentBranch] [-IssueNumber <Int32[]>] [-Statistics] [-SearchString <String>] [-SearchPattern <String>] [<CommonParameters>]
 ```
