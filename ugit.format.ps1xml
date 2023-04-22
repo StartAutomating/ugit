@@ -53,15 +53,11 @@
         $changeLines = @($_.Changes -split '(?&gt;\r\n|\n)' -ne '')
         @(foreach ($changeLine in $changeLines) {
             [Environment]::NewLine
-            if ($changeLine.StartsWith('+')) {                
-                . ${ugit_SetOutputStyle} -ForegroundColor Success
-                $changeLine -replace "[\s\r\n]+$"
-                . ${ugit_ClearOutputStyle}
+            if ($changeLine.StartsWith('+')) {
+                &amp; ${ugit_Format-RichText} -InputObject ($changeLine -replace "[\s\r\n]+$") -ForegroundColor Success
             }
-            elseif ($changeLine.StartsWith('-')) {            
-                . ${ugit_SetOutputStyle} -ForegroundColor Failure
-                $changeLine -replace "[\s\r\n]+$"
-                . ${ugit_ClearOutputStyle}
+            elseif ($changeLine.StartsWith('-')) {
+                &amp; ${ugit_Format-RichText} -InputObject ($changeLine -replace "[\s\r\n]+$") -ForegroundColor Error                
             }
             else {                
                 $changeLine
