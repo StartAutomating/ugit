@@ -62,13 +62,7 @@ $SearchString,
 [Parameter(ValueFromPipelineByPropertyName)]
 [Alias('Pattern')]
 [string]
-$SearchPattern,
-
-# If provided, will ignore specific patterns within the change sets of a commit.
-# This is especially useful when finding references to or changes to a given function or structure.
-[Parameter(ValueFromPipelineByPropertyName)]
-[string[]]
-$IgnoreSearchPattern
+$SearchPattern
 )
 
 foreach ($dashToDoubleDash in 'after', 'before', 'author') {
@@ -114,11 +108,4 @@ if ($SearchString) {
 if ($SearchPattern) {
     "-G"
     $SearchPattern
-}
-
-if ($IgnoreSearchPattern) {
-    foreach ($ignoring in $IgnoreSearchPattern) {
-        "-I"
-        $ignoring
-    }
 }
