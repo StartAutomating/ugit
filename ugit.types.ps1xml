@@ -427,4 +427,20 @@ Pop-Location
       </ScriptProperty>
     </Members>
   </Type>
+  <Type>
+    <Name>ugit.extension</Name>
+    <Members>
+      <ScriptProperty>
+        <Name>Pattern</Name>
+        <GetScriptBlock>
+                        foreach ($attr in $this.ScriptBlock.Attributes) {
+    if ($attr -is [Management.Automation.ValidatePatternAttribute]) {
+        $attr.RegexPattern
+    }
+}
+
+                    </GetScriptBlock>
+      </ScriptProperty>
+    </Members>
+  </Type>
 </Types>
