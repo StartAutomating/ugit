@@ -111,9 +111,9 @@ One or more issue numbers.  Providing an issue number of 0 will find all log ent
 
 
 
-|Type       |Required|Position|PipelineInput        |Aliases                                                                             |
-|-----------|--------|--------|---------------------|------------------------------------------------------------------------------------|
-|`[Int32[]]`|false   |named   |true (ByPropertyName)|ReferenceNumbers<br/>ReferenceNumber<br/>IssueNumbers<br/>WorkItemID<br/>WorkItemIDs|
+|Type       |Required|Position|PipelineInput        |Aliases                                                                                        |
+|-----------|--------|--------|---------------------|-----------------------------------------------------------------------------------------------|
+|`[Int32[]]`|false   |named   |true (ByPropertyName)|Number<br/>ReferenceNumbers<br/>ReferenceNumber<br/>IssueNumbers<br/>WorkItemID<br/>WorkItemIDs|
 
 
 
