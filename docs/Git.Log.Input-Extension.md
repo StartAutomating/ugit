@@ -42,6 +42,21 @@ git log -CurrentBranch
 
 
 ### Parameters
+#### **NumberOfCommits**
+
+The number of entries to get.
+
+
+
+
+
+
+|Type     |Required|Position|PipelineInput|Aliases                      |
+|---------|--------|--------|-------------|-----------------------------|
+|`[Int32]`|false   |named   |false        |CommitNumber<br/>N<br/>Number|
+
+
+
 #### **After**
 
 Gets logs after a given date
@@ -111,9 +126,9 @@ One or more issue numbers.  Providing an issue number of 0 will find all log ent
 
 
 
-|Type       |Required|Position|PipelineInput        |Aliases                                                                                        |
-|-----------|--------|--------|---------------------|-----------------------------------------------------------------------------------------------|
-|`[Int32[]]`|false   |named   |true (ByPropertyName)|Number<br/>ReferenceNumbers<br/>ReferenceNumber<br/>IssueNumbers<br/>WorkItemID<br/>WorkItemIDs|
+|Type       |Required|Position|PipelineInput        |Aliases                                                                             |
+|-----------|--------|--------|---------------------|------------------------------------------------------------------------------------|
+|`[Int32[]]`|false   |named   |true (ByPropertyName)|ReferenceNumbers<br/>ReferenceNumber<br/>IssueNumbers<br/>WorkItemID<br/>WorkItemIDs|
 
 
 
@@ -171,5 +186,5 @@ This is especially useful when finding references to or changes to a given funct
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Log.Input.UGit.Extension.ps1 [-After <DateTime>] [-Before <DateTime>] [-Author <String>] [-CurrentBranch] [-IssueNumber <Int32[]>] [-Statistics] [-SearchString <String>] [-SearchPattern <String>] [<CommonParameters>]
+Extensions/Git.Log.Input.UGit.Extension.ps1 [-NumberOfCommits <Int32>] [-After <DateTime>] [-Before <DateTime>] [-Author <String>] [-CurrentBranch] [-IssueNumber <Int32[]>] [-Statistics] [-SearchString <String>] [-SearchPattern <String>] [<CommonParameters>]
 ```
