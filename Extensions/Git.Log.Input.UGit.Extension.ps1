@@ -41,7 +41,7 @@ $CurrentBranch,
 
 # One or more issue numbers.  Providing an issue number of 0 will find all log entries that reference an issue.
 [Parameter(ValueFromPipelineByPropertyName)]
-[Alias('ReferenceNumbers','ReferenceNumber','IssueNumbers','WorkItemID','WorkItemIDs')]
+[Alias('Number','ReferenceNumbers','ReferenceNumber','IssueNumbers','WorkItemID','WorkItemIDs')]
 [int[]]
 $IssueNumber,
 
