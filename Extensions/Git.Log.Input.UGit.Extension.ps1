@@ -54,7 +54,14 @@ $Statistics,
 # This is especially useful when finding references to or changes to a given function or structure.
 [Alias('Search')]
 [string]
-$SearchString
+$SearchString,
+
+# If provided, will search for specific patterns within the changes of a log entry.
+# This is especially useful when finding references to or changes to a given function or structure.
+[Parameter(ValueFromPipelineByPropertyName)]
+[Alias('Pattern')]
+[string]
+$SearchPattern
 )
 
 foreach ($dashToDoubleDash in 'after', 'before', 'author') {
@@ -95,4 +102,9 @@ if ($IssueNumber) {
 if ($SearchString) {
     "-S"
     $SearchString
+}
+
+if ($SearchPattern) {
+    "-G"
+    $SearchPattern
 }
