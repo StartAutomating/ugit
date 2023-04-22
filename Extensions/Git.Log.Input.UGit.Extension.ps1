@@ -43,13 +43,24 @@ $CurrentBranch,
 [Parameter(ValueFromPipelineByPropertyName)]
 [Alias('ReferenceNumbers','ReferenceNumber','IssueNumbers','WorkItemID','WorkItemIDs')]
 [int[]]
-$IssueNumber
+$IssueNumber,
+
+# If set, will get statistics associated with each change
+[Alias('Stat')]
+[switch]
+$Statistics
 )
 
 foreach ($dashToDoubleDash in 'after', 'before', 'author') {
     if ($PSBoundParameters[$dashToDoubleDash]) {
         "--$dashToDoubleDash"
         "$($PSBoundParameters[$dashToDoubleDash])"
+    }
+}
+
+foreach ($dashToDoubleDashSwitch in 'Statistics') {
+    if ($PSBoundParameters[$dashToDoubleDash]) {
+        "--$dashToDoubleDashSwitch"
     }
 }
 
@@ -72,6 +83,5 @@ if ($IssueNumber) {
         } else {
             "\#$IssueNum\D"
         }
-    }
-    
+    }    
 }
