@@ -342,8 +342,12 @@
                     Write-Progress -PercentComplete $percentageComplete -Status "git $allGitArgs " -Activity "$($dir) " -Id $progId
                 }
 
+                if ($WhatIfPreference) {
+                    "git $AllGitArgs"
+                }
+
                 # If we have indicated we do not care about -Confirmation, don't prompt
-                if (($ConfirmPreference -eq 'None' -and (-not $paramCopy.Confirm)) -or
+                elseif (($ConfirmPreference -eq 'None' -and (-not $paramCopy.Confirm)) -or
                     $PSCmdlet.ShouldProcess("$pwd : git $allGitArgs") # otherwise, as for confirmation to run.
                 ) {
                     $eventSourceIds = @("Use-Git","Use-Git $allGitArgs")
