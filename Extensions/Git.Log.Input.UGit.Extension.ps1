@@ -50,18 +50,25 @@ $IssueNumber,
 [switch]
 $Statistics,
 
-# If provided, will search for specific strings within the changes of a log entry.
+# If provided, will search for specific strings within the change sets of a commit.
 # This is especially useful when finding references to or changes to a given function or structure.
+[Parameter(ValueFromPipelineByPropertyName)]
 [Alias('Search')]
 [string]
 $SearchString,
 
-# If provided, will search for specific patterns within the changes of a log entry.
+# If provided, will search for specific patterns within the change sets of a commit.
 # This is especially useful when finding references to or changes to a given function or structure.
 [Parameter(ValueFromPipelineByPropertyName)]
 [Alias('Pattern')]
 [string]
-$SearchPattern
+$SearchPattern,
+
+# If provided, will ignore specific patterns within the change sets of a commit.
+# This is especially useful when finding references to or changes to a given function or structure.
+[Parameter(ValueFromPipelineByPropertyName)]
+[string[]]
+$IgnoreSearchPattern
 )
 
 foreach ($dashToDoubleDash in 'after', 'before', 'author') {
@@ -107,4 +114,11 @@ if ($SearchString) {
 if ($SearchPattern) {
     "-G"
     $SearchPattern
+}
+
+if ($IgnoreSearchPattern) {
+    foreach ($ignoring in $IgnoreSearchPattern) {
+        "-I"
+        $ignoring
+    }
 }
