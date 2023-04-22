@@ -148,6 +148,22 @@ This is especially useful when finding references to or changes to a given funct
 
 
 
+#### **SearchPattern**
+
+If provided, will search for specific patterns within the changes of a log entry.
+This is especially useful when finding references to or changes to a given function or structure.
+
+
+
+
+
+
+|Type      |Required|Position|PipelineInput        |Aliases|
+|----------|--------|--------|---------------------|-------|
+|`[String]`|false   |named   |true (ByPropertyName)|Pattern|
+
+
+
 
 
 ---
@@ -155,5 +171,5 @@ This is especially useful when finding references to or changes to a given funct
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Log.Input.UGit.Extension.ps1 [-After <DateTime>] [-Before <DateTime>] [-Author <String>] [-CurrentBranch] [-IssueNumber <Int32[]>] [-Statistics] [-SearchString <String>] [<CommonParameters>]
+Extensions/Git.Log.Input.UGit.Extension.ps1 [-After <DateTime>] [-Before <DateTime>] [-Author <String>] [-CurrentBranch] [-IssueNumber <Int32[]>] [-Statistics] [-SearchString <String>] [-SearchPattern <String>] [<CommonParameters>]
 ```
