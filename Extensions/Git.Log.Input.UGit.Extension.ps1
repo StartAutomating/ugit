@@ -19,6 +19,11 @@
 [Management.Automation.Cmdlet("Use","Git")]
 [CmdletBinding(PositionalBinding=$false)]
 param(
+# The number of entries to get.
+[Alias('CommitNumber','N','Number')]
+[int]
+$NumberOfCommits,
+
 # Gets logs after a given date
 [DateTime]
 [Alias('Since')]
@@ -41,7 +46,7 @@ $CurrentBranch,
 
 # One or more issue numbers.  Providing an issue number of 0 will find all log entries that reference an issue.
 [Parameter(ValueFromPipelineByPropertyName)]
-[Alias('Number','ReferenceNumbers','ReferenceNumber','IssueNumbers','WorkItemID','WorkItemIDs')]
+[Alias('ReferenceNumbers','ReferenceNumber','IssueNumbers','WorkItemID','WorkItemIDs')]
 [int[]]
 $IssueNumber,
 
@@ -64,6 +69,12 @@ $SearchString,
 [string]
 $SearchPattern
 )
+
+# If the number of commits was provided, it should come first.
+if ($NumberOfCommits) {
+    '-n'
+    "$NumberOfCommits"
+}
 
 foreach ($dashToDoubleDash in 'after', 'before', 'author') {
     if ($PSBoundParameters[$dashToDoubleDash]) {
