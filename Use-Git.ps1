@@ -112,7 +112,10 @@
 
         $argumentNumber = 0
 
-        $gitArgsArray = [Collections.ArrayList]::new($GitArgument)
+        $gitArgsArray = [Collections.ArrayList]::new()
+        if ($GitArgument.Length) {
+            $gitArgsArray.AddRange($GitArgument)
+        }
 
         foreach ($commandElement in $callingContext.CommandElements) {
             if ($commandElement.parameterName -in 'd', 'v', 'c') {
@@ -269,6 +272,8 @@
 
                 $GitCommand = "git $AllGitArgs"
 
+                $validInputExtensions = Get-UGitExtension -CommandName Use-Git -ValidateInput $GitCommand
+
                 # Get any arguments from extensions
                 $extensionOutputs = @(
                     Get-UGitExtension -CommandName Use-Git -Run -Parameter $paramCopy -Stream -ValidateInput $GitCommand
@@ -286,20 +291,39 @@
                         $extensionArgs += $extensionOutput
                     } else {
                         # However, if we have non-string arguments
-                        $extensionOutput
-                        $RunGit = $false
+                        $extensionOutput # output them directly
+                        $RunGit = $false # and do not run git.
                     }
                 }
 
+                # If we don't want to run git, continue.
                 if (-not $RunGit) { continue }
-
+                
                 if ($inObject -isnot [string] -and 
                     $inObject.ToString -isnot [Management.Automation.PSScriptMethod]) {
-                    Write-Verbose "Input was not a string or ugit object"
+                    Write-Verbose "InputObject was not a string or customized object, not passing down to git."
                     $inObject = $null
                 }
 
-                $AllGitArgs = @(@($GitArgument) + $extensionArgs + $inObject)    # Then we collect the combined arguments
+                 # Then we collect the combined arguments
+                $AllGitArgs = @(                    
+                    $GitArgument[0]
+                    foreach ($xa in $extensionArgs) {
+                        if (-not $xa.AfterInput) {
+                            $xa
+                        }
+                    }
+                    if ($GitArgument.Length -gt 1) {
+                        $GitArgument[1..($gitArgument.Length - 1)]
+                    }
+                    $inObject
+                    foreach ($xa in $extensionArgs) {
+                        if ($xa.AfterInput) {
+                            $xa
+                        }
+                    }                    
+                )
+                
                 $AllGitArgs = @($AllGitArgs -ne '')             # (skipping any empty arguments)
                 $OutGitParams = @{GitArgument=$AllGitArgs}      # and prepare a splat (to save precious space when reporting errors).
 
