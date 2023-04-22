@@ -125,7 +125,9 @@
                     $commandElement.Extent.ToString()
                 )
                 if ($commandElement.parameterName -in 'd', 'c', 'v') {
-                    $ConfirmPreference = 'none' # so set confirm impact to none
+                    if ($commandElement.parameterName -eq 'c') {
+                        $ConfirmPreference = 'none' # so set confirm preference to none
+                    }
                     $VerbosePreference = 'silentlyContinue'
                     $DebugPreference   = 'silentlyContinue'
                 }
