@@ -1,3 +1,10 @@
+<#
+.SYNOPSIS
+    Get Changes for a given file
+.DESCRIPTION
+    Gets changes from git for a given file.  Can provide a timespan, series of numbers, date, or pair of dates.
+#>
+
 $byDate = @()
 $byNumber = @()
 $byTimespan = @()
@@ -23,14 +30,14 @@ Push-Location $this.Directory
 
 
 if ($byTimespan) {    
-    git log --since ([DateTime]::Now - $byTimespan[0]).ToString('s') $this.Name 
+    git log -Since ([DateTime]::Now - $byTimespan[0]) $this.Name 
 }
 elseif ($byDate) {
     if ($byDate.Length -gt 1) {
         $first, $second = $byDate | Sort-Object
-        git log --after $second.ToString('s') --before $first.ToString('s') $this.Name
+        git log -After $second -Before $first $this.Name
     } elseif ($byDate.Length -eq 1) {
-        git log --since $byDate[0].ToString('s') $this.Name 
+        git log -Since $byDate[0] $this.Name 
     } else {
         throw "Can only list Changes between two dates"
     }
