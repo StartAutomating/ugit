@@ -134,7 +134,7 @@ If set, will get statistics associated with each change
 
 #### **SearchString**
 
-If provided, will search for specific strings within the changes of a log entry.
+If provided, will search for specific strings within the change sets of a commit.
 This is especially useful when finding references to or changes to a given function or structure.
 
 
@@ -142,15 +142,15 @@ This is especially useful when finding references to or changes to a given funct
 
 
 
-|Type      |Required|Position|PipelineInput|Aliases|
-|----------|--------|--------|-------------|-------|
-|`[String]`|false   |named   |false        |Search |
+|Type      |Required|Position|PipelineInput        |Aliases|
+|----------|--------|--------|---------------------|-------|
+|`[String]`|false   |named   |true (ByPropertyName)|Search |
 
 
 
 #### **SearchPattern**
 
-If provided, will search for specific patterns within the changes of a log entry.
+If provided, will search for specific patterns within the change sets of a commit.
 This is especially useful when finding references to or changes to a given function or structure.
 
 
@@ -164,6 +164,22 @@ This is especially useful when finding references to or changes to a given funct
 
 
 
+#### **IgnoreSearchPattern**
+
+If provided, will ignore specific patterns within the change sets of a commit.
+This is especially useful when finding references to or changes to a given function or structure.
+
+
+
+
+
+
+|Type        |Required|Position|PipelineInput        |
+|------------|--------|--------|---------------------|
+|`[String[]]`|false   |named   |true (ByPropertyName)|
+
+
+
 
 
 ---
@@ -171,5 +187,5 @@ This is especially useful when finding references to or changes to a given funct
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Log.Input.UGit.Extension.ps1 [-After <DateTime>] [-Before <DateTime>] [-Author <String>] [-CurrentBranch] [-IssueNumber <Int32[]>] [-Statistics] [-SearchString <String>] [-SearchPattern <String>] [<CommonParameters>]
+Extensions/Git.Log.Input.UGit.Extension.ps1 [-After <DateTime>] [-Before <DateTime>] [-Author <String>] [-CurrentBranch] [-IssueNumber <Int32[]>] [-Statistics] [-SearchString <String>] [-SearchPattern <String>] [-IgnoreSearchPattern <String[]>] [<CommonParameters>]
 ```
