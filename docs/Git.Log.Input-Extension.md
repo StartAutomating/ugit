@@ -117,6 +117,21 @@ One or more issue numbers.  Providing an issue number of 0 will find all log ent
 
 
 
+#### **Statistics**
+
+If set, will get statistics associated with each change
+
+
+
+
+
+
+|Type      |Required|Position|PipelineInput|Aliases|
+|----------|--------|--------|-------------|-------|
+|`[Switch]`|false   |named   |false        |Stat   |
+
+
+
 
 
 ---
@@ -124,5 +139,5 @@ One or more issue numbers.  Providing an issue number of 0 will find all log ent
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Log.Input.UGit.Extension.ps1 [-After <DateTime>] [-Before <DateTime>] [-Author <String>] [-CurrentBranch] [-IssueNumber <Int32[]>] [<CommonParameters>]
+Extensions/Git.Log.Input.UGit.Extension.ps1 [-After <DateTime>] [-Before <DateTime>] [-Author <String>] [-CurrentBranch] [-IssueNumber <Int32[]>] [-Statistics] [<CommonParameters>]
 ```
