@@ -1533,8 +1533,10 @@ $BackgroundColor
           <TableColumnHeader>
           </TableColumnHeader>
           <TableColumnHeader>
+            <Alignment>Right</Alignment>
           </TableColumnHeader>
           <TableColumnHeader>
+            <Alignment>Left</Alignment>
           </TableColumnHeader>
         </TableHeaders>
         <TableRowEntries>
@@ -1565,10 +1567,13 @@ $BackgroundColor
           <TableColumnHeader>
           </TableColumnHeader>
           <TableColumnHeader>
+            <Alignment>Right</Alignment>
           </TableColumnHeader>
           <TableColumnHeader>
+            <Alignment>Left</Alignment>
           </TableColumnHeader>
           <TableColumnHeader>
+            <Alignment>Left</Alignment>
           </TableColumnHeader>
         </TableHeaders>
         <TableRowEntries>
@@ -1602,10 +1607,13 @@ $BackgroundColor
           <TableColumnHeader>
           </TableColumnHeader>
           <TableColumnHeader>
+            <Alignment>Right</Alignment>
           </TableColumnHeader>
           <TableColumnHeader>
+            <Alignment>Left</Alignment>
           </TableColumnHeader>
           <TableColumnHeader>
+            <Alignment>Left</Alignment>
           </TableColumnHeader>
         </TableHeaders>
         <TableRowEntries>
