@@ -48,7 +48,13 @@ $IssueNumber,
 # If set, will get statistics associated with each change
 [Alias('Stat')]
 [switch]
-$Statistics
+$Statistics,
+
+# If provided, will search for specific strings within the changes of a log entry.
+# This is especially useful when finding references to or changes to a given function or structure.
+[Alias('Search')]
+[string]
+$SearchString
 )
 
 foreach ($dashToDoubleDash in 'after', 'before', 'author') {
@@ -84,4 +90,9 @@ if ($IssueNumber) {
             "\#$IssueNum\D"
         }
     }    
+}
+
+if ($SearchString) {
+    "-S"
+    $SearchString
 }
