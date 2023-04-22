@@ -8,15 +8,11 @@ Write-FormatView -TypeName Git.Diff.ChangeSet -AsControl -Name Git.Diff.ChangeSe
         $changeLines = @($_.Changes -split '(?>\r\n|\n)' -ne '')
         @(foreach ($changeLine in $changeLines) {
             [Environment]::NewLine
-            if ($changeLine.StartsWith('+')) {                
-                . $SetOutputStyle -ForegroundColor Success
-                $changeLine -replace "[\s\r\n]+$"
-                . $ClearOutputStyle
+            if ($changeLine.StartsWith('+')) {
+                Format-RichText -InputObject ($changeLine -replace "[\s\r\n]+$") -ForegroundColor Success
             }
-            elseif ($changeLine.StartsWith('-')) {            
-                . $SetOutputStyle -ForegroundColor Failure
-                $changeLine -replace "[\s\r\n]+$"
-                . $ClearOutputStyle
+            elseif ($changeLine.StartsWith('-')) {
+                Format-RichText -InputObject ($changeLine -replace "[\s\r\n]+$") -ForegroundColor Error                
             }
             else {                
                 $changeLine
