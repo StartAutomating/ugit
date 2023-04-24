@@ -4,6 +4,10 @@
   <Type>
     <Name>git.branch</Name>
     <Members>
+      <AliasProperty>
+        <Name>HasUpstream</Name>
+        <ReferencedMemberName>IsTracked</ReferencedMemberName>
+      </AliasProperty>
       <ScriptMethod>
         <Name>Delete</Name>
         <Script>
@@ -19,6 +23,19 @@ Pop-Location
 
                     </Script>
       </ScriptMethod>
+      <ScriptProperty>
+        <Name>IsTracked</Name>
+        <GetScriptBlock>
+                        Push-Location $this.GitRoot
+(
+    git remote |
+        git remote show |
+        Select-Object -ExpandProperty RemoteBranches |
+        Where-Object BranchName -like "*$($this.BranchName)"
+) -as [bool]
+Pop-Location
+                    </GetScriptBlock>
+      </ScriptProperty>
     </Members>
   </Type>
   <Type>
