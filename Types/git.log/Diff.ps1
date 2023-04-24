@@ -1,5 +1,6 @@
 Push-Location $this.GitRoot
-$logPaths = @($this.GitArgument -ne 'log' -notmatch '^\-')
+$logPaths = @($this.GitCommand -split '\s' -notmatch '^(?>git|log)$' -notmatch '^\-' -ne '')
+Write-Debug "Logging paths: $logPaths"
 foreach ($logPath in $logPaths) {
     if (Test-Path $logPath) {
         $relativeArgs = @("--relative", $logPath)
@@ -7,6 +8,7 @@ foreach ($logPath in $logPaths) {
     }
 }
 if (-not $logPaths) {
+    Write-Debug "Getting diff of commit hash: $($this.CommitHash)"
     git diff $this.CommitHash @args
 }
 Pop-Location

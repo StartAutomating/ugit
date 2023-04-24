@@ -4,6 +4,10 @@
   <Type>
     <Name>git.branch</Name>
     <Members>
+      <AliasProperty>
+        <Name>HasUpstream</Name>
+        <ReferencedMemberName>IsTracked</ReferencedMemberName>
+      </AliasProperty>
       <ScriptMethod>
         <Name>Delete</Name>
         <Script>
@@ -19,6 +23,19 @@ Pop-Location
 
                     </Script>
       </ScriptMethod>
+      <ScriptProperty>
+        <Name>IsTracked</Name>
+        <GetScriptBlock>
+                        Push-Location $this.GitRoot
+(
+    git remote |
+        git remote show |
+        Select-Object -ExpandProperty RemoteBranches |
+        Where-Object BranchName -like "*$($this.BranchName)"
+) -as [bool]
+Pop-Location
+                    </GetScriptBlock>
+      </ScriptProperty>
     </Members>
   </Type>
   <Type>
@@ -108,7 +125,8 @@ Pop-Location
         <Name>Diff</Name>
         <Script>
                         Push-Location $this.GitRoot
-$logPaths = @($this.GitArgument -ne 'log' -notmatch '^\-')
+$logPaths = @($this.GitCommand -split '\s' -notmatch '^(?&gt;git|log)$' -notmatch '^\-' -ne '')
+Write-Debug "Logging paths: $logPaths"
 foreach ($logPath in $logPaths) {
     if (Test-Path $logPath) {
         $relativeArgs = @("--relative", $logPath)
@@ -116,6 +134,7 @@ foreach ($logPath in $logPaths) {
     }
 }
 if (-not $logPaths) {
+    Write-Debug "Getting diff of commit hash: $($this.CommitHash)"
     git diff $this.CommitHash @args
 }
 Pop-Location
@@ -286,6 +305,159 @@ Pop-Location
 
                     </Script>
       </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
+    <Name>System.IO.FileInfo</Name>
+    <Members>
+      <AliasProperty>
+        <Name>Changes</Name>
+        <ReferencedMemberName>GitChanges</ReferencedMemberName>
+      </AliasProperty>
+      <AliasProperty>
+        <Name>Diff</Name>
+        <ReferencedMemberName>GitDiff</ReferencedMemberName>
+      </AliasProperty>
+      <AliasProperty>
+        <Name>GitDifference</Name>
+        <ReferencedMemberName>GitDiff</ReferencedMemberName>
+      </AliasProperty>
+      <AliasProperty>
+        <Name>GitHistory</Name>
+        <ReferencedMemberName>GitChanges</ReferencedMemberName>
+      </AliasProperty>
+      <AliasProperty>
+        <Name>GitLog</Name>
+        <ReferencedMemberName>GitLogs</ReferencedMemberName>
+      </AliasProperty>
+      <AliasProperty>
+        <Name>HasChanged</Name>
+        <ReferencedMemberName>GitDirty</ReferencedMemberName>
+      </AliasProperty>
+      <AliasProperty>
+        <Name>HasChanges</Name>
+        <ReferencedMemberName>GitDirty</ReferencedMemberName>
+      </AliasProperty>
+      <AliasProperty>
+        <Name>History</Name>
+        <ReferencedMemberName>GitChanges</ReferencedMemberName>
+      </AliasProperty>
+      <AliasProperty>
+        <Name>IsUnstaged</Name>
+        <ReferencedMemberName>GitDirty</ReferencedMemberName>
+      </AliasProperty>
+      <AliasProperty>
+        <Name>Logs</Name>
+        <ReferencedMemberName>GitLogs</ReferencedMemberName>
+      </AliasProperty>
+      <ScriptMethod>
+        <Name>GitChanges</Name>
+        <Script>
+                        &lt;#
+.SYNOPSIS
+    Get Changes for a given file
+.DESCRIPTION
+    Gets changes from git for a given file.  Can provide a timespan, series of numbers, date, or pair of dates.
+#&gt;
+
+$byDate = @()
+$byNumber = @()
+$byTimespan = @()
+foreach ($arg in $args) {
+    if ($arg -as [int] -ne $null) {
+        $byNumber += $arg -as [int]
+    }
+    elseif ($arg -is [object[]]) {
+        $byNumber += $arg
+    }
+    elseif ($arg -as [DateTime]) {        
+        $byDate+= $arg -as [DateTime]
+    }
+    elseif (
+        $arg -as [TimeSpan]
+    ) {
+        $byTimespan+= $arg -as [TimeSpan]
+    }    
+}
+
+Push-Location $this.Directory
+
+
+
+if ($byTimespan) {    
+    git log -Since ([DateTime]::Now - $byTimespan[0]) $this.Name 
+}
+elseif ($byDate) {
+    if ($byDate.Length -gt 1) {
+        $first, $second = $byDate | Sort-Object
+        git log -After $second -Before $first $this.Name
+    } elseif ($byDate.Length -eq 1) {
+        git log -Since $byDate[0] $this.Name 
+    } else {
+        throw "Can only list Changes between two dates"
+    }
+}
+elseif ($byNumber.Length) {
+    $maxNumber = $byNumber | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
+    $maxNumber = $maxNumber + 1
+    $anyNegative = @($byNumber -lt 0).Length
+    
+    if ($anyNegative) {                
+        @(git log $this.Name)[@($byNumber -as [int[]])]
+    } else {
+        @(git log -n $maxNumber $this.Name)[@($byNumber -as [int[]])]
+    }        
+}
+else {
+    git log $this.Name
+}
+
+Pop-Location
+                    </Script>
+      </ScriptMethod>
+      <ScriptProperty>
+        <Name>GitDiff</Name>
+        <GetScriptBlock>
+                        Push-Location $this.Directory
+(git log -n 1 $this.Name).Diff()
+Pop-Location
+
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>GitDirty</Name>
+        <GetScriptBlock>
+                        Push-Location $this.Directory
+$(git status $this.Name '-s') -as [bool]
+Pop-Location
+
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>GitLogs</Name>
+        <GetScriptBlock>
+                        Push-Location $this.Directory
+git log $this.Name
+Pop-Location
+
+                    </GetScriptBlock>
+      </ScriptProperty>
+    </Members>
+  </Type>
+  <Type>
+    <Name>ugit.extension</Name>
+    <Members>
+      <ScriptProperty>
+        <Name>Pattern</Name>
+        <GetScriptBlock>
+                        foreach ($attr in $this.ScriptBlock.Attributes) {
+    if ($attr -is [Management.Automation.ValidatePatternAttribute]) {
+        $attr.RegexPattern
+    }
+}
+
+                    </GetScriptBlock>
+      </ScriptProperty>
     </Members>
   </Type>
 </Types>

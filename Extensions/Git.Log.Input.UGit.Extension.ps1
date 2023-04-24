@@ -19,6 +19,11 @@
 [Management.Automation.Cmdlet("Use","Git")]
 [CmdletBinding(PositionalBinding=$false)]
 param(
+# The number of entries to get.
+[Alias('CommitNumber','N','Number')]
+[int]
+$NumberOfCommits,
+
 # Gets logs after a given date
 [DateTime]
 [Alias('Since')]
@@ -43,13 +48,44 @@ $CurrentBranch,
 [Parameter(ValueFromPipelineByPropertyName)]
 [Alias('ReferenceNumbers','ReferenceNumber','IssueNumbers','WorkItemID','WorkItemIDs')]
 [int[]]
-$IssueNumber
+$IssueNumber,
+
+# If set, will get statistics associated with each change
+[Alias('Stat')]
+[switch]
+$Statistics,
+
+# If provided, will search for specific strings within the change sets of a commit.
+# This is especially useful when finding references to or changes to a given function or structure.
+[Parameter(ValueFromPipelineByPropertyName)]
+[Alias('Search')]
+[string]
+$SearchString,
+
+# If provided, will search for specific patterns within the change sets of a commit.
+# This is especially useful when finding references to or changes to a given function or structure.
+[Parameter(ValueFromPipelineByPropertyName)]
+[Alias('Pattern')]
+[string]
+$SearchPattern
 )
+
+# If the number of commits was provided, it should come first.
+if ($NumberOfCommits) {
+    '-n'
+    "$NumberOfCommits"
+}
 
 foreach ($dashToDoubleDash in 'after', 'before', 'author') {
     if ($PSBoundParameters[$dashToDoubleDash]) {
         "--$dashToDoubleDash"
         "$($PSBoundParameters[$dashToDoubleDash])"
+    }
+}
+
+foreach ($dashToDoubleDashSwitch in 'Statistics') {
+    if ($PSBoundParameters[$dashToDoubleDash]) {
+        "--$dashToDoubleDashSwitch"
     }
 }
 
@@ -72,6 +108,15 @@ if ($IssueNumber) {
         } else {
             "\#$IssueNum\D"
         }
-    }
-    
+    }    
+}
+
+if ($SearchString) {
+    "-S"
+    $SearchString
+}
+
+if ($SearchPattern) {
+    "-G"
+    $SearchPattern
 }
