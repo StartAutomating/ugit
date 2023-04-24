@@ -1,5 +1,5 @@
 @{
-    ModuleVersion    = '0.3.8'
+    ModuleVersion    = '0.3.9'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -15,8 +15,26 @@ PrivateData   = @{
         Tags       = 'PowerShell', 'git'
         ProjectURI = 'https://github.com/StartAutomating/ugit'
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
-        BuildModule  = @('EZOut', 'Piecemeal', 'PipeScript')
+        BuildModule  = @('EZOut', 'Piecemeal', 'PipeScript', 'PSSVG')
         ReleaseNotes = @'
+## 0.3.9:
+
+* Adding ugit demo (Fixes #163)
+* Use-Git: Improving -Confirm (Fixes #165) and -WhatIf (Fixes #162)
+* git.log.input
+  * Adding -NumberOfCommits (#161/#156)
+  * Adding -SearchPattern (Fixes #158)
+  * Adding -SearchString (Fixes #157)
+  * Adding -Statistics (Fixes #155)
+* Adding git.branch IsTracked (Fixes #160)
+* Extending FileInfo for better git results (Fixes #153) (thanks @ninmonkey)
+* Adding ugit.extension formatting (Fixes #164)
+* git log formatting - right-aligning CommitMessage (Fixes #152) (thanks @ninmonkey)
+* git log .diff FileChange fix (Fixes #151)
+* Git Diff ChangeSet Formatting Fix (Fixes #150)
+* Updating workflow (Using GitLogger)
+
+
 ## 0.3.8:
 
 * Use-Git can now be extended (#140, #97), letting you add PowerShell parameters to any git command
