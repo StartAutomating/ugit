@@ -14,7 +14,7 @@ git log -n 1
     
     GitUserName    CommitDate          CommitMessage
     -----------    ----------          -------------
-    James Brundage 04/24/2023 00:27:47 Adding ugit demo (Fixes #163)
+    James Brundage 04/24/2023 00:37:52 Improving ugit demo (adding mock file) (Fixes #163)
     
     
  Don't believe me?  Just pipe to Get-Member
@@ -35,9 +35,9 @@ git log -n 1 |
     GetHashCode      Method         int GetHashCode()
     GetType          Method         type GetType()
     ToString         Method         string ToString()
-    CommitDate       NoteProperty   datetime CommitDate=04/24/2023 00:27:47
-    CommitHash       NoteProperty   string CommitHash=b992f1a2e79b06a73eb4d24c97091d78c7422fa2
-    CommitMessage    NoteProperty   string CommitMessage=Adding ugit demo (Fixes #163)
+    CommitDate       NoteProperty   datetime CommitDate=04/24/2023 00:37:52
+    CommitHash       NoteProperty   string CommitHash=caf98ef79777d30f283eac04dc1e76222b8dd2ef
+    CommitMessage    NoteProperty   string CommitMessage=Improving ugit demo (adding mock file) (Fixes #163)
     GitCommand       NoteProperty   string GitCommand=git log -n 1 
     GitOutputLines   NoteProperty   string[] GitOutputLines=System.String[]
     GitRoot          NoteProperty   string GitRoot=/home/runner/work/ugit/ugit
@@ -157,16 +157,28 @@ git status
     Nothing to commit, working tree clean
     
     
- And even get untracked files (as files!)
+ Let's make a little file, so that there are some changes
 
     
 
 ```PowerShell
-git status |
-    Where-Object Untracked | 
-    Select-Object -Expand Untracked
+"hello world" | Set-Content .\hello.txt
 ```
 
+    
+
+```PowerShell
+# Now we can see our file in the status's .Untracked property (as fileinfo objects)
+(git status).Untracked
+```
+
+    
+        Directory: /home/runner/work/ugit/ugit
+    
+    UnixMode   User             Group                 LastWriteTime           Size Name
+    --------   ----             -----                 -------------           ---- ----
+    -rw-r--r-- runner           docker             04/24/2023 00:39             12 hello.txt
+    
     
  We can git diffs
 
@@ -186,6 +198,15 @@ git diff
 ```
 
     
+ Let's clean up our file
+
+    
+
+```PowerShell
+Remove-Item .\hello.txt
+```
+
+    
 ### 2. ugitting cooler
 
  ugit has started to extend the parameters of git
@@ -202,6 +223,9 @@ git log -After ([datetime]::Now.AddMonths(-1))
     
     GitUserName     CommitDate          CommitMessage
     -----------     ----------          -------------
+    James Brundage  04/24/2023 00:37:52 Improving ugit demo (adding mock file) (Fixes #163)
+    StartAutomating 04/24/2023 00:29:58 Adding ugit demo (Fixes #163)
+    StartAutomating 04/24/2023 00:29:51 Adding ugit demo (Fixes #163)
     James Brundage  04/24/2023 00:27:47 Adding ugit demo (Fixes #163)
     StartAutomating 04/24/2023 00:26:25 Adding git.branch IsTracked (Fixes #160)
     James Brundage  04/24/2023 00:24:29 Adding git.branch IsTracked (Fixes #160)
@@ -595,9 +619,3 @@ Get-UGitExtension -CommandName Use-Git
     
     
  Each extension returns a property bag, which can then be extended within ugit.types.ps1xml and formatted within a ugit.format.ps1xml.
-
-    
- In this way, we can elegantly parse anything git throws at us, and leave the rest alone.
-
-    
- ugit it?
