@@ -588,6 +588,9 @@ jobs:
         uses: StartAutomating/Piecemeal@main
       - name: UseEZOut
         uses: StartAutomating/EZOut@master
+      - name: ShowDemo
+        uses: StartAutomating/ShowDemo@main
+        id: ShowDemo
       - name: Run HelpOut
         uses: StartAutomating/HelpOut@master
         id: HelpOut
