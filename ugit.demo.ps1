@@ -30,10 +30,11 @@ git branch |
 # We can also git status
 git status
 
-# And even get untracked files (as files!)
-git status |
-    Where-Object Untracked | 
-    Select-Object -Expand Untracked
+# Let's make a little file, so that there are some changes
+"hello world" | Set-Content .\hello.txt
+
+# Now we can see our file in the status's .Untracked property (as fileinfo objects)
+(git status).Untracked
     
 # We can git diffs
 
@@ -42,6 +43,9 @@ git diff
 # And get files with differences this way, too
 
 (git diff).File
+
+# Let's clean up our file
+Remove-Item .\hello.txt
 
 # 2. ugitting cooler
 
