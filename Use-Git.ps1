@@ -53,9 +53,11 @@
     )
 
     dynamicParam {
+        # To get dynamic parameters, we need to look at our invocation
         $myInv = $MyInvocation
 
-        $callstackPeek = @(Get-PSCallStack)[1]
+        # and peek up the callstack.
+        $callstackPeek = @(Get-PSCallStack)[-1]
         $callingContext =
             if ($callstackPeek.InvocationInfo.MyCommand.ScriptBlock) {
                 @($callstackPeek.InvocationInfo.MyCommand.ScriptBlock.Ast.FindAll({
@@ -66,24 +68,72 @@
                 },$true))[0]
             }
         
+        # This will give us something to validate against, so we don't get dynamic parameters for everything
         $ToValidate = 
             if (-not $callingContext -and 
                 $callstackPeek.Command -like 'TabExpansion*' -and 
                 $callstackPeek.InvocationInfo.BoundParameters.InputScript
                 ) {
                 $callstackPeek.InvocationInfo.BoundParameters.InputScript.ToString()
-            } else {
+            } 
+            elseif ($callingContext) {
                 $callingContext.CommandElements -join ' '
             }
+            elseif ($myInv.Line) {
+                if ($myInv.OffsetInLine -eq 1) {
+                    $myInv.Line
+                } else {
+                    $myInv.Line.Substring($myInv.OffsetInLine)
+                }                
+            }
+        
+        # If there's nothing to validate, there are no dynamic parameters.
+        if (-not $ToValidate) { return }
 
+        # Get dynamic parameters that are valid for this command
         $dynamicParameterSplat = [Ordered]@{
             CommandName='Use-Git'
             ValidateInput=$ToValidate
             DynamicParameter=$true
             DynamicParameterSetName='__AllParameterSets'
             NoMandatoryDynamicParameter=$true
+        }        
+        $myDynamicParameters = Get-UGitExtension @dynamicParameterSplat
+        if (-not $myDynamicParameters) { return }
+        
+        # Here's where things get a little tricky.
+        # we want to make as much muscle memory work as possible, so we don't wany any dynamic parameter that is not "fully" mapped.
+        # So we need to walk over each command element        
+        foreach ($commandElement in $callingContext.CommandElements) {
+            if (-not $commandElement.parameterName) { continue } # that is a Powershell parameter
+            foreach ($dynamicParam in @($myDynamicParameters.Values)) {
+                if (
+                    (
+                        # If it started with this name
+                        $dynamicParam.Name.StartsWith($commandElement.parameterName, 'CurrentCultureIgnoreCase') -and 
+                        # but was not the full parameter name, we'll remove it
+                        $dynamicParam.Name -ne $commandElement.parameterName
+                    ) -or # otherwise                         
+                    (                
+                        # If the dynamic parameter had aliases        
+                        $dynamicParam.Attributes.AliasNames -and
+                        $(foreach ($aliasName in $dynamicParam.Attributes.AliasNames) {
+                            if (-not $aliasName) { continue }
+                            # and any of those aliases starts with the parameter name
+                            if ($aliasName.StartsWith($commandElement.parameterName, 'CurrentCultureIgnoreCase') -and 
+                                # and is not the full parameter name
+                                $aliasName -ne $commandElement.parameterName) {
+                                # we also want to remove it
+                                $true; break
+                            }
+                        })                             
+                    )
+                ) {
+                    $null = $myDynamicParameters.Remove($dynamicParam.Name)
+                }
+            }
         }
-        Get-UGitExtension @dynamicParameterSplat
+        $myDynamicParameters    
     }
 
     begin {
@@ -117,21 +167,22 @@
             $gitArgsArray.AddRange($GitArgument)
         }
 
-        foreach ($commandElement in $callingContext.CommandElements) {
-            if ($commandElement.parameterName -in 'd', 'v', 'c') {
+        :nextCommandElement foreach ($commandElement in $callingContext.CommandElements) {            
+            if (-not $commandElement.parameterName) { continue }
+            $paramName = $commandElement.parameterName                        
+            if ($paramName -in 'd', 'c', 'v') {
                 # Insert the argument into the list
                 $gitArgsArray.Insert(
-                    $argumentNumber - 1, # ( don't forget to subtract one, because the command is an element)
+                    $argumentNumber - 1, # ( don't forget to subtract one, because the command name is an element)
                     $commandElement.Extent.ToString()
                 )
-                if ($commandElement.parameterName -in 'd', 'c', 'v') {
-                    if ($commandElement.parameterName -eq 'c') {
-                        $ConfirmPreference = 'none' # so set confirm preference to none
-                    }
-                    $VerbosePreference = 'silentlyContinue'
-                    $DebugPreference   = 'silentlyContinue'
+                if ($paramName -eq 'c') {
+                    $ConfirmPreference = 'none' # so set confirm preference to none
                 }
+                $VerbosePreference = 'silentlyContinue'
+                $DebugPreference   = 'silentlyContinue'
             }
+        
             $argumentNumber++
         }
 
