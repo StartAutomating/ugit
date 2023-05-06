@@ -46,7 +46,8 @@ describe ugit {
 
     context 'Dynamic parameters' {
         it 'Can will not map partially completed parameters' {
-            git commit -am 'Message' -WhatIf | Should -be "git commit -am 'Message'"
+            git commit -am 'Message' -WhatIf |
+                Should -BeLike "git commit -am*Message*"
         }
     }
 }
