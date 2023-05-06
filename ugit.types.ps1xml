@@ -77,6 +77,14 @@ Pop-Location
                     </Script>
       </ScriptMethod>
       <ScriptMethod>
+        <Name>Push</Name>
+        <Script>
+                        Push-Location $this.GitRoot
+git push @args
+Pop-Location
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
         <Name>UpdateMessage</Name>
         <Script>
                         param(
