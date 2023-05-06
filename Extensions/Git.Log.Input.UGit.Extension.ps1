@@ -83,12 +83,6 @@ foreach ($dashToDoubleDash in 'after', 'before', 'author') {
     }
 }
 
-foreach ($dashToDoubleDashSwitch in 'Statistics') {
-    if ($PSBoundParameters[$dashToDoubleDash]) {
-        "--$dashToDoubleDashSwitch"
-    }
-}
-
 if ($CurrentBranch) {        
     $headbranch        = git remote | git remote show | Select-Object -ExpandProperty HeadBranch
     $currentBranchName = git branch | Where-Object IsCurrentBranch
@@ -119,4 +113,8 @@ if ($SearchString) {
 if ($SearchPattern) {
     "-G"
     $SearchPattern
+}
+
+if ($Statistics) {
+    '--stat'
 }
