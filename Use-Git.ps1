@@ -101,7 +101,7 @@
         # we want to make as much muscle memory work as possible, so we don't wany any dynamic parameter that is not "fully" mapped.
         # So we need to walk over each command element.
         
-        if (-not $callingContext -and -not $callstackPeek.Command -like 'TabExpansion*') {
+        if (-not ($callingContext -or ($callstackPeek.Command -like 'TabExpansion*'))) {
             # (bonus points - within Pester, we cannot callstack peek effectively, and need to use the invocation line)
             # Therefore, when testing dynamic parameters, assign to a variable (because parenthesis and pipes may make this an invalid ScriptBlock)
             $callingContext = try {
