@@ -45,6 +45,9 @@ describe ugit {
 
 
     context 'Dynamic parameters' {
+        it 'Can map dynamic parameters' {
+            git log -Statistics -WhatIf | Should -BeLike 'git log --stat*'
+        }
         it 'Can will not map partially completed parameters' {
             git commit -am 'Message' -WhatIf |
                 Should -BeLike "git commit -am*Message*"
