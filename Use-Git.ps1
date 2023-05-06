@@ -79,12 +79,8 @@
             elseif ($callingContext) {
                 $callingContext.CommandElements -join ' '
             }
-            elseif ($myInv.Line) {
-                if ($myInv.OffsetInLine -eq 1) {
-                    $myInv.Line
-                } else {
-                    $myInv.Line.Substring($myInv.OffsetInLine)
-                }                
+            elseif ($myInv.Line) {                
+                $myInv.Line.Substring($myInv.OffsetInLine - 1)
             }
         
         # If there's nothing to validate, there are no dynamic parameters.
@@ -103,7 +99,15 @@
         
         # Here's where things get a little tricky.
         # we want to make as much muscle memory work as possible, so we don't wany any dynamic parameter that is not "fully" mapped.
-        # So we need to walk over each command element        
+        # So we need to walk over each command element.
+        
+        if (-not $callingContext -and -not $callstackPeek.Command -like 'TabExpansion*') {
+            # (bonus points - within Pester, we cannot callstack peek effectively, and need to use the invocation line)
+            # Therefore, when testing dynamic parameters, assign to a variable (because parenthesis and pipes may make this an invalid ScriptBlock)
+            $callingContext = try {
+                    [scriptblock]::Create($ToValidate).Ast.EndBlock.Statements[0].PipelineElements[0]
+            } catch { $null}
+        }
         foreach ($commandElement in $callingContext.CommandElements) {
             if (-not $commandElement.parameterName) { continue } # that is a Powershell parameter
             foreach ($dynamicParam in @($myDynamicParameters.Values)) {
@@ -217,6 +221,8 @@
             return # we're done.
         }
 
+        $pipedInDirectories = $false
+
         $inputObject =
             @(foreach ($in in $AllInputObjects) {
                 if ($in -is [IO.FileInfo]) { # If the input is a file
@@ -235,11 +241,13 @@
                             $in.Fullname # and adding this file name.
                     }
                 } elseif ($in -is [IO.DirectoryInfo]) {
+                    $pipedInDirectories = $true
                     $directories += Get-Item -LiteralPath $in.Fullname # If the input was a directory, keep track of it.
                 } else {
                     # Otherwise, see if it was a path and it was a directory
                     if ((Test-Path $in -ErrorAction SilentlyContinue) -and
                         (Get-Item $in -ErrorAction SilentlyContinue) -is [IO.DirectoryInfo]) {
+                        $pipedInDirectories = $true
                         $directories += Get-Item $in
                     } else {
 
@@ -318,8 +326,10 @@
             
             # Walk over each input for each directory
             :nextInput foreach ($inObject in $InputDirectories[$dir]) {
-                # Continue if there was no input and we were not the first step of the pipeline.
-                if (-not $inObject -and $myInv.PipelinePosition -gt 1) { continue }                
+                # Continue if there was no input and we were not the first step of the pipeline that was not a directory.
+                if (-not $inObject -and (
+                        $myInv.PipelinePosition -gt 1
+                ) -and -not $pipedInDirectories) { continue }                
                 
                 $AllGitArgs = @(@($GitArgument) + $inObject)    # Then we collect the combined arguments
 
