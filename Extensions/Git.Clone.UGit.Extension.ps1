@@ -53,7 +53,7 @@ end {
         $gitUrl = $gitArgument | Where-Object { $_ -like '*.git' -and $_ -as [uri]}
         [PSCustomObject]@{
             PSTypeName = 'git.clone'
-            GitRoot    = $destPath
+            GitRoot    = "$destPath"
             Directory  = Get-Item -LiteralPath $destPath
             GitUrl     = $gitUrl
         }
