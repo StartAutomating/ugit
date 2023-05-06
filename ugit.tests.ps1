@@ -42,4 +42,11 @@ describe ugit {
             Pop-Location
         }
     }
+
+
+    context 'Dynamic parameters' {
+        it 'Can will not map partially completed parameters' {
+            git commit -am 'Message' -WhatIf | Should -be "git commit -am 'Message'"
+        }
+    }
 }
