@@ -34,7 +34,3 @@ process {
         Category = $category
     }
 }
-
-end {
-
-}
