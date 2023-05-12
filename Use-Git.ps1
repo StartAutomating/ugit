@@ -35,7 +35,7 @@
     .NOTES
         Use-Git will generate two events before git runs.  They will have the source identifiers of "Use-Git" and "Use-Git $GitArgument"
     #>
-    [Alias('git')]
+    [Alias('git','realgit','gitreal')]
     [CmdletBinding(PositionalBinding=$false,SupportsShouldProcess,ConfirmImpact='Low')]
     param(
     # Any arguments passed to git.  All positional arguments will automatically be passed to -GitArgument.
@@ -141,6 +141,7 @@
     }
 
     begin {
+        $myInv = $MyInvocation
         if (-not $script:CachedGitCmd) { # If we haven't cahced the git command
             # go get it.
             $script:CachedGitCmd = $ExecutionContext.SessionState.InvokeCommand.GetCommand('git', 'Application')
@@ -172,7 +173,7 @@
         }
 
         :nextCommandElement foreach ($commandElement in $callingContext.CommandElements) {            
-            if (-not $commandElement.parameterName) { continue }
+            if (-not $commandElement.parameterName) { $argumentNumber++; continue }
             $paramName = $commandElement.parameterName                        
             if ($paramName -in 'd', 'c', 'v') {
                 # Insert the argument into the list
@@ -405,30 +406,76 @@
                     Write-Progress -PercentComplete $percentageComplete -Status "git $allGitArgs " -Activity "$($dir) " -Id $progId
                 }
 
+                # If -WhatIf was passed, $WhatIfPreference will be true.
                 if ($WhatIfPreference) {
+                    # If that's the case, return the command line we would execute.
                     "git $AllGitArgs"
                 }
 
-                # If we have indicated we do not care about -Confirmation, don't prompt
+                # otherwise, if we have indicated we do not want to -Confirm, don't prompt.
                 elseif (($ConfirmPreference -eq 'None' -and (-not $paramCopy.Confirm)) -or
-                    $PSCmdlet.ShouldProcess("$pwd : git $allGitArgs") # otherwise, as for confirmation to run.
+                    $PSCmdlet.ShouldProcess("$pwd : git $allGitArgs") # otherwise, prompt for confirmation to run.
                 ) {
                     $eventSourceIds = @("Use-Git","Use-Git $allGitArgs")
-                    $messageData = @{
-                        GitRoot = "$pwd"
+                    $messageData = [Ordered]@{
                         GitCommand = @(@("git") + $AllGitArgs) -join ' '
+                        GitRoot = "$pwd"
                     }
+
+                    $isPipedFrom = $myInv.PipelinePosition -lt $myInv.PipelineLength 
+                    $isAssigned  = $null
+
+                    if (-not $isPipedFrom) {
+                        if (-not $callstackPeek) {
+                            $myCallstack = @(Get-PSCallStack)
+                            $callstackPeek = $myCallstack[-1]
+                        }
+                        
+                        if (-not $callingContext) {
+                            $callingContext =
+                                if ($callstackPeek.InvocationInfo.MyCommand.ScriptBlock) {
+                                    @($callstackPeek.InvocationInfo.MyCommand.ScriptBlock.Ast.FindAll({
+                                        param($ast)
+                                            $ast.Extent.StartLineNumber -eq $myInv.ScriptLineNumber -and
+                                            $ast.Extent.StartColumnNumber -eq $myInv.OffsetInLine -and
+                                            $ast -is [Management.Automation.Language.CommandAst]
+                                    },$true))[0]
+                                }
+                        }
+
+                        $isAssigned =
+                            $(
+                                if ($myCallstack.Count -gt 2) {
+                                    $true 
+                                } else {
+                                    do {
+                                        $callingContext = $callingContext.Parent
+                                        if ($callingContext -and $callingContext.GetType().Name -in 'Assignment','SubExpressionAst','ArrayExpressionAst', 'ArrayLiteralAst') {
+                                            $true
+                                            break
+                                        }
+                                    } while ($callingContext.Parent)
+                                }
+                            )
+                        
+                    }
+
                     $null =
                         foreach ($sourceIdentifier in $eventSourceIds) {
                             New-Event -SourceIdentifier $sourceIdentifier -MessageData $messageData
                         }
-                    & $script:CachedGitCmd @AllGitArgs *>&1       | # Then we run git, combining all streams into output.
-                                                                    # then pipe to Out-Git, which will
-                        Out-Git @OutGitParams # output git as objects.
 
-                        # These objects are decorated for the PowerShell Extended Type System.
-                        # This makes them easy to extend and customize their display.
-                        # If Out-Git finds one or more extensions to run, these can parse the output.
+                    if ($myInv.InvocationName -in 'realgit', 'gitreal') {
+                        & $script:CachedGitCmd @AllGitArgs *>&1
+                    } else {
+                        & $script:CachedGitCmd @AllGitArgs *>&1       | # Then we run git, combining all streams into output.
+                                                                        # then pipe to Out-Git, which will
+                            Out-Git @OutGitParams # output git as objects.
+
+                            # These objects are decorated for the PowerShell Extended Type System.
+                            # This makes them easy to extend and customize their display.
+                            # If Out-Git finds one or more extensions to run, these can parse the output.
+                    }
                 }
 
             }
