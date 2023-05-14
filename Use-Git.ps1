@@ -35,7 +35,7 @@
     .NOTES
         Use-Git will generate two events before git runs.  They will have the source identifiers of "Use-Git" and "Use-Git $GitArgument"
     #>
-    [Alias('git')]
+    [Alias('git','realgit','gitreal')]
     [CmdletBinding(PositionalBinding=$false,SupportsShouldProcess,ConfirmImpact='Low')]
     param(
     # Any arguments passed to git.  All positional arguments will automatically be passed to -GitArgument.
@@ -53,9 +53,11 @@
     )
 
     dynamicParam {
+        # To get dynamic parameters, we need to look at our invocation
         $myInv = $MyInvocation
 
-        $callstackPeek = @(Get-PSCallStack)[1]
+        # and peek up the callstack.
+        $callstackPeek = @(Get-PSCallStack)[-1]
         $callingContext =
             if ($callstackPeek.InvocationInfo.MyCommand.ScriptBlock) {
                 @($callstackPeek.InvocationInfo.MyCommand.ScriptBlock.Ast.FindAll({
@@ -66,27 +68,80 @@
                 },$true))[0]
             }
         
+        # This will give us something to validate against, so we don't get dynamic parameters for everything
         $ToValidate = 
             if (-not $callingContext -and 
                 $callstackPeek.Command -like 'TabExpansion*' -and 
                 $callstackPeek.InvocationInfo.BoundParameters.InputScript
                 ) {
                 $callstackPeek.InvocationInfo.BoundParameters.InputScript.ToString()
-            } else {
+            } 
+            elseif ($callingContext) {
                 $callingContext.CommandElements -join ' '
             }
+            elseif ($myInv.Line) {                
+                $myInv.Line.Substring($myInv.OffsetInLine - 1)
+            }
+        
+        # If there's nothing to validate, there are no dynamic parameters.
+        if (-not $ToValidate) { return }
 
+        # Get dynamic parameters that are valid for this command
         $dynamicParameterSplat = [Ordered]@{
             CommandName='Use-Git'
             ValidateInput=$ToValidate
             DynamicParameter=$true
             DynamicParameterSetName='__AllParameterSets'
             NoMandatoryDynamicParameter=$true
+        }        
+        $myDynamicParameters = Get-UGitExtension @dynamicParameterSplat
+        if (-not $myDynamicParameters) { return }
+        
+        # Here's where things get a little tricky.
+        # we want to make as much muscle memory work as possible, so we don't wany any dynamic parameter that is not "fully" mapped.
+        # So we need to walk over each command element.
+        
+        if (-not ($callingContext -or ($callstackPeek.Command -like 'TabExpansion*'))) {
+            # (bonus points - within Pester, we cannot callstack peek effectively, and need to use the invocation line)
+            # Therefore, when testing dynamic parameters, assign to a variable (because parenthesis and pipes may make this an invalid ScriptBlock)
+            $callingContext = try {
+                    [scriptblock]::Create($ToValidate).Ast.EndBlock.Statements[0].PipelineElements[0]
+            } catch { $null}
         }
-        Get-UGitExtension @dynamicParameterSplat
+        foreach ($commandElement in $callingContext.CommandElements) {
+            if (-not $commandElement.parameterName) { continue } # that is a Powershell parameter
+            foreach ($dynamicParam in @($myDynamicParameters.Values)) {
+                if (
+                    (
+                        # If it started with this name
+                        $dynamicParam.Name.StartsWith($commandElement.parameterName, 'CurrentCultureIgnoreCase') -and 
+                        # but was not the full parameter name, we'll remove it
+                        $dynamicParam.Name -ne $commandElement.parameterName
+                    ) -or # otherwise                         
+                    (                
+                        # If the dynamic parameter had aliases        
+                        $dynamicParam.Attributes.AliasNames -and
+                        $(foreach ($aliasName in $dynamicParam.Attributes.AliasNames) {
+                            if (-not $aliasName) { continue }
+                            # and any of those aliases starts with the parameter name
+                            if ($aliasName.StartsWith($commandElement.parameterName, 'CurrentCultureIgnoreCase') -and 
+                                # and is not the full parameter name
+                                $aliasName -ne $commandElement.parameterName) {
+                                # we also want to remove it
+                                $true; break
+                            }
+                        })                             
+                    )
+                ) {
+                    $null = $myDynamicParameters.Remove($dynamicParam.Name)
+                }
+            }
+        }
+        $myDynamicParameters    
     }
 
     begin {
+        $myInv = $MyInvocation
         if (-not $script:CachedGitCmd) { # If we haven't cahced the git command
             # go get it.
             $script:CachedGitCmd = $ExecutionContext.SessionState.InvokeCommand.GetCommand('git', 'Application')
@@ -117,21 +172,22 @@
             $gitArgsArray.AddRange($GitArgument)
         }
 
-        foreach ($commandElement in $callingContext.CommandElements) {
-            if ($commandElement.parameterName -in 'd', 'v', 'c') {
+        :nextCommandElement foreach ($commandElement in $callingContext.CommandElements) {            
+            if (-not $commandElement.parameterName) { $argumentNumber++; continue }
+            $paramName = $commandElement.parameterName                        
+            if ($paramName -in 'd', 'c', 'v') {
                 # Insert the argument into the list
                 $gitArgsArray.Insert(
-                    $argumentNumber - 1, # ( don't forget to subtract one, because the command is an element)
+                    $argumentNumber - 1, # ( don't forget to subtract one, because the command name is an element)
                     $commandElement.Extent.ToString()
                 )
-                if ($commandElement.parameterName -in 'd', 'c', 'v') {
-                    if ($commandElement.parameterName -eq 'c') {
-                        $ConfirmPreference = 'none' # so set confirm preference to none
-                    }
-                    $VerbosePreference = 'silentlyContinue'
-                    $DebugPreference   = 'silentlyContinue'
+                if ($paramName -eq 'c') {
+                    $ConfirmPreference = 'none' # so set confirm preference to none
                 }
+                $VerbosePreference = 'silentlyContinue'
+                $DebugPreference   = 'silentlyContinue'
             }
+        
             $argumentNumber++
         }
 
@@ -166,6 +222,8 @@
             return # we're done.
         }
 
+        $pipedInDirectories = $false
+
         $inputObject =
             @(foreach ($in in $AllInputObjects) {
                 if ($in -is [IO.FileInfo]) { # If the input is a file
@@ -184,11 +242,13 @@
                             $in.Fullname # and adding this file name.
                     }
                 } elseif ($in -is [IO.DirectoryInfo]) {
+                    $pipedInDirectories = $true
                     $directories += Get-Item -LiteralPath $in.Fullname # If the input was a directory, keep track of it.
                 } else {
                     # Otherwise, see if it was a path and it was a directory
                     if ((Test-Path $in -ErrorAction SilentlyContinue) -and
                         (Get-Item $in -ErrorAction SilentlyContinue) -is [IO.DirectoryInfo]) {
+                        $pipedInDirectories = $true
                         $directories += Get-Item $in
                     } else {
 
@@ -267,8 +327,10 @@
             
             # Walk over each input for each directory
             :nextInput foreach ($inObject in $InputDirectories[$dir]) {
-                # Continue if there was no input and we were not the first step of the pipeline.
-                if (-not $inObject -and $myInv.PipelinePosition -gt 1) { continue }                
+                # Continue if there was no input and we were not the first step of the pipeline that was not a directory.
+                if (-not $inObject -and (
+                        $myInv.PipelinePosition -gt 1
+                ) -and -not $pipedInDirectories) { continue }                
                 
                 $AllGitArgs = @(@($GitArgument) + $inObject)    # Then we collect the combined arguments
 
@@ -344,30 +406,38 @@
                     Write-Progress -PercentComplete $percentageComplete -Status "git $allGitArgs " -Activity "$($dir) " -Id $progId
                 }
 
+                # If -WhatIf was passed, $WhatIfPreference will be true.
                 if ($WhatIfPreference) {
+                    # If that's the case, return the command line we would execute.
                     "git $AllGitArgs"
                 }
 
-                # If we have indicated we do not care about -Confirmation, don't prompt
+                # otherwise, if we have indicated we do not want to -Confirm, don't prompt.
                 elseif (($ConfirmPreference -eq 'None' -and (-not $paramCopy.Confirm)) -or
-                    $PSCmdlet.ShouldProcess("$pwd : git $allGitArgs") # otherwise, as for confirmation to run.
+                    $PSCmdlet.ShouldProcess("$pwd : git $allGitArgs") # otherwise, prompt for confirmation to run.
                 ) {
                     $eventSourceIds = @("Use-Git","Use-Git $allGitArgs")
-                    $messageData = @{
-                        GitRoot = "$pwd"
+                    $messageData = [Ordered]@{
                         GitCommand = @(@("git") + $AllGitArgs) -join ' '
-                    }
+                        GitRoot = "$pwd"
+                    }                    
+
                     $null =
                         foreach ($sourceIdentifier in $eventSourceIds) {
                             New-Event -SourceIdentifier $sourceIdentifier -MessageData $messageData
                         }
-                    & $script:CachedGitCmd @AllGitArgs *>&1       | # Then we run git, combining all streams into output.
-                                                                    # then pipe to Out-Git, which will
-                        Out-Git @OutGitParams # output git as objects.
 
-                        # These objects are decorated for the PowerShell Extended Type System.
-                        # This makes them easy to extend and customize their display.
-                        # If Out-Git finds one or more extensions to run, these can parse the output.
+                    if ($myInv.InvocationName -in 'realgit', 'gitreal') {
+                        & $script:CachedGitCmd @AllGitArgs *>&1
+                    } else {
+                        & $script:CachedGitCmd @AllGitArgs *>&1       | # Then we run git, combining all streams into output.
+                                                                        # then pipe to Out-Git, which will
+                            Out-Git @OutGitParams # output git as objects.
+
+                            # These objects are decorated for the PowerShell Extended Type System.
+                            # This makes them easy to extend and customize their display.
+                            # If Out-Git finds one or more extensions to run, these can parse the output.
+                    }
                 }
 
             }

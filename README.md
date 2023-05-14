@@ -3,10 +3,12 @@
 <a href='https://www.powershellgallery.com/packages/ugit/'>
 <img src='https://img.shields.io/powershellgallery/dt/ugit' />
 </a>
+<br/>
+<a href='https://github.com/sponsors/StartAutomating'>❤️</a>
+<a href='https://github.com/StartAutomating/ugit/stargazers'>⭐</a>
 </div>
 
-Updated Git: A powerful PowerShell wrapper for git that lets you extend git, automate multiple repos, and output git as objects.
-
+ugit (Updated Git) is a powerful PowerShell module for git that lets you: output git as objects, automate multiple repos, and extend git.
 
 ## What is ugit?
 
@@ -470,4 +472,9 @@ ugit also allows you to extend the input for git.
 
 
 
+## What uses ugit?
+
+ugit is part of the core of [GitLogger](https://gitlogger.com/).
+
+GitLogger uses ugit to turn logs into objects and then provides standardized metrics and a way to query your logs.
 

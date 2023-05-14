@@ -42,4 +42,17 @@ describe ugit {
             Pop-Location
         }
     }
+
+    context 'Dynamic parameters' {        
+        it 'Can map dynamic parameters' {
+            $whatIf = git log -NumberOfCommits 1 -WhatIf
+            $whatIf |
+                Should -Belike 'git log -n 1*'
+        }
+        it 'Can will not map partially completed parameters' {
+            $whatIf = git commit -am 'Message' -WhatIf
+            $whatIf |
+                Should -BeLike "git commit -am*Message*"
+        }        
+    }
 }

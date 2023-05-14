@@ -49,12 +49,12 @@ end {
 
 
     if ($dest) {
-        $destPath = Join-Path $pwd $dest
+        $destPath = $ExecutionContext.SessionState.Path.GetResolvedPSPathFromPSPath($dest)
         $gitUrl = $gitArgument | Where-Object { $_ -like '*.git' -and $_ -as [uri]}
         [PSCustomObject]@{
             PSTypeName = 'git.clone'
-            GitRoot    = $destPath
-            Directory  = Get-Item -Path $destPath
+            GitRoot    = "$destPath"
+            Directory  = Get-Item -LiteralPath $destPath
             GitUrl     = $gitUrl
         }
     } else {
