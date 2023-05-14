@@ -469,3 +469,11 @@ ugit also allows you to extend the input for git.
 
  
 * [Git Log Input](Git.Log.Input-Extension.md)
+
+
+
+## What uses ugit?
+
+ugit is part of the core of [GitLogger](https://gitlogger.com/).
+
+GitLogger uses ugit to turn logs into objects and then provides standardized metrics and a way to query your logs.
