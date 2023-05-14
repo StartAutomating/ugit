@@ -420,45 +420,7 @@
                     $messageData = [Ordered]@{
                         GitCommand = @(@("git") + $AllGitArgs) -join ' '
                         GitRoot = "$pwd"
-                    }
-
-                    $isPipedFrom = $myInv.PipelinePosition -lt $myInv.PipelineLength 
-                    $isAssigned  = $null
-
-                    if (-not $isPipedFrom) {
-                        if (-not $callstackPeek) {
-                            $myCallstack = @(Get-PSCallStack)
-                            $callstackPeek = $myCallstack[-1]
-                        }
-                        
-                        if (-not $callingContext) {
-                            $callingContext =
-                                if ($callstackPeek.InvocationInfo.MyCommand.ScriptBlock) {
-                                    @($callstackPeek.InvocationInfo.MyCommand.ScriptBlock.Ast.FindAll({
-                                        param($ast)
-                                            $ast.Extent.StartLineNumber -eq $myInv.ScriptLineNumber -and
-                                            $ast.Extent.StartColumnNumber -eq $myInv.OffsetInLine -and
-                                            $ast -is [Management.Automation.Language.CommandAst]
-                                    },$true))[0]
-                                }
-                        }
-
-                        $isAssigned =
-                            $(
-                                if ($myCallstack.Count -gt 2) {
-                                    $true 
-                                } else {
-                                    do {
-                                        $callingContext = $callingContext.Parent
-                                        if ($callingContext -and $callingContext.GetType().Name -in 'Assignment','SubExpressionAst','ArrayExpressionAst', 'ArrayLiteralAst') {
-                                            $true
-                                            break
-                                        }
-                                    } while ($callingContext.Parent)
-                                }
-                            )
-                        
-                    }
+                    }                    
 
                     $null =
                         foreach ($sourceIdentifier in $eventSourceIds) {
