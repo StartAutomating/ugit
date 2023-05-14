@@ -3,6 +3,7 @@
 <a href='https://www.powershellgallery.com/packages/ugit/'>
 <img src='https://img.shields.io/powershellgallery/dt/ugit' />
 </a>
+<br/>
 <a href='https://github.com/sponsors/StartAutomating'>❤️</a>
 <a href='https://github.com/StartAutomating/ugit/stargazers'>⭐</a>
 </div>
