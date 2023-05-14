@@ -2,6 +2,7 @@
 <img src='assets/ugit.svg' alt='ugit' />
 <a href='https://www.powershellgallery.com/packages/ugit/'>
 <img src='https://img.shields.io/powershellgallery/dt/ugit' />
+<img src="https://github.com/sponsors/StartAutomating/button" />
 </a>
 </div>
 
