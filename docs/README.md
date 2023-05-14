@@ -2,8 +2,8 @@
 <img src='assets/ugit.svg' alt='ugit' />
 <a href='https://www.powershellgallery.com/packages/ugit/'>
 <img src='https://img.shields.io/powershellgallery/dt/ugit' />
-<img src="https://github.com/sponsors/StartAutomating/button" />
 </a>
+[:heart: Sponsor](https://github.com/sponsors/StartAutomating)
 </div>
 
 Updated Git: A powerful PowerShell wrapper for git that lets you extend git, automate multiple repos, and output git as objects.
