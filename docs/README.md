@@ -3,11 +3,12 @@
 <a href='https://www.powershellgallery.com/packages/ugit/'>
 <img src='https://img.shields.io/powershellgallery/dt/ugit' />
 </a>
-[:heart: Sponsor](https://github.com/sponsors/StartAutomating)
+<br/>
+<a href='https://github.com/sponsors/StartAutomating'>❤️</a>
+<a href='https://github.com/StartAutomating/ugit/stargazers'>⭐</a>
 </div>
 
-Updated Git: A powerful PowerShell wrapper for git that lets you extend git, automate multiple repos, and output git as objects.
-
+ugit (Updated Git) is a powerful PowerShell module for git that lets you: output git as objects, automate multiple repos, and extend git.
 
 ## What is ugit?
 
