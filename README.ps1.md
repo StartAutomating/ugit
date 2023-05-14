@@ -2,6 +2,7 @@
 <img src='assets/ugit.svg' alt='ugit' />
 <a href='https://www.powershellgallery.com/packages/ugit/'>
 <img src='https://img.shields.io/powershellgallery/dt/ugit' />
+<iframe src="https://github.com/sponsors/StartAutomating/button" title="Sponsor StartAutomating" height="32" width="114" style="border: 0; border-radius: 6px;"></iframe>
 </a>
 </div>
 
