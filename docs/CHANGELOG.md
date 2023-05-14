@@ -1,3 +1,15 @@
+## 0.4:
+
+* Adding Sponsorship! (#174)
+* RealGit / GitReal will opt-out of ugit (#173)
+* Added git.commit.info.psuh (#111)
+* Fixing directory piping (#172)
+* Git Clone allows absolute paths (#169, thanks @corbob)
+* Fixing Git Log -Statistics (#171)
+* Not Mapping Partial Dynamic Parameters (#168)
+
+--
+
 ## 0.3.9:
 
 * Adding ugit demo (Fixes #163)
