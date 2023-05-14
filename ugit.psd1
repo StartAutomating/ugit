@@ -1,11 +1,11 @@
 @{
-    ModuleVersion    = '0.3.9'
+    ModuleVersion    = '0.4'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
     Guid             = '32323806-1d4a-485b-a64b-c502b0468847'
     Author           = 'James Brundage'
-    Copyright        = '2022 Start-Automating'    
+    Copyright        = '2022-2023 Start-Automating'    
     CompanyName      = 'Start-Automating'
     Description      = 'ugit:  Updated Git.
 
@@ -17,6 +17,18 @@ PrivateData   = @{
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
         BuildModule  = @('EZOut', 'Piecemeal', 'PipeScript', 'PSSVG')
         ReleaseNotes = @'
+## 0.4:
+
+* Adding Sponsorship! (#174)
+* RealGit / GitReal will opt-out of ugit (#173)
+* Added git.commit.info.psuh (#111)
+* Fixing directory piping (#172)
+* Git Clone allows absolute paths (#169, thanks @corbob)
+* Fixing Git Log -Statistics (#171)
+* Not Mapping Partial Dynamic Parameters (#168)
+
+--
+
 ## 0.3.9:
 
 * Adding ugit demo (Fixes #163)
