@@ -22,16 +22,16 @@ Outputs git mv as objects.
 
 
 ### Examples
-#### EXAMPLE 1
+> EXAMPLE 1
+
 ```PowerShell
 git mv .\OldName.txt .\NewName.txt
 ```
+> EXAMPLE 2
 
-#### EXAMPLE 2
 ```PowerShell
 git mv .\OldName.txt .\NewName.txt --verbose
 ```
-
 
 
 ---
