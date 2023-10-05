@@ -31,11 +31,11 @@ Also adds -IssueNumber, which searchers for commits that reference particular is
 
 
 ### Examples
-#### EXAMPLE 1
+> EXAMPLE 1
+
 ```PowerShell
 git log -CurrentBranch
 ```
-
 
 
 ---
