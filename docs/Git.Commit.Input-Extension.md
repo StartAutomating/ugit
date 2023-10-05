@@ -22,16 +22,14 @@ Makes Git Commit easier to use from PowerShell by providing parameters for the -
 
 
 ### Examples
-#### EXAMPLE 1
+> EXAMPLE 1
+
 ```PowerShell
 git commit -Title "Fixing Something"
 ```
+> EXAMPLE 2
 
-#### EXAMPLE 2
-```PowerShell
 "}
-```
-
 
 
 ---
