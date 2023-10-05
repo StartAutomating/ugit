@@ -29,6 +29,7 @@ end {
             $toObject = [Ordered]@{
                 PSTypeName = 'git.submodule.status'
                 GitOutputLines = $submoduleLines
+                GitRoot = $gitRoot                
             } + $Matches                            
             [PSCustomObject]$toObject
         }
