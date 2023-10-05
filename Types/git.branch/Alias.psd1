@@ -1,3 +1,4 @@
 @{
     HasUpstream = 'IsTracked'
+    Compare = 'Diff'
 }
