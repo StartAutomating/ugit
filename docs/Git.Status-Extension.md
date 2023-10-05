@@ -22,16 +22,16 @@ Returns git status as an object.
 
 
 ### Examples
-#### EXAMPLE 1
+> EXAMPLE 1
+
 ```PowerShell
 git status
 ```
+> EXAMPLE 2
 
-#### EXAMPLE 2
 ```PowerShell
 git status | Select-Object -ExpandProperty Untracked
 ```
-
 
 
 ---
