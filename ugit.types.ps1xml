@@ -5,6 +5,10 @@
     <Name>git.branch</Name>
     <Members>
       <AliasProperty>
+        <Name>Compare</Name>
+        <ReferencedMemberName>Diff</ReferencedMemberName>
+      </AliasProperty>
+      <AliasProperty>
         <Name>HasUpstream</Name>
         <ReferencedMemberName>IsTracked</ReferencedMemberName>
       </AliasProperty>
@@ -13,6 +17,26 @@
         <Script>
                         Push-Location $this.GitRoot
 git branch '-d' $this.BranchName @args
+Pop-Location
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
+        <Name>Diff</Name>
+        <Script>
+                        param()
+
+$firstArg, $restOfArgs =
+if (-not $args) {
+    git remote | git remote show | Select-Object -ExpandProperty HeadBranch -First 1  
+} else {
+    $args | Select-Object -First 1
+    $args | Select-Object -Skip 1
+}
+
+$restOfArgs = @($restOfArgs)
+
+Push-Location $this.GitRoot
+git diff "$($firstArg)..$($this.BranchName)" @restOfArgs
 Pop-Location
                     </Script>
       </ScriptMethod>
