@@ -1,3 +1,17 @@
+## 0.4.1:
+
+* New Git Command Support:
+  * git submodule status (#183)
+* New Git ScriptMethods:
+  * git.branch.diff (#187)
+  * git.branch.rename (#86)
+* Easier Input:
+  * git commit -CommitDate (#184)
+  * git log -CurrentBranch (fixing forks, #179)
+* Announcing Releases with [PSA](https://github.com/StartAutomating/PSA)
+
+---
+
 ## 0.4:
 
 * Adding Sponsorship! (#174)
