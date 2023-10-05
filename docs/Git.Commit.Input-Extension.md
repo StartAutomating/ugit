@@ -113,6 +113,21 @@ If set, will amend an existing commit.
 
 
 
+#### **CommitDate**
+
+The commit date.
+
+
+
+
+
+
+|Type        |Required|Position|PipelineInput        |Aliases                                 |
+|------------|--------|--------|---------------------|----------------------------------------|
+|`[DateTime]`|false   |named   |true (ByPropertyName)|Date<br/>Time<br/>DateTime<br/>Timestamp|
+
+
+
 
 
 ---
@@ -120,5 +135,5 @@ If set, will amend an existing commit.
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Commit.Input.UGit.Extension.ps1 [-Message <String>] [-Title <String>] [-Body <String>] [-Trailers <IDictionary>] [-Amend] [<CommonParameters>]
+Extensions/Git.Commit.Input.UGit.Extension.ps1 [-Message <String>] [-Title <String>] [-Body <String>] [-Trailers <IDictionary>] [-Amend] [-CommitDate <DateTime>] [<CommonParameters>]
 ```
