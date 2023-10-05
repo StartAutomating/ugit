@@ -1,4 +1,4 @@
-#region Piecemeal [ 0.3.10 ] : Easy Extensible Plugins for PowerShell
+#region Piecemeal [ 0.4.1 ] : Easy Extensible Plugins for PowerShell
 # Install-Module Piecemeal -Scope CurrentUser 
 # Import-Module Piecemeal -Force 
 # Install-Piecemeal -ExtensionModule 'ugit' -ExtensionModuleAlias 'git' -ExtensionNoun 'UGitExtension' -ExtensionTypeName 'ugit.extension' -OutputPath '.\Get-UGitExtension.ps1'
@@ -614,6 +614,8 @@ function Get-UGitExtension
 
                     $ExtensionDynamicParameters = [Management.Automation.RuntimeDefinedParameterDictionary]::new()
                     $Extension = $this
+                    $ExtensionMetadata = $Extension -as [Management.Automation.CommandMetaData]
+                    if (-not $ExtensionMetadata) { return $ExtensionDynamicParameters }
 
                     :nextDynamicParameter foreach ($in in @(($Extension -as [Management.Automation.CommandMetaData]).Parameters.Keys)) {
                         $attrList = [Collections.Generic.List[Attribute]]::new()
@@ -1042,12 +1044,16 @@ function Get-UGitExtension
 
         if ($Force) {
             $script:UGitExtensions  = $null
+            $script:UGitExtensionsByName    = $null
             $script:AllCommands = @()
         }
         if (-not $script:UGitExtensions)
         {
-            $script:UGitExtensionsFromFiles = [Ordered]@{}
-            $script:UGitExtensionsFileTimes = [Ordered]@{}
+            $script:UGitExtensionsFromFiles     = [Ordered]@{}
+            $script:UGitExtensionsFileTimes     = [Ordered]@{}
+            $script:UGitExtensionsByName        = [Ordered]@{}
+            $script:UGitExtensionsByDisplayName = [Ordered]@{}
+            $script:UGitExtensionsByPattern     = [Ordered]@{}
             $script:UGitExtensions =
                 @(@(
                 #region Find UGitExtension in Loaded Modules
@@ -1093,6 +1099,46 @@ function Get-UGitExtension
                 $ExecutionContext.SessionState.InvokeCommand.GetCommands('*', 'Function,Alias',$true) -match $extensionFullRegex
                 #endregion Find UGitExtension in Loaded Commands
                 ) | Select-Object -Unique | Sort-Object Rank, Name)
+
+            foreach ($extCmd in $script:UGitExtensions) {
+                if (-not $script:UGitExtensionsByName[$extCmd.Name]) {
+                    $script:UGitExtensionsByName[$extCmd.Name] = $extCmd
+                }
+                else {
+                    $script:UGitExtensionsByName[$extCmd.Name] = @($script:UGitExtensionsByName[$extCmd.Name]) + $extCmd
+                }
+                if ($extCmd.DisplayName) {
+                    if (-not $script:UGitExtensionsByDisplayName[$extCmd.DisplayName]) {
+                        $script:UGitExtensionsByDisplayName[$extCmd.DisplayName] = $extCmd
+                    }
+                    else {
+                        $script:UGitExtensionsByDisplayName[$extCmd.DisplayName] = @($script:UGitExtensionsByDisplayName[$extCmd.DisplayName]) + $extCmd
+                    }   
+                }
+                $ExtensionCommandAliases = @($extCmd.Attributes.AliasNames)
+                $ExtensionCommandAliasRegexes  = @($ExtensionCommandAliases -match '^/' -match '/$')
+                $ExtensionCommandNormalAliases = @($ExtensionCommandAliases -notmatch '^/')
+                if ($ExtensionCommandAliasRegexes) {
+                    foreach ($extensionAliasRegex in $ExtensionCommandAliasRegexes) {
+                        $regex = [Regex]::New($extensionAliasRegex -replace '^/' -replace '/$', 'IgnoreCase,IgnorePatternWhitespace')
+                        if (-not $script:UGitExtensionsByPattern[$regex]) {
+                            $script:UGitExtensionsByPattern[$regex] = $extCmd
+                        } else {
+                            $script:UGitExtensionsByPattern[$regex] = @($script:UGitExtensionsByPattern[$regex]) + $extCmd
+                        }
+                    }
+                }
+                if ($ExtensionCommandNormalAliases) {
+                    foreach ($extensionAlias in $ExtensionCommandNormalAliases) {
+                        if (-not $script:UGitExtensionsByName[$extensionAlias]) {
+                            $script:UGitExtensionsByName[$extensionAlias] = $extCmd
+                        } else {
+                            $script:UGitExtensionsByName[$extensionAlias] = @($script:UGitExtensionsByName[$extensionAlias]) + $extCmd
+                        }
+                    }
+                }
+                
+            }
         }
         #endregion Find Extensions
     }
@@ -1100,7 +1146,7 @@ function Get-UGitExtension
     process {
 
         if ($UGitExtensionPath) {
-            @(foreach ($_ in Get-ChildItem -Recurse -Path $UGitExtensionPath -File) {
+            @(foreach ($_ in Get-ChildItem -Recurse:$($UGitExtensionPath -notmatch '^\.[\\/]') -Path $UGitExtensionPath -File) {
                 if ($_.Name -notmatch $extensionFullRegex) { continue }
                 if ($CommandName -or $UGitExtensionName) {
                     ConvertToExtension $_ |
@@ -1118,14 +1164,34 @@ function Get-UGitExtension
                 # This section can be updated by using Install-Piecemeal -ForeachObject
                 #endregion Install-Piecemeal -ForeachObject
         } elseif ($CommandName -or $UGitExtensionName) {
-            $script:UGitExtensions |
-                . WhereExtends $CommandName |                
-                OutputExtension
+            if (-not $CommandName -and -not $like -and -not $Match) {
+                foreach ($exn in $UGitExtensionName) {
+                    if ($script:UGitExtensionsByName[$exn]) {
+                        $script:UGitExtensionsByName[$exn] | OutputExtension
+                    }
+                    if ($script:UGitExtensionsByDisplayName[$exn]) {
+                        $script:UGitExtensionsByDisplayName[$exn] | OutputExtension
+                    }
+                    if ($script:UGitExtensionsByPattern.Count) {
+                        foreach ($patternAndValue in $script:UGitExtensionsByPattern.GetEnumerator()) {
+                            if ($patternAndValue.Key.IsMatch($exn)) {
+                                $patternAndValue.Value | OutputExtension
+                            }
+                        }
+                        $script:UGitExtensionsByDisplayName[$exn]
+                    }
+                }                
+            } else {
+                $script:UGitExtensions |
+                    . WhereExtends $CommandName |
+                    OutputExtension
+            }
+            
         } else {
             $script:UGitExtensions | 
                 OutputExtension
         }
     }
 }
-#endregion Piecemeal [ 0.3.10 ] : Easy Extensible Plugins for PowerShell
+#endregion Piecemeal [ 0.4.1 ] : Easy Extensible Plugins for PowerShell
 
