@@ -22,16 +22,16 @@ Outputs git checkout as objects.
 
 
 ### Examples
-#### EXAMPLE 1
+> EXAMPLE 1
+
 ```PowerShell
 git checkout -b CreateNewBranch
 ```
+> EXAMPLE 2
 
-#### EXAMPLE 2
 ```PowerShell
 git checkout main
 ```
-
 
 
 ---
