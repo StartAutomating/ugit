@@ -22,11 +22,11 @@ Outputs git rm as objects.
 
 
 ### Examples
-#### EXAMPLE 1
+> EXAMPLE 1
+
 ```PowerShell
 git rm .\FileIDontCareAbout.txt
 ```
-
 
 
 ---

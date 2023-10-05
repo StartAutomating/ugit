@@ -1,0 +1,17 @@
+
+name: ugit-psa
+on: 
+  workflow_dispatch: 
+jobs: 
+  SendPSA: 
+    runs-on: ubuntu-latest
+    if: ${{ success() }}
+    steps: 
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: PSA
+        uses: StartAutomating/PSA@main
+        id: PSA
+env: 
+  AT_PROTOCOL_HANDLE: mrpowershell.bsky.social
+  AT_PROTOCOL_APP_PASSWORD: ${{ secrets.AT_PROTOCOL_APP_PASSWORD }}

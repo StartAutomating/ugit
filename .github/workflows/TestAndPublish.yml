@@ -591,4 +591,9 @@ jobs:
       - name: Run HelpOut
         uses: StartAutomating/HelpOut@master
         id: HelpOut
-
+      - name: PSA
+        uses: StartAutomating/PSA@main
+        id: PSA
+env: 
+  AT_PROTOCOL_HANDLE: mrpowershell.bsky.social
+  AT_PROTOCOL_APP_PASSWORD: ${{ secrets.AT_PROTOCOL_APP_PASSWORD }}

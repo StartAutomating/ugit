@@ -33,7 +33,13 @@ $Trailers,
 
 # If set, will amend an existing commit.
 [switch]
-$Amend
+$Amend,
+
+# The commit date.
+[Parameter(ValueFromPipelineByPropertyName)]
+[Alias('Date','Time','DateTime','Timestamp')]
+[datetime]
+$CommitDate
 )
 
 
@@ -63,4 +69,9 @@ if ($Trailers) {
 
 if ($amend) {
     "--amend"   
+}
+
+if ($CommitDate) {
+    "--date"        
+    $CommitDate.ToString("o")
 }

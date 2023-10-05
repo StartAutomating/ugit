@@ -22,26 +22,26 @@ Outputs git shortlog as objects
 
 
 ### Examples
-#### EXAMPLE 1
+> EXAMPLE 1
+
 ```PowerShell
 git shortlog  # Get a shortlog
 ```
+> EXAMPLE 2
 
-#### EXAMPLE 2
 ```PowerShell
 git shortlog --email # Get a shortlog with email information
 ```
+> EXAMPLE 3
 
-#### EXAMPLE 3
 ```PowerShell
 git shortlog --summary # Get a shortlog summary
 ```
+> EXAMPLE 4
 
-#### EXAMPLE 4
 ```PowerShell
 git shortlog --sumary --email # Get a shortlog summary, with email.
 ```
-
 
 
 ---

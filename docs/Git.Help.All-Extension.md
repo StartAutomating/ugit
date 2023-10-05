@@ -22,16 +22,16 @@ Returns git help --all as objects.
 
 
 ### Examples
-#### EXAMPLE 1
+> EXAMPLE 1
+
 ```PowerShell
 git help -a
 ```
+> EXAMPLE 2
 
-#### EXAMPLE 2
 ```PowerShell
 git help --all
 ```
-
 
 
 ---

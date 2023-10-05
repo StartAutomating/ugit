@@ -41,30 +41,26 @@ Extensions use two attributes to indicate if they should be run:
 
 
 ### Examples
-#### EXAMPLE 1
+Log entries are returned as objects, with properties and methods.
+
 ```PowerShell
-# Log entries are returned as objects, with properties and methods.
 git log -n 1 | Get-Member
 ```
+Status entries are converted into objects.
 
-#### EXAMPLE 2
 ```PowerShell
-# Status entries are converted into objects.
 git status
 ```
+Display untracked files.
 
-#### EXAMPLE 3
 ```PowerShell
-# Display untracked files.
 git status | Select-Object -ExpandProperty Untracked
 ```
+Display the list of branches, as objects.
 
-#### EXAMPLE 4
 ```PowerShell
-# Display the list of branches, as objects.
 git branch
 ```
-
 
 
 ---

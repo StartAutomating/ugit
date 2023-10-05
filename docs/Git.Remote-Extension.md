@@ -22,21 +22,21 @@ Outputs git remotes as objects.
 
 
 ### Examples
-#### EXAMPLE 1
+> EXAMPLE 1
+
 ```PowerShell
 git remote
 ```
+> EXAMPLE 2
 
-#### EXAMPLE 2
 ```PowerShell
 git remote | git remote get-url
 ```
+> EXAMPLE 3
 
-#### EXAMPLE 3
 ```PowerShell
 git remote | git remote show
 ```
-
 
 
 ---

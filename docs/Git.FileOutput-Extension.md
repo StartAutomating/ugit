@@ -24,11 +24,11 @@ When the command is finished, this will attempt to file the argument provided af
 
 
 ### Examples
-#### EXAMPLE 1
+> EXAMPLE 1
+
 ```PowerShell
 git archive -o My.zip
 ```
-
 
 
 ---

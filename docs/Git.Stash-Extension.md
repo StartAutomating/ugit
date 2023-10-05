@@ -22,11 +22,11 @@ Manages git code stashes.  Returns objects wherever possible.
 
 
 ### Examples
-#### EXAMPLE 1
+> EXAMPLE 1
+
 ```PowerShell
 git stash list
 ```
-
 
 
 ---

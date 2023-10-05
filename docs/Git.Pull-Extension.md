@@ -22,11 +22,11 @@ Returns git pull as objects.
 
 
 ### Examples
-#### EXAMPLE 1
+> EXAMPLE 1
+
 ```PowerShell
 git pull
 ```
-
 
 
 ---

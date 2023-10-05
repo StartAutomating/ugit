@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-16"?>
-<!-- Generated with EZOut 1.9.9: Install-Module EZOut or https://github.com/StartAutomating/EZOut -->
+<!-- Generated with EZOut 2.0.1: Install-Module EZOut or https://github.com/StartAutomating/EZOut -->
 <Types>
   <Type>
     <Name>git.branch</Name>
     <Members>
+      <AliasProperty>
+        <Name>Compare</Name>
+        <ReferencedMemberName>Diff</ReferencedMemberName>
+      </AliasProperty>
       <AliasProperty>
         <Name>HasUpstream</Name>
         <ReferencedMemberName>IsTracked</ReferencedMemberName>
@@ -14,6 +18,38 @@
                         Push-Location $this.GitRoot
 git branch '-d' $this.BranchName @args
 Pop-Location
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
+        <Name>Diff</Name>
+        <Script>
+                        param()
+
+$firstArg, $restOfArgs =
+if (-not $args) {
+    git remote | git remote show | Select-Object -ExpandProperty HeadBranch -First 1  
+} else {
+    $args | Select-Object -First 1
+    $args | Select-Object -Skip 1
+}
+
+$restOfArgs = @($restOfArgs)
+
+Push-Location $this.GitRoot
+git diff "$($firstArg)..$($this.BranchName)" @restOfArgs
+Pop-Location
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
+        <Name>Rename</Name>
+        <Script>
+                        if (-not $args) {
+    throw "Must provide a new branch name"
+}
+Push-Location $this.GitRoot
+git branch '-m' $this.BranchName @args
+Pop-Location
+
                     </Script>
       </ScriptMethod>
       <ScriptMethod>

@@ -84,7 +84,7 @@ foreach ($dashToDoubleDash in 'after', 'before', 'author') {
 }
 
 if ($CurrentBranch) {        
-    $headbranch        = git remote | git remote show | Select-Object -ExpandProperty HeadBranch
+    $headbranch        = git remote | git remote show | Select-Object -ExpandProperty HeadBranch -First 1
     $currentBranchName = git branch | Where-Object IsCurrentBranch
     if ($currentBranchName -ne $headbranch) {
         "$headbranch..$currentBranchName"

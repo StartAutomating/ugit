@@ -26,11 +26,11 @@ If that fails, it will output a Git.Object.Name.
 
 
 ### Examples
-#### EXAMPLE 1
+> EXAMPLE 1
+
 ```PowerShell
 git diff --name-only
 ```
-
 
 
 ---

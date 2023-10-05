@@ -22,18 +22,17 @@ Clones a repository, and returns the result as an object.
 
 
 ### Examples
-#### EXAMPLE 1
+> EXAMPLE 1
+
 ```PowerShell
 git clone https://github.com/StartAutomating/ugit.git
 ```
+Clone a large repo.
+When --progress is provided, Write-Progress will be called.
 
-#### EXAMPLE 2
 ```PowerShell
-# Clone a large repo.
-# When --progress is provided, Write-Progress will be called.
 git clone https://github.com/Azure/azure-quickstart-templates --progress
 ```
-
 
 
 ---

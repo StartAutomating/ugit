@@ -34,11 +34,11 @@ When possible, the regular expression will be converted into PowerSEhll so that 
 
 
 ### Examples
-#### EXAMPLE 1
+> EXAMPLE 1
+
 ```PowerShell
 git grep '-i' example # look for all examples in the repository
 ```
-
 
 
 ---
