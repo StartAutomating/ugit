@@ -378,7 +378,7 @@ You might want to try giving some of these a try.
     git status | Select-Object -ExpandProperty Untracked
 ~~~
 
-### Git.SubModule Example 1
+### Git.SubModule.Status Example 1
 
 
 ~~~PowerShell
@@ -449,7 +449,7 @@ Most extensions handle output from a single git command.
 * [Git Status](Git.Status-Extension.md)
 
  
-* [Git SubModule](Git.SubModule-Extension.md)
+* [Git SubModule Status](Git.SubModule.Status-Extension.md)
 
 
 
