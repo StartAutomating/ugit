@@ -4,6 +4,15 @@
   <Type>
     <Name>git.blame</Name>
     <Members>
+      <ScriptProperty>
+        <Name>Log</Name>
+        <GetScriptBlock>
+                        
+Push-Location $this.GitRoot
+git log $this.CommitHash -NumberOfCommits 1
+Pop-Location
+                    </GetScriptBlock>
+      </ScriptProperty>
     </Members>
   </Type>
   <Type>
