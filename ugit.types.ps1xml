@@ -2,6 +2,11 @@
 <!-- Generated with EZOut 2.0.2: Install-Module EZOut or https://github.com/StartAutomating/EZOut -->
 <Types>
   <Type>
+    <Name>git.blame</Name>
+    <Members>
+    </Members>
+  </Type>
+  <Type>
     <Name>git.branch</Name>
     <Members>
       <AliasProperty>
