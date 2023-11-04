@@ -12,11 +12,19 @@ param()
 
 begin {
     $gitBlameOutput = @()
-    $blameHeaderPattern = "(?<CommitHash>[0-9a-f]{8})\s\((?<WhoWhenWhat>.+?)\)"
+    $blameHeaderPattern = @(
+        '(?<CommitHash>[0-9a-f]{8})\s'
+        
+        # If your filename contains parenthesis, this may not work, and you'll only have yourself to blame.
+        '(?:(?<FileName>[\S-[\(]]+)\s)?' 
+        
+        '\((?<WhoWhenWhat>.+?)\)'
+    ) -join ''
+    $blameRevision = @($gitCommand -split '\s' -notmatch '^--')[-1]
 }
 
 process {
-    $gitBlameOutput += $gitout
+    $gitBlameOutput += $gitout    
 }
 
 end {
@@ -26,19 +34,21 @@ end {
             $lineContent  = $gitBlameLine -replace $blameHeaderPattern            
             $commitMatch = [Ordered]@{} + $matches
             $whoWhenWhat = $commitMatch.WhoWhenWhat -split '\s+'
-            $commitAuthorStart = $whoWhenWhat.Length
             
             [PSCustomObject][Ordered]@{
                 PSTypeName = 'git.blame'
                 CommitHash = $commitMatch.CommitHash
                 CommitDate = ($whoWhenWhat[-4..-2] -join ' ') -as [DateTime]
                 Line       = $whoWhenWhat[-1]
+                File       = $matches.File
+                Revision   = $blameRevision
                 Content    = $lineContent
                 GitRoot    = $GitRoot
                 Author     = $whoWhenWhat[0..$(
                     ($whoWhenWhat.Length - 5)
                 )] -join ' '
-            }            
+                GitOutputLines = $gitBlameLine
+            }
         }
     )
 
