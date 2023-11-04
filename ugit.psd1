@@ -36,6 +36,15 @@ Like It?  Start It.  Love It?  Support It.
 https://github.com/StartAutomating/ugit
 
 '@
+        Taglines = @(
+            "I've got to admit it's gitting better, gitting better all the time:"
+            "Somehow, someway, I keep coming up with funky git nearly every single day:"
+            "#git in the #PowerShell object pipeline!"
+            "Get your git together!"
+            "Put this git in your pipe and smoke it!"
+            "I promise you, git gets better"
+            "Git ahead of the game!"
+        )
     }
 }
 }
