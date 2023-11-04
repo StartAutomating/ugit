@@ -29,7 +29,7 @@ $importedModule = Import-Module .\ugit.psd1 -Global -PassThru
 $importedModule | Out-Host
 $moduleAndVersion = "$($importedModule.Name) $($importedModule.Version)"
 
-$isManuallyTriggered = $gitHubEvent.psobject.properties["input"]
+$isManuallyTriggered = $gitHubEvent.psobject.properties["inputs"]
 
 if ($isMergeToMain -or $isManuallyTriggered) {
 
