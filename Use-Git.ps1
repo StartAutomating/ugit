@@ -319,7 +319,7 @@
                 if (-not $script:RepoRoots[$dir] -and      # If we did not have a repo root
                     -not ($gitArgument -match "(?>$($RepoNotRequired -join '|'))") # and we are not doing an operation that does not require one
                 ) {
-                    Write-Warning "'$($dir)' is not a git repository" # warn that there is no repo (#21)
+                    Write-Verbose "'$($dir)' is not a git repository" # write that there is no repo to verbose (#21 , #198, #204)
                     Pop-Location # pop back out of the directory
                     continue nextDirectory # and continue to the next directory.
                 }
