@@ -73,6 +73,13 @@ Get-UGitExtension is built using [Piecemeal](https://github.com/StartAutomating/
 ugit comes packed with many examples.
 You might want to try giving some of these a try.
 
+### Git.Blame Example 1
+
+
+~~~PowerShell
+    git blame ugit.psd1
+~~~
+
 ### Git.Branch Example 1
 
 
@@ -392,6 +399,9 @@ You might want to try giving some of these a try.
 Most extensions handle output from a single git command.
 
 
+* [Git Blame](Git.Blame-Extension.md)
+
+ 
 * [Git Branch](Git.Branch-Extension.md)
 
  
@@ -472,6 +482,9 @@ It will attempt to locate any output specified by -o and return it as a file or 
 ugit also allows you to extend the input for git.
 
 
+* [Git Blame Input](Git.Blame.Input-Extension.md)
+
+ 
 * [Git Clone Input](Git.Clone.Input-Extension.md)
 
  

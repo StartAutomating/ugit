@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-16"?>
-<!-- Generated with EZOut 2.0.1: Install-Module EZOut or https://github.com/StartAutomating/EZOut -->
+<!-- Generated with EZOut 2.0.2: Install-Module EZOut or https://github.com/StartAutomating/EZOut -->
 <Types>
+  <Type>
+    <Name>git.blame</Name>
+    <Members>
+      <ScriptProperty>
+        <Name>Log</Name>
+        <GetScriptBlock>
+                        
+Push-Location $this.GitRoot
+git log $this.CommitHash -NumberOfCommits 1
+Pop-Location
+                    </GetScriptBlock>
+      </ScriptProperty>
+    </Members>
+  </Type>
   <Type>
     <Name>git.branch</Name>
     <Members>
