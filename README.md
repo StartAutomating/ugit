@@ -482,6 +482,9 @@ It will attempt to locate any output specified by -o and return it as a file or 
 ugit also allows you to extend the input for git.
 
 
+* [Git Blame Input](docs/Git.Blame.Input-Extension.md)
+
+ 
 * [Git Clone Input](docs/Git.Clone.Input-Extension.md)
 
  
