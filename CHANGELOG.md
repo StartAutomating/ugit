@@ -1,3 +1,11 @@
+## 0.4.2:
+
+* git blame support (#192, #193, #199, #201)
+* Use-Git will write to Verbose, not warning, when a directory is not a repository (#198, #204)
+* ugit PSA improvements (#189, #205, #206, #207)
+
+---
+
 ## 0.4.1:
 
 * New Git Command Support:
