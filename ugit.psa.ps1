@@ -36,26 +36,16 @@ if ($isMergeToMain -or $isManuallyTriggered) {
     $fullMessage = 
         @(switch ($importedModule.Version) {
             default {
-                "I've got to admit it's gitting better, gitting better all the time:",
-                "Somehow, someway, I keep coming up with funky git nearly every single day:",
-                "#git in the #PowerShell object pipeline!",
-                "Get your git together!",
-                "Put this git in your pipe and smoke it!",
-                "I promise you, git gets better",
-                "Git ahead of the game!" |
-                    Get-Random
-        
-                "$moduleAndVersion"        
-        
-                "https://github.com/StartAutomating/ugit"
+                $importedModule.PrivateData.PSData.Taglines | Get-Random                
+                "$moduleAndVersion"                               
             }
         }) -join ([Environment]::NewLine * 2)
 
     
     Send-AtProto -Text $fullMessage -WebCard @{
-        Url = "https://github.com/StartAutomating/ugit"
+        Url = $importedModule.PrivateData.PSData.ProjectURI
     } -LinkPattern @{
-        "ugit" = "https://github.com/StartAutomating/ugit"
+        $importedModule.Name = $importedModule.PrivateData.PSData.ProjectURI
     }
     
     return
