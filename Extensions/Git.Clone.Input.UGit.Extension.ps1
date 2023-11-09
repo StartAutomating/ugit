@@ -26,6 +26,13 @@ param(
 [switch]
 $NoCheckout,
 
+# Employ a sparse-checkout.
+# Only files in the toplevel directory will be present by default.
+# Sparse checkout can be configured with git sparse-checkout.
+[Parameter(ValueFromPipelineByPropertyName)]
+[switch]
+$Sparse,
+
 # Create a shallow clone with a history truncated to the specified number of commits
 [Parameter(ValueFromPipelineByPropertyName)]
 [uint32]
@@ -34,7 +41,12 @@ $Depth,
 # Create a shallow clone with a history after the specified time.
 [Parameter(ValueFromPipelineByPropertyName)]
 [Datetime]
-$Since
+$Since,
+
+# One or more filters
+[Parameter(ValueFromPipelineByPropertyName)]
+[string[]]
+$Filter
 )
 
 if ($Depth) {
@@ -42,12 +54,16 @@ if ($Depth) {
     "$Depth"
 }
 
-if ($NoCheckout) {
-    '--no-checkout'
-}
+if ($NoCheckout) {'--no-checkout'}
 
-if ($Since) {
-    "--shallow-since=$($Since.ToString('o'))"
+if ($Sparse) {'--sparse'}
+
+if ($Since) {"--shallow-since=$($Since.ToString('o'))"}
+
+if ($filter) {
+    foreach ($gitFilter in $filter) {
+        "--filter=$gitFilter"
+    }
 }
 
 if ($gitArgument -notcontains '--progress') {
