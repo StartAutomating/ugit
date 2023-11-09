@@ -127,6 +127,16 @@ You might want to try giving some of these a try.
     # (of course, that's because we're not copying files, just history)
 ~~~
 
+### Git.Clone.Input Example 3
+
+
+~~~PowerShell
+    # We can also clone more quickly by only picking a certain number of commits
+    git clone https://github.com/Microsoft/vscode.git -Depth 1
+    # (of course, this will make the history lie to you,
+    # by saying everything was changed whenever anything was changed)
+~~~
+
 ### Git.Clone Example 1
 
 
