@@ -78,6 +78,21 @@ Create a shallow clone with a history truncated to the specified number of commi
 
 
 
+#### **Since**
+
+Create a shallow clone with a history after the specified time.
+
+
+
+
+
+
+|Type        |Required|Position|PipelineInput        |
+|------------|--------|--------|---------------------|
+|`[DateTime]`|false   |named   |true (ByPropertyName)|
+
+
+
 
 
 ---
@@ -85,5 +100,5 @@ Create a shallow clone with a history truncated to the specified number of commi
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Clone.Input.UGit.Extension.ps1 [-NoCheckout] [-Depth <UInt32>] [<CommonParameters>]
+Extensions/Git.Clone.Input.UGit.Extension.ps1 [-NoCheckout] [-Depth <UInt32>] [-Since <DateTime>] [<CommonParameters>]
 ```
