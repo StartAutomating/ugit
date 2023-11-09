@@ -118,6 +118,15 @@ You might want to try giving some of these a try.
     git clone https://github.com/MDN/content.git # This is a big repo.  Progress bars will be very welcome.
 ~~~
 
+### Git.Clone.Input Example 2
+
+
+~~~PowerShell
+    # If we don't check things out, cloning is faster.
+    git clone https://github.com/PowerShell/PowerShell -NoCheckout 
+    # (of course, that's because we're not copying files, just history)
+~~~
+
 ### Git.Clone Example 1
 
 
