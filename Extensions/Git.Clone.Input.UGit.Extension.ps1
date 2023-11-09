@@ -29,7 +29,12 @@ $NoCheckout,
 # Create a shallow clone with a history truncated to the specified number of commits
 [Parameter(ValueFromPipelineByPropertyName)]
 [uint32]
-$Depth
+$Depth,
+
+# Create a shallow clone with a history after the specified time.
+[Parameter(ValueFromPipelineByPropertyName)]
+[Datetime]
+$Since
 )
 
 if ($Depth) {
@@ -41,8 +46,10 @@ if ($NoCheckout) {
     '--no-checkout'
 }
 
-if (
-    $gitArgument -notcontains '--progress'
-) {
+if ($Since) {
+    "--shallow-since=$($Since.ToString('o'))"
+}
+
+if ($gitArgument -notcontains '--progress') {
     '--progress'
 }
