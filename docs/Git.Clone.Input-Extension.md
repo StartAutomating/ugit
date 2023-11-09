@@ -35,6 +35,13 @@ If we don't check things out, cloning is faster.
 git clone https://github.com/PowerShell/PowerShell -NoCheckout 
 # (of course, that's because we're not copying files, just history)
 ```
+We can also clone more quickly by only picking a certain number of commits
+
+```PowerShell
+git clone https://github.com/Microsoft/vscode.git -Depth 1
+# (of course, this will make the history lie to you,
+# by saying everything was changed whenever anything was changed)
+```
 
 
 ---
@@ -56,6 +63,21 @@ If set, will not check out files from the respository.
 
 
 
+#### **Depth**
+
+Create a shallow clone with a history truncated to the specified number of commits
+
+
+
+
+
+
+|Type      |Required|Position|PipelineInput        |
+|----------|--------|--------|---------------------|
+|`[UInt32]`|false   |named   |true (ByPropertyName)|
+
+
+
 
 
 ---
@@ -63,5 +85,5 @@ If set, will not check out files from the respository.
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Clone.Input.UGit.Extension.ps1 [-NoCheckout] [<CommonParameters>]
+Extensions/Git.Clone.Input.UGit.Extension.ps1 [-NoCheckout] [-Depth <UInt32>] [<CommonParameters>]
 ```
