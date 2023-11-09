@@ -11,6 +11,11 @@
     # If we don't check things out, cloning is faster.
     git clone https://github.com/PowerShell/PowerShell -NoCheckout 
     # (of course, that's because we're not copying files, just history)
+.EXAMPLE
+    # We can also clone more quickly by only picking a certain number of commits
+    git clone https://github.com/Microsoft/vscode.git -Depth 1
+    # (of course, this will make the history lie to you,
+    # by saying everything was changed whenever anything was changed)
 #>
 [ValidatePattern('^git clone')]
 [Management.Automation.Cmdlet("Use","Git")]
@@ -19,8 +24,18 @@ param(
 # If set, will not check out files from the respository.
 [Parameter(ValueFromPipelineByPropertyName)]
 [switch]
-$NoCheckout
+$NoCheckout,
+
+# Create a shallow clone with a history truncated to the specified number of commits
+[Parameter(ValueFromPipelineByPropertyName)]
+[uint32]
+$Depth
 )
+
+if ($Depth) {
+    '--depth'
+    "$Depth"
+}
 
 if ($NoCheckout) {
     '--no-checkout'
