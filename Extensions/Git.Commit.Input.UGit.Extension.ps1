@@ -12,13 +12,45 @@
 [Management.Automation.Cmdlet('Use','Git')]
 [CmdletBinding(PositionalBinding=$false)]
 param(
-# The message used for the commit
+# The title of the commit.  If -Message is also provided, this will become part of the -Body
+[Alias('Subject')]
+[string]
+$Title,
+
+# The commit message.
 [string]
 $Message,
 
-# The title of the commit.  If -Message is also provided, this will become part of the -Body
+# The type of the commit.  This uses the conventional commits format.
+# https://www.conventionalcommits.org/en/v1.0.0/#specification
+[ArgumentCompleter({
+    @(
+        "feat" # feature
+        "fix"  # bugfix
+        # any other custom values can be provided by a global variable
+        # (method subject to change)
+        if (${global:ugit.ConventionalCommitTypes}) {
+            ${global:ugit.ConventionalCommitTypes}
+        }
+    )
+})]
 [string]
-$Title,
+$Type,
+
+# The scope of the commit.  This uses the conventional commits format.
+# https://www.conventionalcommits.org/en/v1.0.0/#specification
+[string]
+$Scope,
+
+# A description of the commit.  This uses the conventional commits format.
+# https://www.conventionalcommits.org/en/v1.0.0/#specification
+[string]
+$Description,
+
+# The footer for the commit.  This uses the conventional commits format.
+# https://www.conventionalcommits.org/en/v1.0.0/#specification
+[string]
+$Footer,
 
 # The body of the commit.
 [string]
@@ -43,21 +75,39 @@ $CommitDate
 )
 
 
+# git commit -m can accept multiple messages, but the first message is somewhat special.
+# (trailers cannot exist in the first message, and it's considered the subject by many other parts of git)
 
+# So we want several potential things to become "-m", and we have to do this in the right order.
+
+# First up is Convential Commits
+if ($type -and $Description) #  (if -Type and -Description were provided)
+{ 
+    "-m"
+    # construct a conventional commit message.
+    "${type}$(if ($scope) { "($scope)" }): $Description" 
+}
+
+# If title was provided, pass it as a message
+if ($Title) {
+    if ($Title) {"-m";$title}
+}
+
+# If -Message was provided, pass that as a message, too.
 if ($Message) {
     "-m"
     $message
 }
 
-if ($Title) {
-    "-m"
-    $title
+# If Body was provided, it counts as a message.
+if ($Body) {"-m";$body}
+elseif (
+    # f someone passed description but not type, that should also count.    
+    $Description -and -not $type
+) {
+    "-m";$Description
 }
 
-if ($Body) {
-    "-m"
-    $body
-}
 
 if ($Trailers) {    
     foreach ($kv in $Trailers.GetEnumerator()) {
