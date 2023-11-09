@@ -36,9 +36,24 @@ git commit -Title "Fixing Something"
 
 
 ### Parameters
+#### **Title**
+
+The title of the commit.  If -Message is also provided, this will become part of the -Body
+
+
+
+
+
+
+|Type      |Required|Position|PipelineInput|Aliases|
+|----------|--------|--------|-------------|-------|
+|`[String]`|false   |named   |false        |Subject|
+
+
+
 #### **Message**
 
-The message used for the commit
+The commit message.
 
 
 
@@ -51,9 +66,62 @@ The message used for the commit
 
 
 
-#### **Title**
+#### **Type**
 
-The title of the commit.  If -Message is also provided, this will become part of the -Body
+The type of the commit.  This uses the conventional commits format.
+https://www.conventionalcommits.org/en/v1.0.0/#specification
+feature
+bugfix
+any other custom values can be provided by a global variable
+(method subject to change)
+
+
+
+
+
+
+|Type      |Required|Position|PipelineInput|
+|----------|--------|--------|-------------|
+|`[String]`|false   |named   |false        |
+
+
+
+#### **Scope**
+
+The scope of the commit.  This uses the conventional commits format.
+https://www.conventionalcommits.org/en/v1.0.0/#specification
+
+
+
+
+
+
+|Type      |Required|Position|PipelineInput|
+|----------|--------|--------|-------------|
+|`[String]`|false   |named   |false        |
+
+
+
+#### **Description**
+
+A description of the commit.  This uses the conventional commits format.
+https://www.conventionalcommits.org/en/v1.0.0/#specification
+
+
+
+
+
+
+|Type      |Required|Position|PipelineInput|
+|----------|--------|--------|-------------|
+|`[String]`|false   |named   |false        |
+
+
+
+#### **Footer**
+
+The footer for the commit.  This uses the conventional commits format.
+https://www.conventionalcommits.org/en/v1.0.0/#specification
 
 
 
@@ -135,5 +203,5 @@ The commit date.
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Commit.Input.UGit.Extension.ps1 [-Message <String>] [-Title <String>] [-Body <String>] [-Trailers <IDictionary>] [-Amend] [-CommitDate <DateTime>] [<CommonParameters>]
+Extensions/Git.Commit.Input.UGit.Extension.ps1 [-Title <String>] [-Message <String>] [-Type <String>] [-Scope <String>] [-Description <String>] [-Footer <String>] [-Body <String>] [-Trailers <IDictionary>] [-Amend] [-CommitDate <DateTime>] [<CommonParameters>]
 ```
