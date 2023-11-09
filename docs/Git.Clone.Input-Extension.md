@@ -63,6 +63,23 @@ If set, will not check out files from the respository.
 
 
 
+#### **Sparse**
+
+Employ a sparse-checkout.
+Only files in the toplevel directory will be present by default.
+Sparse checkout can be configured with git sparse-checkout.
+
+
+
+
+
+
+|Type      |Required|Position|PipelineInput        |
+|----------|--------|--------|---------------------|
+|`[Switch]`|false   |named   |true (ByPropertyName)|
+
+
+
 #### **Depth**
 
 Create a shallow clone with a history truncated to the specified number of commits
@@ -93,6 +110,21 @@ Create a shallow clone with a history after the specified time.
 
 
 
+#### **Filter**
+
+One or more filters
+
+
+
+
+
+
+|Type        |Required|Position|PipelineInput        |
+|------------|--------|--------|---------------------|
+|`[String[]]`|false   |named   |true (ByPropertyName)|
+
+
+
 
 
 ---
@@ -100,5 +132,5 @@ Create a shallow clone with a history after the specified time.
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Clone.Input.UGit.Extension.ps1 [-NoCheckout] [-Depth <UInt32>] [-Since <DateTime>] [<CommonParameters>]
+Extensions/Git.Clone.Input.UGit.Extension.ps1 [-NoCheckout] [-Sparse] [-Depth <UInt32>] [-Since <DateTime>] [-Filter <String[]>] [<CommonParameters>]
 ```
