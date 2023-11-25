@@ -71,7 +71,14 @@ $Amend,
 [Parameter(ValueFromPipelineByPropertyName)]
 [Alias('Date','Time','DateTime','Timestamp')]
 [datetime]
-$CommitDate
+$CommitDate,
+
+# If provided, will add mark this commit as a fix.
+# This will add 'Fixes #...' to your commit message.
+[Parameter(ValueFromPipelineByPropertyName)]
+[ValidatePattern("^\#\d+")]
+[string[]]
+$Fix
 )
 
 
@@ -79,6 +86,10 @@ $CommitDate
 # (trailers cannot exist in the first message, and it's considered the subject by many other parts of git)
 
 # So we want several potential things to become "-m", and we have to do this in the right order.
+
+$Fixes = if ($Fix) {
+    $Fix -replace "^\#?", "Fixes #" -join ', '
+}
 
 # First up is Convential Commits
 if ($type) #  (if -Type was provided)
@@ -99,12 +110,16 @@ if ($type) #  (if -Type was provided)
     }
     "-m"
     # construct a conventional commit message.
-    "${type}$(if ($scope) { "($scope)" }): $Description" 
+    "${type}$(if ($scope) { "($scope)" }): $Description$(if ($Fixes) { " ( $fixes)"})" 
 }
 
 # If title was provided, pass it as a message
 elseif ($Title) {
-    if ($Title) {"-m";$title}
+    if ($Fix) {
+        if ($Title) {"-m";"$title$(if ($Fixes) { " ( $fixes)"})"}
+    } else {
+        if ($Title) {"-m";$title}
+    }
 }
 
 # If -Message was provided, pass that as a message, too.
