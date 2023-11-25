@@ -105,9 +105,17 @@ The commit date.
 |------------|--------|--------|---------------------|----------------------------------------|
 |`[DateTime]`|false   |named   |true (ByPropertyName)|Date<br/>Time<br/>DateTime<br/>Timestamp|
 
+#### **Fix**
+If provided, will add mark this commit as a fix.
+This will add 'Fixes #...' to your commit message.
+
+|Type        |Required|Position|PipelineInput        |
+|------------|--------|--------|---------------------|
+|`[String[]]`|false   |named   |true (ByPropertyName)|
+
 ---
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Commit.Input.UGit.Extension.ps1 [-Title <String>] [-Message <String>] [-Type <String>] [-Scope <String>] [-Description <String>] [-Footer <String>] [-Body <String>] [-Trailers <IDictionary>] [-Amend] [-CommitDate <DateTime>] [<CommonParameters>]
+Extensions/Git.Commit.Input.UGit.Extension.ps1 [-Title <String>] [-Message <String>] [-Type <String>] [-Scope <String>] [-Description <String>] [-Footer <String>] [-Body <String>] [-Trailers <IDictionary>] [-Amend] [-CommitDate <DateTime>] [-Fix <String[]>] [<CommonParameters>]
 ```
