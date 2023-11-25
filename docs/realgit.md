@@ -1,16 +1,10 @@
 Use-Git
 -------
 
-
-
-
 ### Synopsis
 Use Git
 
-
-
 ---
-
 
 ### Description
 
@@ -25,20 +19,12 @@ Otherwise, it will be passed as a positional argument (after any other arguments
 
 Use-Git will combine errors and output, so that git output to standard error is handled without difficulty.
 
-
-
 ---
-
 
 ### Related Links
 * [Out-Git](Out-Git.md)
 
-
-
-
-
 ---
-
 
 ### Examples
 Log entries are returned as objects, with properties and methods.
@@ -62,42 +48,24 @@ Display the list of branches, as objects.
 git branch
 ```
 
-
 ---
-
 
 ### Parameters
 #### **GitArgument**
-
 Any arguments passed to git.  All positional arguments will automatically be passed to -GitArgument.
-
-
-
-
-
 
 |Type        |Required|Position|PipelineInput|Aliases     |
 |------------|--------|--------|-------------|------------|
 |`[String[]]`|false   |named   |false        |GitArguments|
 
-
-
 #### **InputObject**
-
 An optional input object.
 If the Input is a directory, Use-Git will Push-Location to that directory
 Otherwise, it will be passed as a postional argument (after any other arguments)
 
-
-
-
-
-
 |Type          |Required|Position|PipelineInput |
 |--------------|--------|--------|--------------|
 |`[PSObject[]]`|false   |named   |true (ByValue)|
-
-
 
 #### **WhatIf**
 -WhatIf is an automatic variable that is created when a command has ```[CmdletBinding(SupportsShouldProcess)]```.
@@ -108,21 +76,14 @@ Otherwise, it will be passed as a postional argument (after any other arguments)
 
 If you pass ```-Confirm:$false``` you will not be prompted.
 
-
 If the command sets a ```[ConfirmImpact("Medium")]``` which is lower than ```$confirmImpactPreference```, you will not be prompted unless -Confirm is passed.
 
-
-
 ---
-
 
 ### Notes
 Use-Git will generate two events before git runs.  They will have the source identifiers of "Use-Git" and "Use-Git $GitArgument"
 
-
-
 ---
-
 
 ### Syntax
 ```PowerShell
