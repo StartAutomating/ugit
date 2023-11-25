@@ -81,15 +81,29 @@ $CommitDate
 # So we want several potential things to become "-m", and we have to do this in the right order.
 
 # First up is Convential Commits
-if ($type -and $Description) #  (if -Type and -Description were provided)
-{ 
+if ($type) #  (if -Type was provided)
+{
+    if (-not $Description) {
+        if ($Title) {
+            $Description = $title
+            $title = ''
+        }
+        elseif ($Message) {
+            $Description = $Message
+            $Message = ''
+        }
+        elseif ($body) {
+            $Description = $Body
+            $Message = ''
+        }
+    }
     "-m"
     # construct a conventional commit message.
     "${type}$(if ($scope) { "($scope)" }): $Description" 
 }
 
 # If title was provided, pass it as a message
-if ($Title) {
+elseif ($Title) {
     if ($Title) {"-m";$title}
 }
 
@@ -106,6 +120,10 @@ elseif (
     $Description -and -not $type
 ) {
     "-m";$Description
+}
+
+if ($Footer) {
+    "-m";$Footer
 }
 
 
