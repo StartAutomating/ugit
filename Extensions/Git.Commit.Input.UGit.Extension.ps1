@@ -76,7 +76,6 @@ $CommitDate,
 # If provided, will add mark this commit as a fix.
 # This will add 'Fixes #...' to your commit message.
 [Parameter(ValueFromPipelineByPropertyName)]
-[ValidatePattern("^\#?\d+$")]
 [string[]]
 $Fix
 )
@@ -88,7 +87,7 @@ $Fix
 # So we want several potential things to become "-m", and we have to do this in the right order.
 
 $Fixes = if ($Fix) {
-    $Fix -replace "^\#?", "Fixes #" -join ', '
+    $Fix -match '^\#?\d+$' -replace "^\#?", "Fixes #" -join ', '
 }
 
 # First up is Convential Commits
