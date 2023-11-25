@@ -110,13 +110,13 @@ if ($type) #  (if -Type was provided)
     }
     "-m"
     # construct a conventional commit message.
-    "${type}$(if ($scope) { "($scope)" }): $Description$(if ($Fixes) { " ( $fixes)"})" 
+    "${type}$(if ($scope) { "($scope)" }): $Description$(if ($Fixes) { " ( $fixes )"})" 
 }
 
 # If title was provided, pass it as a message
 elseif ($Title) {
     if ($Fix) {
-        if ($Title) {"-m";"$title$(if ($Fixes) { " ( $fixes)"})"}
+        if ($Title) {"-m";"$title$(if ($Fixes) { " ( $fixes )"})"}
     } else {
         if ($Title) {"-m";$title}
     }
