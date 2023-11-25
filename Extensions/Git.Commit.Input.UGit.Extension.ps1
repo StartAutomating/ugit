@@ -76,7 +76,7 @@ $CommitDate,
 # If provided, will add mark this commit as a fix.
 # This will add 'Fixes #...' to your commit message.
 [Parameter(ValueFromPipelineByPropertyName)]
-[ValidatePattern("^\#\d+")]
+[ValidatePattern("^\#?\d+$")]
 [string[]]
 $Fix
 )
