@@ -74,9 +74,17 @@ One or more filters
 |------------|--------|--------|---------------------|
 |`[String[]]`|false   |named   |true (ByPropertyName)|
 
+#### **Nothing**
+If set, will clone nothing.
+This means not checking out, filtering everything from the tree, and using sparse checkout
+
+|Type      |Required|Position|PipelineInput        |
+|----------|--------|--------|---------------------|
+|`[Switch]`|false   |named   |true (ByPropertyName)|
+
 ---
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Clone.Input.UGit.Extension.ps1 [-NoCheckout] [-Sparse] [-Depth <UInt32>] [-Since <DateTime>] [-Filter <String[]>] [<CommonParameters>]
+Extensions/Git.Clone.Input.UGit.Extension.ps1 [-NoCheckout] [-Sparse] [-Depth <UInt32>] [-Since <DateTime>] [-Filter <String[]>] [-Nothing] [<CommonParameters>]
 ```
