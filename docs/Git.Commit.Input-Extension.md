@@ -109,13 +109,29 @@ The commit date.
 If provided, will add mark this commit as a fix.
 This will add 'Fixes #...' to your commit message.
 
-|Type        |Required|Position|PipelineInput        |
-|------------|--------|--------|---------------------|
-|`[String[]]`|false   |named   |true (ByPropertyName)|
+|Type        |Required|Position|PipelineInput        |Aliases        |
+|------------|--------|--------|---------------------|---------------|
+|`[String[]]`|false   |named   |true (ByPropertyName)|Fixes<br/>Fixed|
+
+#### **Close**
+If provided, will add mark this commit as a close.
+This will add 'Closes #...' to your commit message.
+
+|Type        |Required|Position|PipelineInput        |Aliases          |
+|------------|--------|--------|---------------------|-----------------|
+|`[String[]]`|false   |named   |true (ByPropertyName)|Closed<br/>Closes|
+
+#### **Resolve**
+If provided, will add mark this commit as a close.
+This will add 'Resolves #...' to your commit message.
+
+|Type        |Required|Position|PipelineInput        |Aliases              |
+|------------|--------|--------|---------------------|---------------------|
+|`[String[]]`|false   |named   |true (ByPropertyName)|Resolves<br/>Resolved|
 
 ---
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Commit.Input.UGit.Extension.ps1 [-Title <String>] [-Message <String>] [-Type <String>] [-Scope <String>] [-Description <String>] [-Footer <String>] [-Body <String>] [-Trailers <IDictionary>] [-Amend] [-CommitDate <DateTime>] [-Fix <String[]>] [<CommonParameters>]
+Extensions/Git.Commit.Input.UGit.Extension.ps1 [-Title <String>] [-Message <String>] [-Type <String>] [-Scope <String>] [-Description <String>] [-Footer <String>] [-Body <String>] [-Trailers <IDictionary>] [-Amend] [-CommitDate <DateTime>] [-Fix <String[]>] [-Close <String[]>] [-Resolve <String[]>] [<CommonParameters>]
 ```
