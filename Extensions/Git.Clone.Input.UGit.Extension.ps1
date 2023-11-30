@@ -46,8 +46,22 @@ $Since,
 # One or more filters
 [Parameter(ValueFromPipelineByPropertyName)]
 [string[]]
-$Filter
+$Filter,
+
+# If set, will clone nothing.
+# This means not checking out, filtering everything from the tree, and using sparse checkout 
+[Parameter(ValueFromPipelineByPropertyName)]
+[switch]
+$Nothing
 )
+
+# If we're cloning nothing, it means:
+if ($Nothing) {
+    $NoCheckout = $true # * No checking out
+    $Sparse = $true # * Sparse checkouts only
+    $filter = "tree:0" # * Pick nothing from the tree
+    $Depth = 1 # * With a depth of 1.
+}
 
 if ($Depth) {
     '--depth'

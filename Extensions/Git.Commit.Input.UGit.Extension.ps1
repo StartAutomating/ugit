@@ -76,8 +76,23 @@ $CommitDate,
 # If provided, will add mark this commit as a fix.
 # This will add 'Fixes #...' to your commit message.
 [Parameter(ValueFromPipelineByPropertyName)]
+[Alias('Fixes','Fixed')]
 [string[]]
-$Fix
+$Fix,
+
+# If provided, will add mark this commit as a close.
+# This will add 'Closes #...' to your commit message.
+[Parameter(ValueFromPipelineByPropertyName)]
+[Alias('Closed','Closes')]
+[string[]]
+$Close,
+
+# If provided, will add mark this commit as a close.
+# This will add 'Resolves #...' to your commit message.
+[Parameter(ValueFromPipelineByPropertyName)]
+[Alias('Resolves','Resolved')]
+[string[]]
+$Resolve
 )
 
 
@@ -86,9 +101,19 @@ $Fix
 
 # So we want several potential things to become "-m", and we have to do this in the right order.
 
-$Fixes = if ($Fix) {
-    $Fix -match '^\#?\d+$' -replace "^\#?", "Fixes #" -join ', '
-}
+$Fixes = @(
+    $IssuePattern = '^\#?\d+$'
+    $IssueReplace = "^\#?"
+    if ($Close) {
+        $Close -match $IssuePattern -replace $IssueReplace, "Closes #"
+    }
+    if ($Fix) {
+        $Fix -match $IssuePattern -replace $IssueReplace, "Fixes #"
+    }
+    if ($Resolve) {
+        $Resolve -match $IssuePattern -replace $IssueReplace, "Resolve #"
+    }
+)  -join ', '
 
 # First up is Convential Commits
 if ($type) #  (if -Type was provided)
