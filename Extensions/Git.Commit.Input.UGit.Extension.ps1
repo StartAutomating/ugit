@@ -73,28 +73,35 @@ $Amend,
 [datetime]
 $CommitDate,
 
-# If provided, will add mark this commit as a fix.
+# If provided, will mark this commit as a fix.
 # This will add 'Fixes #...' to your commit message.
 [Parameter(ValueFromPipelineByPropertyName)]
-[Alias('Fixes','Fixed')]
 [string[]]
 $Fix,
 
-# If provided, will add mark this commit as a close.
+# If provided, will mark this commit as a close.
 # This will add 'Closes #...' to your commit message.
 [Parameter(ValueFromPipelineByPropertyName)]
 [Alias('Closed','Closes')]
 [string[]]
 $Close,
 
-# If provided, will add mark this commit as a close.
+# If provided, will mark this commit as a resolution.
 # This will add 'Resolves #...' to your commit message.
 [Parameter(ValueFromPipelineByPropertyName)]
 [Alias('Resolves','Resolved')]
 [string[]]
-$Resolve
+$Resolve,
+
+# If provided, will mark this commit as referencing an issue.
+# This will add 'Re #...' to your commit message.
+[Parameter(ValueFromPipelineByPropertyName)]
+[Alias('Re','Regard','Regards','Regarding','References')]
+[string[]]
+$Reference
 )
 
+$MyParameters =  [Ordered]@{} + $PSBoundParameters
 
 # git commit -m can accept multiple messages, but the first message is somewhat special.
 # (trailers cannot exist in the first message, and it's considered the subject by many other parts of git)
@@ -111,7 +118,10 @@ $Fixes = @(
         $Fix -match $IssuePattern -replace $IssueReplace, "Fixes #"
     }
     if ($Resolve) {
-        $Resolve -match $IssuePattern -replace $IssueReplace, "Resolve #"
+        $Resolve -match $IssuePattern -replace $IssueReplace, "Resolves #"
+    }
+    if ($Reference) {
+        $Reference -match $IssuePattern -replace $IssueReplace, "re #"
     }
 )  -join ', '
 
