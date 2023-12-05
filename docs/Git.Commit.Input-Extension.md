@@ -106,15 +106,15 @@ The commit date.
 |`[DateTime]`|false   |named   |true (ByPropertyName)|Date<br/>Time<br/>DateTime<br/>Timestamp|
 
 #### **Fix**
-If provided, will add mark this commit as a fix.
+If provided, will mark this commit as a fix.
 This will add 'Fixes #...' to your commit message.
 
-|Type        |Required|Position|PipelineInput        |Aliases        |
-|------------|--------|--------|---------------------|---------------|
-|`[String[]]`|false   |named   |true (ByPropertyName)|Fixes<br/>Fixed|
+|Type        |Required|Position|PipelineInput        |
+|------------|--------|--------|---------------------|
+|`[String[]]`|false   |named   |true (ByPropertyName)|
 
 #### **Close**
-If provided, will add mark this commit as a close.
+If provided, will mark this commit as a close.
 This will add 'Closes #...' to your commit message.
 
 |Type        |Required|Position|PipelineInput        |Aliases          |
@@ -122,16 +122,24 @@ This will add 'Closes #...' to your commit message.
 |`[String[]]`|false   |named   |true (ByPropertyName)|Closed<br/>Closes|
 
 #### **Resolve**
-If provided, will add mark this commit as a close.
+If provided, will mark this commit as a resolution.
 This will add 'Resolves #...' to your commit message.
 
 |Type        |Required|Position|PipelineInput        |Aliases              |
 |------------|--------|--------|---------------------|---------------------|
 |`[String[]]`|false   |named   |true (ByPropertyName)|Resolves<br/>Resolved|
 
+#### **Reference**
+If provided, will mark this commit as referencing an issue.
+This will add 'Re #...' to your commit message.
+
+|Type        |Required|Position|PipelineInput        |Aliases                                               |
+|------------|--------|--------|---------------------|------------------------------------------------------|
+|`[String[]]`|false   |named   |true (ByPropertyName)|Re<br/>Regard<br/>Regards<br/>Regarding<br/>References|
+
 ---
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Commit.Input.UGit.Extension.ps1 [-Title <String>] [-Message <String>] [-Type <String>] [-Scope <String>] [-Description <String>] [-Footer <String>] [-Body <String>] [-Trailers <IDictionary>] [-Amend] [-CommitDate <DateTime>] [-Fix <String[]>] [-Close <String[]>] [-Resolve <String[]>] [<CommonParameters>]
+Extensions/Git.Commit.Input.UGit.Extension.ps1 [-Title <String>] [-Message <String>] [-Type <String>] [-Scope <String>] [-Description <String>] [-Footer <String>] [-Body <String>] [-Trailers <IDictionary>] [-Amend] [-CommitDate <DateTime>] [-Fix <String[]>] [-Close <String[]>] [-Resolve <String[]>] [-Reference <String[]>] [<CommonParameters>]
 ```
