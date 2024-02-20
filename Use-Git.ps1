@@ -111,26 +111,24 @@
         foreach ($commandElement in $callingContext.CommandElements) {
             if (-not $commandElement.parameterName) { continue } # that is a Powershell parameter
             foreach ($dynamicParam in @($myDynamicParameters.Values)) {
+                $dynamicParameterAliases = $dynamicParam.Attributes.AliasNames
                 if (
                     (
                         # If it started with this name
                         $dynamicParam.Name.StartsWith($commandElement.parameterName, 'CurrentCultureIgnoreCase') -and 
                         # but was not the full parameter name, we'll remove it
                         $dynamicParam.Name -ne $commandElement.parameterName
-                    ) -or # otherwise                         
-                    (                
-                        # If the dynamic parameter had aliases        
-                        $dynamicParam.Attributes.AliasNames -and
-                        $(foreach ($aliasName in $dynamicParam.Attributes.AliasNames) {
-                            if (-not $aliasName) { continue }
-                            # and any of those aliases starts with the parameter name
-                            if ($aliasName.StartsWith($commandElement.parameterName, 'CurrentCultureIgnoreCase') -and 
-                                # and is not the full parameter name
-                                $aliasName -ne $commandElement.parameterName) {
-                                # we also want to remove it
-                                $true; break
-                            }
-                        })                             
+                    ) -and # otherwise                         
+                    (   
+                        (-not $dynamicParameterAliases) -or (             
+                            # If the dynamic parameter had aliases        
+                            $dynamicParameterAliases.Attributes.AliasNames -and
+                            # we may want to remove it if none of the aliases is a full match.
+                            $(
+                                $AliasesLikeElement = $dynamicParam.Attributes.AliasNames -like "$($commandElement.parameterName)*"
+                                $AliasesLikeElement -and $AliasesLikeElement -notcontains $commandElement.parameterName
+                            )
+                        )
                     )
                 ) {
                     $null = $myDynamicParameters.Remove($dynamicParam.Name)
