@@ -116,16 +116,19 @@
                     (
                         # If it started with this name
                         $dynamicParam.Name.StartsWith($commandElement.parameterName, 'CurrentCultureIgnoreCase') -and 
-                        # but was not the full parameter name, we'll remove it
+                        # but was not the full parameter name, we might want to remove it.
                         $dynamicParam.Name -ne $commandElement.parameterName
-                    ) -and # otherwise                         
+                    ) -and # To be as sure as we can be, 
                     (   
-                        (-not $dynamicParameterAliases) -or (             
-                            # If the dynamic parameter had aliases        
-                            $dynamicParameterAliases.Attributes.AliasNames -and
-                            # we may want to remove it if none of the aliases is a full match.
+                        # we only remove the parameter if it has no aliases                        
+                        (-not $dynamicParameterAliases) -or # or
+                        (             
+                            # the dynamic parameter had aliases        
+                            $dynamicParameterAliases.Attributes.AliasNames -and                            
                             $(
+                                # at least one starts with the parameter name
                                 $AliasesLikeElement = $dynamicParam.Attributes.AliasNames -like "$($commandElement.parameterName)*"
+                                # and does not contain the exact parameter name.
                                 $AliasesLikeElement -and $AliasesLikeElement -notcontains $commandElement.parameterName
                             )
                         )
