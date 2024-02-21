@@ -25,8 +25,17 @@ $Message,
 # https://www.conventionalcommits.org/en/v1.0.0/#specification
 [ArgumentCompleter({
     @(
-        "feat" # feature
-        "fix"  # bugfix
+        "feat"      # feature
+        "fix"       # bugfix
+        "build"     # build related
+        "chore"     # chore / code housekeeping
+        "ci"        # ci
+        "docs"      # documentation
+        "style"     # stylistic
+        "refactor"  # refactoring
+        "perf"      # performance improvement
+        "test"      # tests
+        "BREAKING CHANGE" # BREAKING CHANGES
         # any other custom values can be provided by a global variable
         # (method subject to change)
         if (${global:ugit.ConventionalCommitTypes}) {
@@ -76,6 +85,7 @@ $CommitDate,
 # If provided, will mark this commit as a fix.
 # This will add 'Fixes #...' to your commit message.
 [Parameter(ValueFromPipelineByPropertyName)]
+[Alias('Fixes','Fixed')]
 [string[]]
 $Fix,
 
