@@ -44,6 +44,15 @@ The type of the commit.  This uses the conventional commits format.
 https://www.conventionalcommits.org/en/v1.0.0/#specification
 feature
 bugfix
+build related
+chore / code housekeeping
+ci
+documentation
+stylistic
+refactoring
+performance improvement
+tests
+BREAKING CHANGES
 any other custom values can be provided by a global variable
 (method subject to change)
 
@@ -109,9 +118,9 @@ The commit date.
 If provided, will mark this commit as a fix.
 This will add 'Fixes #...' to your commit message.
 
-|Type        |Required|Position|PipelineInput        |
-|------------|--------|--------|---------------------|
-|`[String[]]`|false   |named   |true (ByPropertyName)|
+|Type        |Required|Position|PipelineInput        |Aliases        |
+|------------|--------|--------|---------------------|---------------|
+|`[String[]]`|false   |named   |true (ByPropertyName)|Fixes<br/>Fixed|
 
 #### **Close**
 If provided, will mark this commit as a close.
