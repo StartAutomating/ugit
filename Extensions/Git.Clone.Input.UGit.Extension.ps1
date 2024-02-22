@@ -51,6 +51,7 @@ $Filter,
 # If set, will clone nothing.
 # This means not checking out, filtering everything from the tree, and using sparse checkout 
 [Parameter(ValueFromPipelineByPropertyName)]
+[Alias('None','Nada')]
 [switch]
 $Nothing
 )
@@ -60,7 +61,7 @@ if ($Nothing) {
     $NoCheckout = $true # * No checking out
     $Sparse = $true # * Sparse checkouts only
     $filter = "tree:0" # * Pick nothing from the tree
-    $Depth = 1 # * With a depth of 1.
+    $Depth = 1 # * With a depth of 1
 }
 
 if ($Depth) {
