@@ -78,9 +78,9 @@ One or more filters
 If set, will clone nothing.
 This means not checking out, filtering everything from the tree, and using sparse checkout
 
-|Type      |Required|Position|PipelineInput        |
-|----------|--------|--------|---------------------|
-|`[Switch]`|false   |named   |true (ByPropertyName)|
+|Type      |Required|Position|PipelineInput        |Aliases      |
+|----------|--------|--------|---------------------|-------------|
+|`[Switch]`|false   |named   |true (ByPropertyName)|None<br/>Nada|
 
 ---
 
