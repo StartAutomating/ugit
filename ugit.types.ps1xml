@@ -168,14 +168,6 @@ Pop-Location
     <Name>git.error</Name>
     <Members>
       <ScriptProperty>
-        <Name>NotGitCommand</Name>
-        <GetScriptBlock>
-                        if ($this -match "^git:\s'(?&lt;cmd&gt;.+?)'is not a git command.") {
-    return $matches.cmd
-}
-                    </GetScriptBlock>
-      </ScriptProperty>
-      <ScriptProperty>
         <Name>UnknownRevision</Name>
         <GetScriptBlock>
                         &lt;#
@@ -280,6 +272,19 @@ foreach ($line in $this -split '[\r\n]+') {
 }
 
 
+                    </GetScriptBlock>
+      </ScriptProperty>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.output</Name>
+    <Members>
+      <ScriptProperty>
+        <Name>NotGitCommand</Name>
+        <GetScriptBlock>
+                        if ($this -match "^git:\s'(?&lt;cmd&gt;.+?)'is not a git command.") {
+    return $matches.cmd
+}
                     </GetScriptBlock>
       </ScriptProperty>
     </Members>
