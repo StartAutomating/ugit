@@ -282,7 +282,13 @@ foreach ($line in $this -split '[\r\n]+') {
       <ScriptProperty>
         <Name>NotGitCommand</Name>
         <GetScriptBlock>
-                        if ($this -match "^git:\s'(?&lt;cmd&gt;.+?)'is not a git command.") {
+                        &lt;#
+.SYNOPSIS
+    Gets what was not a Git Command
+.DESCRIPTION
+    If the git output is not a git command, this will output the command name.
+#&gt;
+if ($this -match "^git:\s'(?&lt;cmd&gt;.+?)' is not a git command.") {
     return $matches.cmd
 }
                     </GetScriptBlock>
