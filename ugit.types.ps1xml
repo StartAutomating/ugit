@@ -254,6 +254,29 @@ Pop-Location
     </Members>
   </Type>
   <Type>
+    <Name>git.merge.error</Name>
+    <Members>
+      <ScriptProperty>
+        <Name>Conflict</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets Conflicts
+.DESCRIPTION
+    Gets Conflicts from any git merge output.
+#&gt;
+foreach ($line in $this -split '[\r\n]+') {
+    if ($line -match "^\t(?&lt;path&gt;.+?)\s{0,}$") {
+        $matches.path
+    }    
+}
+
+
+                    </GetScriptBlock>
+      </ScriptProperty>
+    </Members>
+  </Type>
+  <Type>
     <Name>git.pull.error</Name>
     <Members>
       <ScriptProperty>
