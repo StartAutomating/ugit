@@ -165,6 +165,25 @@ Pop-Location
     </Members>
   </Type>
   <Type>
+    <Name>git.error</Name>
+    <Members>
+      <ScriptProperty>
+        <Name>UnknownRevision</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets Unknown Revisions
+.DESCRIPTION
+    Gets Unknown Revisions from any git error output.
+#&gt;
+if ($this -match "'(?&lt;n&gt;.+?)'\: unknown revision or path not in the working tree") {
+    $matches.n
+}
+                    </GetScriptBlock>
+      </ScriptProperty>
+    </Members>
+  </Type>
+  <Type>
     <Name>git.log</Name>
     <Members>
       <ScriptMethod>
