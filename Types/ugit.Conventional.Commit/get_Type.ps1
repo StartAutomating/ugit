@@ -1,3 +1,15 @@
+<#
+.SYNOPSIS
+    Gets Conventional Commit Types
+.DESCRIPTION
+    Gets the different types of Conventional Commits
+.EXAMPLE
+    $ugit.ConventionalCommit.Type
+.LINK
+    https://www.conventionalcommits.org/en/v1.0.0/#specification
+#>
+param()
+
 if (-not $this.'.Types') {
     $this | Add-Member NoteProperty '.Types' @(
         "feat"      # feature
