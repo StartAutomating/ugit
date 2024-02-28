@@ -20,6 +20,7 @@ if (-not $this.'.Types') {
         "docs"      # documentation
         "style"     # stylistic
         "refactor"  # refactoring
+        "release"   # releasing
         "perf"      # performance improvement
         "test"      # tests
         "BREAKING CHANGE" # BREAKING CHANGES
