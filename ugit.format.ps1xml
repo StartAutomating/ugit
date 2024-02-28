@@ -2999,6 +2999,34 @@ $BackgroundColor
       </TableControl>
     </View>
     <View>
+      <Name>ugit.Conventional.Commit</Name>
+      <ViewSelectedBy>
+        <TypeName>ugit.Conventional.Commit</TypeName>
+      </ViewSelectedBy>
+      <CustomControl>
+        <CustomEntries>
+          <CustomEntry>
+            <CustomItem>
+              <ExpressionBinding>
+                <ScriptBlock>
+    @(
+        if ($_.README) {
+            Show-Markdown $_.README
+        }
+
+        Show-Markdown -InputObject "### Conventinal Commit Types"
+        Show-Markdown -InputObject (
+            '* ' + $($_.Type -join ([Environment]::NewLine + '* '))
+        )
+    ) -join [Environment]::NewLine
+</ScriptBlock>
+              </ExpressionBinding>
+            </CustomItem>
+          </CustomEntry>
+        </CustomEntries>
+      </CustomControl>
+    </View>
+    <View>
       <Name>ugit.extension</Name>
       <ViewSelectedBy>
         <TypeName>ugit.extension</TypeName>
