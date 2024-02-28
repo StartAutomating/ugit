@@ -24,24 +24,16 @@ $Message,
 # The type of the commit.  This uses the conventional commits format.
 # https://www.conventionalcommits.org/en/v1.0.0/#specification
 [ArgumentCompleter({
-    @(
-        "feat"      # feature
-        "fix"       # bugfix
-        "build"     # build related
-        "chore"     # chore / code housekeeping
-        "ci"        # ci
-        "docs"      # documentation
-        "style"     # stylistic
-        "refactor"  # refactoring
-        "perf"      # performance improvement
-        "test"      # tests
-        "BREAKING CHANGE" # BREAKING CHANGES
-        # any other custom values can be provided by a global variable
-        # (method subject to change)
-        if (${global:ugit.ConventionalCommitTypes}) {
-            ${global:ugit.ConventionalCommitTypes}
-        }
-    )
+    param ( $commandName,
+    $parameterName,
+    $wordToComplete,
+    $commandAst,
+    $fakeBoundParameters )
+    if ($wordToComplete) {
+        $ugit.ConventionalCommits.Types -like "$WordToComplete*"
+    } else {
+        $ugit.ConventionalCommits.Types
+    }
 })]
 [string]
 $Type,
