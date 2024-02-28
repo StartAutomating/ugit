@@ -1,25 +1,16 @@
 Extensions/Git.Log.UGit.Extension.ps1
 -------------------------------------
 
-
-
-
 ### Synopsis
 Log Extension
 
-
-
 ---
-
 
 ### Description
 
 Outputs git log as objects.
 
-
-
 ---
-
 
 ### Examples
 Get all logs
@@ -67,9 +58,7 @@ git log |
 git log --merges
 ```
 
-
 ---
-
 
 ### Syntax
 ```PowerShell

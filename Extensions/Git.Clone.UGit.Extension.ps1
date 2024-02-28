@@ -50,7 +50,7 @@ end {
 
     if ($dest) {
         $destPath = $ExecutionContext.SessionState.Path.GetResolvedPSPathFromPSPath($dest)
-        $gitUrl = $gitArgument | Where-Object { $_ -like '*.git' -and $_ -as [uri]}
+        $gitUrl = $gitArgument | Where-Object { ($_ -as [uri]).Authority}
         [PSCustomObject]@{
             PSTypeName = 'git.clone'
             GitRoot    = "$destPath"

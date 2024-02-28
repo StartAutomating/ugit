@@ -1,16 +1,10 @@
 Out-Git
 -------
 
-
-
-
 ### Synopsis
 Outputs Git to PowerShell
 
-
-
 ---
-
 
 ### Description
 
@@ -25,20 +19,12 @@ Extensions use two attributes to indicate if they should be run:
 [ValidatePattern("RegularExpression")]      # This is run on $GitCommand to determine if the extension should run.
 ~~~
 
-
-
 ---
-
 
 ### Related Links
 * [Invoke-Git](Invoke-Git.md)
 
-
-
-
-
 ---
-
 
 ### Examples
 Log entries are returned as objects, with properties and methods.
@@ -62,83 +48,43 @@ Display the list of branches, as objects.
 git branch
 ```
 
-
 ---
-
 
 ### Parameters
 #### **GitOutputLine**
-
 One or more output lines from Git.
-
-
-
-
-
 
 |Type        |Required|Position|PipelineInput |Aliases       |
 |------------|--------|--------|--------------|--------------|
 |`[String[]]`|false   |named   |true (ByValue)|GitOutputLines|
 
-
-
 #### **GitArgument**
-
 The arguments that were passed to git.
-
-
-
-
-
 
 |Type        |Required|Position|PipelineInput|
 |------------|--------|--------|-------------|
 |`[String[]]`|false   |named   |false        |
 
-
-
 #### **GitRoot**
-
 The root of the current git repository.
-
-
-
-
-
 
 |Type      |Required|Position|PipelineInput|
 |----------|--------|--------|-------------|
 |`[String]`|false   |named   |false        |
 
-
-
 #### **TimeStamp**
-
 The timestamp.   This can be used for tracking.  Defaults to [DateTime]::Now
-
-
-
-
-
 
 |Type        |Required|Position|PipelineInput|
 |------------|--------|--------|-------------|
 |`[DateTime]`|false   |named   |false        |
 
-
-
-
-
 ---
-
 
 ### Notes
 Out-Git will generate two events upon completion.  They will have the source identifiers of "Out-Git" and "Out-Git $GitArgument"
 
-
-
 ---
-
 
 ### Syntax
 ```PowerShell

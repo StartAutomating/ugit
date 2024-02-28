@@ -118,6 +118,25 @@ You might want to try giving some of these a try.
     git clone https://github.com/MDN/content.git # This is a big repo.  Progress bars will be very welcome.
 ~~~
 
+### Git.Clone.Input Example 2
+
+
+~~~PowerShell
+    # If we don't check things out, cloning is faster.
+    git clone https://github.com/PowerShell/PowerShell -NoCheckout 
+    # (of course, that's because we're not copying files, just history)
+~~~
+
+### Git.Clone.Input Example 3
+
+
+~~~PowerShell
+    # We can also clone more quickly by only picking a certain number of commits
+    git clone https://github.com/Microsoft/vscode.git -Depth 1
+    # (of course, this will make the history lie to you,
+    # by saying everything was changed whenever anything was changed)
+~~~
+
 ### Git.Clone Example 1
 
 
@@ -175,6 +194,13 @@ You might want to try giving some of these a try.
 
 ~~~PowerShell
     git archive -o My.zip
+~~~
+
+### Git.Format.Simple Example 1
+
+
+~~~PowerShell
+    git branch --format "%(refname:short)|%(objectname)|%(parent)|%(committerdate:iso8601)|%(objecttype)"
 ~~~
 
 ### Git.Grep Example 1
@@ -418,6 +444,9 @@ Most extensions handle output from a single git command.
 
  
 * [Git FileName](Git.FileName-Extension.md)
+
+ 
+* [Git Format Simple](Git.Format.Simple-Extension.md)
 
  
 * [Git Grep](Git.Grep-Extension.md)

@@ -21,7 +21,7 @@ begin {
     If any of these parameters are used, we will skip processing.
     #>
     $SkipIf = 'm', 'c', 'column','format', 'show-current' -join '|'
-    if ($gitCommand -match "\s-(?>$SkipIf)")      { continue }
+    if ($gitCommand -match "\s-{1,2}(?>$SkipIf)")      { continue }
     $allBranches = @()
 }
 process {

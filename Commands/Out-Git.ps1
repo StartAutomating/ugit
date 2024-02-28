@@ -144,20 +144,33 @@
 
         $AllGitOutput    = [Collections.Queue]::new()
         $ProcessedOutput = [Collections.Queue]::new()
+        $OutputLineCount = 0
+        $errorTypeNames  = @()
     }
 
     process {
         # Walk over each output.
+
         foreach ($out in $GitOutputLine) {
+            $OutputLineCount++
             # If the out was a literal string of 'System.Management.Automation.RemoteException',
             if ("$out" -eq "System.Management.Automation.RemoteException") {
                 # ignore it and continue (these things happen with some exes from time to time).
                 continue
             }
 
-            $AllGitOutput.Enqueue($out)
-            # Wrap the output in a PSObject
-            $gitOut = [PSObject]::new($out)
+            try {
+                $AllGitOutput.Enqueue($out)
+                
+                # Wrap the output in a PSObject
+                $gitOut = [PSObject]::new($out)
+            } catch {                
+                # [AMSI](https://learn.microsoft.com/en-us/windows/win32/amsi/how-amsi-helps) will prevent creation of a PSObject from a string if it is deemed malicious
+                # Therefore, if we could not create the object, complain with the exact line and keep moving.
+                Write-Error "Line $outputLineCount : $_"
+                continue
+            }
+
             # Next, clear it's typenames and determine an automatic typename.
             # The first typename is the complete set of arguments ( separated by periods )
             # Followed by each smaller set of arguments, separated by periods
@@ -165,7 +178,7 @@
             # Thus, for example, git clone $repo
             # Would have the typenames of :"git.clone.$repo.output", "git.clone.output","git.output"
             $gitOut.pstypenames.clear()
-            for ($n = $GitArgument.Length - 1 ; $n -ge 0; $n--) {
+            for ($n = $GitArgument.Length - 2 ; $n -ge 0; $n--) {
                 $gitOut.pstypenames.add(@('git') + $GitArgument[0..$n]  + @('output') -join '.')
             }
             $gitOut.pstypenames.add('git.output')
@@ -179,8 +192,14 @@
             # If the output started with "error" or "fatal"
             if ("$out" -match "^(?:error|fatal):") {
                 $exception = [Exception]::new($("$out" -replace '^(?:error|fatal):')) # Create an exception
+                $errorRecord = [Management.Automation.ErrorRecord]::new($exception,"$GitCommand", 'NotSpecified',$gitOut)
+                $errorTypeNames = @($gitOut.pstypenames -replace 'output','error')
+                foreach ($typename in $errorTypeNames) {
+                    $errorRecord.pstypenames.add($typename)
+                }
+                
                 $PSCmdlet.WriteError( # and write an error using $psCmdlet (this simplifies the displayed callstack).
-                    [Management.Automation.ErrorRecord]::new($exception,"$GitCommand", 'NotSpecified',$gitOut)
+                    $errorRecord
                 )
                 # If there was an error, cancel all steppable pipelines (thus stopping any extensions)
                 $steppablePipelines = @()
@@ -196,7 +215,14 @@
 
             if (-not $steppablePipelines) {
                 # If we do not have steppable pipelines, output directly
-                $gitOut
+                if ($errorTypeNames -and $gitOut.pstypenames) {
+                    foreach ($typeName in $errorTypeNames) {
+                        $gitOut.pstypenames.add($typename)
+                    }
+                    $gitOut
+                } else {
+                    $gitOut
+                }                
             }
             else {
                 # If we have steppable pipelines, then we have to do a similar operation as we did for begin.

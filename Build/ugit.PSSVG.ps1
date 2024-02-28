@@ -1,5 +1,5 @@
 #requires -Module PSSVG
-   
+Push-Location ($PSScriptRoot | Split-Path)   
 $psChevron = 
     svg.symbol -Id psChevron -Content @(
         svg.polygon -Points (@(
@@ -12,7 +12,7 @@ $psChevron =
         ) -join ' ')
     ) -ViewBox 100, 100 -PreserveAspectRatio $false
 
-$assetsPath = Join-Path $PSScriptRoot assets
+$assetsPath = Join-Path $pwd assets
 
 if (-not (Test-Path $assetsPath)) {
     $null = New-item -ItemType Directory -Path $assetsPath
@@ -27,3 +27,5 @@ svg -ViewBox 300, 100 @(
         SVG.tspan -FontSize 1em -Content 'git' -Dx -.25em
     ) -FontFamily 'serif' -Fill '#4488ff' -FontSize 4em 
 ) -OutputPath (Join-Path $assetsPath ugit.svg)
+
+Pop-Location

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-16"?>
-<!-- Generated with EZOut 2.0.2: Install-Module EZOut or https://github.com/StartAutomating/EZOut -->
+<!-- Generated with EZOut 2.0.4: Install-Module EZOut or https://github.com/StartAutomating/EZOut -->
 <Types>
   <Type>
     <Name>git.blame</Name>
@@ -109,6 +109,23 @@ Pop-Location
     </Members>
   </Type>
   <Type>
+    <Name>git.checkout</Name>
+    <Members>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.clone</Name>
+    <Members>
+      <ScriptMethod>
+        <Name>ToString</Name>
+        <Script>
+                        $this.Directory.ToString()
+
+                    </Script>
+      </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
     <Name>git.commit.info</Name>
     <Members>
       <ScriptMethod>
@@ -150,6 +167,40 @@ Pop-Location
 
                     </Script>
       </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.diff</Name>
+    <Members>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.error</Name>
+    <Members>
+      <ScriptProperty>
+        <Name>UnknownRevision</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets Unknown Revisions
+.DESCRIPTION
+    Gets Unknown Revisions from any git error output.
+#&gt;
+if ($this -match "'(?&lt;n&gt;.+?)'\: unknown revision or path not in the working tree") {
+    $matches.n
+}
+                    </GetScriptBlock>
+      </ScriptProperty>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.grep</Name>
+    <Members>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.init</Name>
+    <Members>
     </Members>
   </Type>
   <Type>
@@ -223,6 +274,81 @@ Pop-Location
     </Members>
   </Type>
   <Type>
+    <Name>git.merge.error</Name>
+    <Members>
+      <ScriptProperty>
+        <Name>Conflict</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets Conflicts
+.DESCRIPTION
+    Gets Conflicts from any git merge output.
+#&gt;
+foreach ($line in $this -split '[\r\n]+') {
+    if ($line -match "^\t(?&lt;path&gt;.+?)\s{0,}$") {
+        $matches.path
+    }    
+}
+
+
+                    </GetScriptBlock>
+      </ScriptProperty>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.output</Name>
+    <Members>
+      <ScriptProperty>
+        <Name>NotGitCommand</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets what was not a Git Command
+.DESCRIPTION
+    If the git output is not a git command, this will output the command name.
+#&gt;
+if ($this -match "^git:\s'(?&lt;cmd&gt;.+?)' is not a git command.") {
+    return $matches.cmd
+}
+                    </GetScriptBlock>
+      </ScriptProperty>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.pull</Name>
+    <Members>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.pull.error</Name>
+    <Members>
+      <ScriptProperty>
+        <Name>Conflict</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets Conflicts
+.DESCRIPTION
+    Gets Conflicts from any git pull output.
+#&gt;
+foreach ($line in $this -split '[\r\n]+') {
+    if ($line -match "^\t(?&lt;path&gt;.+?)\s{0,}$") {
+        $matches.path
+    }    
+}
+
+
+                    </GetScriptBlock>
+      </ScriptProperty>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.push</Name>
+    <Members>
+    </Members>
+  </Type>
+  <Type>
     <Name>git.reference.log</Name>
     <Members>
       <AliasProperty>
@@ -286,6 +412,11 @@ Pop-Location
     </Members>
   </Type>
   <Type>
+    <Name>git.remote</Name>
+    <Members>
+    </Members>
+  </Type>
+  <Type>
     <Name>git.remote.name</Name>
     <Members>
       <ScriptMethod>
@@ -294,6 +425,21 @@ Pop-Location
                         "$($this.RemoteName)"
                     </Script>
       </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.removal</Name>
+    <Members>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.shortlog</Name>
+    <Members>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.stash</Name>
+    <Members>
     </Members>
   </Type>
   <Type>
@@ -363,6 +509,11 @@ Pop-Location
 
                     </Script>
       </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.submodule</Name>
+    <Members>
     </Members>
   </Type>
   <Type>
@@ -500,6 +651,111 @@ Pop-Location
 
                     </GetScriptBlock>
       </ScriptProperty>
+    </Members>
+  </Type>
+  <Type>
+    <Name>ugit</Name>
+    <Members>
+      <AliasProperty>
+        <Name>ConventionalCommits</Name>
+        <ReferencedMemberName>ConventionalCommit</ReferencedMemberName>
+      </AliasProperty>
+      <ScriptProperty>
+        <Name>ConventionalCommit</Name>
+        <GetScriptBlock>
+                        if (-not $this.'.ConventionalCommits') {
+    $this | Add-Member NoteProperty '.ConventionalCommits' ([PSCustomObject]@{
+        PSTypeName = 'ugit.Conventional.Commit'
+    })
+}
+
+$this.'.ConventionalCommits'
+
+                    </GetScriptBlock>
+      </ScriptProperty>
+    </Members>
+  </Type>
+  <Type>
+    <Name>ugit.Conventional.Commit</Name>
+    <Members>
+      <AliasProperty>
+        <Name>Types</Name>
+        <ReferencedMemberName>Type</ReferencedMemberName>
+      </AliasProperty>
+      <ScriptProperty>
+        <Name>Type</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets Conventional Commit Types
+.DESCRIPTION
+    Gets the different types of Conventional Commits
+.EXAMPLE
+    $ugit.ConventionalCommit.Type
+.LINK
+    https://www.conventionalcommits.org/en/v1.0.0/#specification
+#&gt;
+param()
+
+if (-not $this.'.Types') {
+    $this | Add-Member NoteProperty '.Types' @(
+        "feat"      # feature
+        "fix"       # bugfix
+        "build"     # build related
+        "chore"     # chore / code housekeeping
+        "ci"        # ci
+        "docs"      # documentation
+        "style"     # stylistic
+        "refactor"  # refactoring
+        "release"   # releasing
+        "perf"      # performance improvement
+        "test"      # tests
+        "BREAKING CHANGE" # BREAKING CHANGES
+    ) -Force
+}
+$this.'.Types'
+
+                    </GetScriptBlock>
+        <SetScriptBlock>
+                        param()
+
+$unrolledArgs = @($args | . { process { $_ }})
+
+$standardTypes = @(
+    "feat"      # feature
+    "fix"       # bugfix
+    "build"     # build related
+    "chore"     # chore / code housekeeping
+    "ci"        # ci
+    "docs"      # documentation
+    "style"     # stylistic
+    "refactor"  # refactoring
+    "release"   # releasing
+    "perf"      # performance improvement
+    "test"      # tests
+    "BREAKING CHANGE" # BREAKING CHANGES
+)
+
+$combinedTypes = @(@($unrolledArgs + $standardTypes) | Select-Object -Unique)
+
+$this | Add-Member NoteProperty '.Types' $combinedTypes -Force
+
+                    </SetScriptBlock>
+      </ScriptProperty>
+      <NoteProperty>
+        <Name>README</Name>
+        <Value>Conventional Commits are a useful way to organize your commit messages in Git.
+
+To learn more about them, visit:
+
+https://www.conventionalcommits.org/ 
+
+ugit makes them a little easier to work with.
+
+In ugit, `git commit` supports a virtual parameter `-Type`.
+
+You can tab thru any conventional commit types until you find the right one.</Value>
+      </NoteProperty>
     </Members>
   </Type>
   <Type>

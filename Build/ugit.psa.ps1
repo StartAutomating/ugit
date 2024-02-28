@@ -24,7 +24,7 @@ $isMergeToMain =
     ($gitHubEvent.head_commit.message -match "Merge Pull Request #(?<PRNumber>\d+)") -and 
     $gitHubEvent.ref -in 'refs/heads/main', 'refs/heads/master'
 
-
+Push-Location ($PSScriptRoot | Split-Path)
 $importedModule = Import-Module .\ugit.psd1 -Global -PassThru
 $importedModule | Out-Host
 $moduleAndVersion = "$($importedModule.Name) $($importedModule.Version)"
@@ -47,6 +47,8 @@ if ($isMergeToMain -or $isManuallyTriggered) {
     } -LinkPattern @{
         $importedModule.Name = $importedModule.PrivateData.PSData.ProjectURI
     }
-    
+    Pop-Location    
     return
 }
+
+Pop-Location
