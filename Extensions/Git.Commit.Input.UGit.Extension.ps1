@@ -30,9 +30,9 @@ $Message,
     $commandAst,
     $fakeBoundParameters )
     if ($wordToComplete) {
-        $ugit.ConventionalCommits.Types -like "$WordToComplete*"
+        @($ugit.ConventionalCommits.Types) -like "$WordToComplete*" -replace '^', "'" -replace '$',"'"
     } else {
-        $ugit.ConventionalCommits.Types
+        $ugit.ConventionalCommits.Types -replace '^', "'" -replace '$',"'"
     }
 })]
 [string]
