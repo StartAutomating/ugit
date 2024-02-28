@@ -109,6 +109,11 @@ Pop-Location
     </Members>
   </Type>
   <Type>
+    <Name>git.checkout</Name>
+    <Members>
+    </Members>
+  </Type>
+  <Type>
     <Name>git.clone</Name>
     <Members>
       <ScriptMethod>
@@ -165,6 +170,11 @@ Pop-Location
     </Members>
   </Type>
   <Type>
+    <Name>git.diff</Name>
+    <Members>
+    </Members>
+  </Type>
+  <Type>
     <Name>git.error</Name>
     <Members>
       <ScriptProperty>
@@ -181,6 +191,16 @@ if ($this -match "'(?&lt;n&gt;.+?)'\: unknown revision or path not in the workin
 }
                     </GetScriptBlock>
       </ScriptProperty>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.grep</Name>
+    <Members>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.init</Name>
+    <Members>
     </Members>
   </Type>
   <Type>
@@ -296,6 +316,11 @@ if ($this -match "^git:\s'(?&lt;cmd&gt;.+?)' is not a git command.") {
     </Members>
   </Type>
   <Type>
+    <Name>git.pull</Name>
+    <Members>
+    </Members>
+  </Type>
+  <Type>
     <Name>git.pull.error</Name>
     <Members>
       <ScriptProperty>
@@ -316,6 +341,11 @@ foreach ($line in $this -split '[\r\n]+') {
 
                     </GetScriptBlock>
       </ScriptProperty>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.push</Name>
+    <Members>
     </Members>
   </Type>
   <Type>
@@ -382,6 +412,11 @@ Pop-Location
     </Members>
   </Type>
   <Type>
+    <Name>git.remote</Name>
+    <Members>
+    </Members>
+  </Type>
+  <Type>
     <Name>git.remote.name</Name>
     <Members>
       <ScriptMethod>
@@ -390,6 +425,21 @@ Pop-Location
                         "$($this.RemoteName)"
                     </Script>
       </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.removal</Name>
+    <Members>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.shortlog</Name>
+    <Members>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.stash</Name>
+    <Members>
     </Members>
   </Type>
   <Type>
@@ -459,6 +509,11 @@ Pop-Location
 
                     </Script>
       </ScriptMethod>
+    </Members>
+  </Type>
+  <Type>
+    <Name>git.submodule</Name>
+    <Members>
     </Members>
   </Type>
   <Type>
