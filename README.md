@@ -196,6 +196,13 @@ You might want to try giving some of these a try.
     git archive -o My.zip
 ~~~
 
+### Git.Format.Simple Example 1
+
+
+~~~PowerShell
+    git branch --format "%(refname:short)|%(objectname)|%(parent)|%(committerdate:iso8601)|%(objecttype)"
+~~~
+
 ### Git.Grep Example 1
 
 
@@ -437,6 +444,9 @@ Most extensions handle output from a single git command.
 
  
 * [Git FileName](docs/Git.FileName-Extension.md)
+
+ 
+* [Git Format Simple](docs/Git.Format.Simple-Extension.md)
 
  
 * [Git Grep](docs/Git.Grep-Extension.md)
