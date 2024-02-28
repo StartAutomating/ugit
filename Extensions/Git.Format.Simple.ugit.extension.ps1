@@ -26,7 +26,7 @@ begin {
 }
 process {
     $columnNumber = 0
-    $parsedFormatObject = [Ordered]@{PSTypename=@($gitOut.pstypenames)[1] -replace '--format','properties'}
+    $parsedFormatObject = [Ordered]@{PSTypename=@($gitOut.pstypenames)[1] -replace '--format','format.simple'}
     foreach ($gitOutputSegment in $gitOut -split $expectedDelimiter) {
         if ($expectedColumns[$columnNumber].Groups["proptype"].Value -eq 'iso8601') {
             $gitOutputSegment = $gitOutputSegment -as [datetime]
