@@ -42,19 +42,6 @@ The commit message.
 #### **Type**
 The type of the commit.  This uses the conventional commits format.
 https://www.conventionalcommits.org/en/v1.0.0/#specification
-feature
-bugfix
-build related
-chore / code housekeeping
-ci
-documentation
-stylistic
-refactoring
-performance improvement
-tests
-BREAKING CHANGES
-any other custom values can be provided by a global variable
-(method subject to change)
 
 |Type      |Required|Position|PipelineInput|
 |----------|--------|--------|-------------|
