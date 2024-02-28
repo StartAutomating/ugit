@@ -1,6 +1,10 @@
 ﻿#requires -Module PSDevOps
-Push-Location $PSScriptRoot
-Import-BuildStep -ModuleName ugit
+Import-BuildStep -SourcePath (
+    Join-Path $PSScriptRoot 'GitHub'
+) -BuildSystem GitHubWorkflow
+
+Push-Location ($PSScriptRoot | Split-Path)
+
 New-GitHubWorkflow -Name "Analyze, Test, Tag, and Publish" -On Push, PullRequest, Demand -Job PowerShellStaticAnalysis, 
     TestPowerShellOnLinux, 
     TagReleaseAndPublish, 
