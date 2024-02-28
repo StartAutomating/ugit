@@ -715,6 +715,30 @@ if (-not $this.'.Types') {
 $this.'.Types'
 
                     </GetScriptBlock>
+        <SetScriptBlock>
+                        param()
+
+$unrolledArgs = @($args | . { process { $_ }})
+
+$standardTypes = @(
+    "feat"      # feature
+    "fix"       # bugfix
+    "build"     # build related
+    "chore"     # chore / code housekeeping
+    "ci"        # ci
+    "docs"      # documentation
+    "style"     # stylistic
+    "refactor"  # refactoring
+    "perf"      # performance improvement
+    "test"      # tests
+    "BREAKING CHANGE" # BREAKING CHANGES
+)
+
+$combinedTypes = @(@($unrolledArgs + $standardTypes) | Select-Object -Unique)
+
+$this | Add-Member NoteProperty '.Types' $combinedTypes -Force
+
+                    </SetScriptBlock>
       </ScriptProperty>
       <NoteProperty>
         <Name>README</Name>
