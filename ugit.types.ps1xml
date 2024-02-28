@@ -660,6 +660,19 @@ Pop-Location
         <Name>ConventionalCommits</Name>
         <ReferencedMemberName>ConventionalCommit</ReferencedMemberName>
       </AliasProperty>
+      <ScriptProperty>
+        <Name>ConventionalCommit</Name>
+        <GetScriptBlock>
+                        if (-not $this.'.ConventionalCommits') {
+    $this | Add-Member NoteProperty '.ConventionalCommits' ([PSCustomObject]@{
+        PSTypeName = 'ugit.Conventional.Commit'
+    })
+}
+
+$this.'.ConventionalCommits'
+
+                    </GetScriptBlock>
+      </ScriptProperty>
     </Members>
   </Type>
   <Type>
