@@ -1,6 +1,6 @@
 #requires -Module HelpOut
 
-Push-Location $PSScriptRoot
+Push-Location ($PSScriptRoot | Split-Path)
 $ugitLoaded = Get-Module ugit
 if (-not $ugitLoaded) {
     $ugitLoaded = Get-ChildItem -Recurse -Filter "*.psd1" | Where-Object Name -like 'ugit*' | Import-Module -Name { $_.FullName } -Force -PassThru
