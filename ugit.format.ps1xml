@@ -778,6 +778,52 @@ $BackgroundColor
   </Controls>
   <ViewDefinitions>
     <View>
+      <Name>git.blame</Name>
+      <ViewSelectedBy>
+        <TypeName>git.blame</TypeName>
+      </ViewSelectedBy>
+      <GroupBy>
+        <PropertyName>GitRoot</PropertyName>
+      </GroupBy>
+      <TableControl>
+        <TableHeaders>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Alignment>Right</Alignment>
+          </TableColumnHeader>
+          <TableColumnHeader>
+            <Alignment>Left</Alignment>
+          </TableColumnHeader>
+        </TableHeaders>
+        <TableRowEntries>
+          <TableRowEntry>
+            <TableColumnItems>
+              <TableColumnItem>
+                <PropertyName>CommitHash</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Author</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>CommitDate</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Line</PropertyName>
+              </TableColumnItem>
+              <TableColumnItem>
+                <PropertyName>Content</PropertyName>
+              </TableColumnItem>
+            </TableColumnItems>
+          </TableRowEntry>
+        </TableRowEntries>
+      </TableControl>
+    </View>
+    <View>
       <Name>git.branch</Name>
       <ViewSelectedBy>
         <TypeName>git.branch</TypeName>
@@ -1142,36 +1188,6 @@ $BackgroundColor
           </CustomEntry>
         </CustomEntries>
       </CustomControl>
-    </View>
-    <View>
-      <Name>git.command</Name>
-      <ViewSelectedBy>
-        <TypeName>git.command</TypeName>
-      </ViewSelectedBy>
-      <GroupBy>
-        <PropertyName>Category</PropertyName>
-      </GroupBy>
-      <TableControl>
-        <AutoSize />
-        <TableHeaders>
-          <TableColumnHeader>
-          </TableColumnHeader>
-          <TableColumnHeader>
-          </TableColumnHeader>
-        </TableHeaders>
-        <TableRowEntries>
-          <TableRowEntry>
-            <TableColumnItems>
-              <TableColumnItem>
-                <PropertyName>Name</PropertyName>
-              </TableColumnItem>
-              <TableColumnItem>
-                <PropertyName>Description</PropertyName>
-              </TableColumnItem>
-            </TableColumnItems>
-          </TableRowEntry>
-        </TableRowEntries>
-      </TableControl>
     </View>
     <View>
       <Name>Git.Commit.Info</Name>
@@ -3037,45 +3053,29 @@ $BackgroundColor
       </TableControl>
     </View>
     <View>
-      <Name>git.blame</Name>
+      <Name>git.command</Name>
       <ViewSelectedBy>
-        <TypeName>git.blame</TypeName>
+        <TypeName>git.command</TypeName>
       </ViewSelectedBy>
       <GroupBy>
-        <PropertyName>GitRoot</PropertyName>
+        <PropertyName>Category</PropertyName>
       </GroupBy>
       <TableControl>
+        <AutoSize />
         <TableHeaders>
           <TableColumnHeader>
           </TableColumnHeader>
           <TableColumnHeader>
-          </TableColumnHeader>
-          <TableColumnHeader>
-          </TableColumnHeader>
-          <TableColumnHeader>
-            <Alignment>Right</Alignment>
-          </TableColumnHeader>
-          <TableColumnHeader>
-            <Alignment>Left</Alignment>
           </TableColumnHeader>
         </TableHeaders>
         <TableRowEntries>
           <TableRowEntry>
             <TableColumnItems>
               <TableColumnItem>
-                <PropertyName>CommitHash</PropertyName>
+                <PropertyName>Name</PropertyName>
               </TableColumnItem>
               <TableColumnItem>
-                <PropertyName>Author</PropertyName>
-              </TableColumnItem>
-              <TableColumnItem>
-                <PropertyName>CommitDate</PropertyName>
-              </TableColumnItem>
-              <TableColumnItem>
-                <PropertyName>Line</PropertyName>
-              </TableColumnItem>
-              <TableColumnItem>
-                <PropertyName>Content</PropertyName>
+                <PropertyName>Description</PropertyName>
               </TableColumnItem>
             </TableColumnItems>
           </TableRowEntry>
