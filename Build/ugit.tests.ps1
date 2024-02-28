@@ -49,7 +49,7 @@ describe ugit {
             $whatIf |
                 Should -Belike 'git log -n 1*'
         }
-        it 'Can will not map partially completed parameters' {
+        it 'Will not map partially completed parameters' {
             $whatIf = git commit -am 'Message' -WhatIf
             $whatIf |
                 Should -BeLike "git commit -am*Message*"
