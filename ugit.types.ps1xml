@@ -654,6 +654,15 @@ Pop-Location
     </Members>
   </Type>
   <Type>
+    <Name>ugit</Name>
+    <Members>
+      <AliasProperty>
+        <Name>ConventionalCommits</Name>
+        <ReferencedMemberName>ConventionalCommit</ReferencedMemberName>
+      </AliasProperty>
+    </Members>
+  </Type>
+  <Type>
     <Name>ugit.extension</Name>
     <Members>
       <ScriptProperty>
