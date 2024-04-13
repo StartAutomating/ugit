@@ -203,6 +203,13 @@ You might want to try giving some of these a try.
     git config --list --local
 ~~~
 
+### Git.Config.List Example 4
+
+
+~~~PowerShell
+    git config --list --show-origin
+~~~
+
 ### Git.FileName Example 1
 
 
