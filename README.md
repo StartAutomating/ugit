@@ -390,6 +390,13 @@ You might want to try giving some of these a try.
     git shortlog --sumary --email # Get a shortlog summary, with email.
 ~~~
 
+### Git.Sparse.Checkout.input Example 1
+
+
+~~~PowerShell
+    git sparse-checkout -FileFilters *.ps1,*.psm1
+~~~
+
 ### Git.Stash Example 1
 
 
@@ -521,6 +528,9 @@ ugit also allows you to extend the input for git.
 
  
 * [Git Log Input](docs/Git.Log.Input-Extension.md)
+
+ 
+* [Git Sparse Checkout input](docs/Git.Sparse.Checkout.input-Extension.md)
 
 
 
