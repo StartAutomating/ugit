@@ -80,6 +80,13 @@ You might want to try giving some of these a try.
     git blame ugit.psd1
 ~~~
 
+### Git.Branch.Input Example 1
+
+
+~~~PowerShell
+    git branch -Remote
+~~~
+
 ### Git.Branch Example 1
 
 
@@ -560,6 +567,9 @@ ugit also allows you to extend the input for git.
 
 
 * [Git Blame Input](docs/Git.Blame.Input-Extension.md)
+
+ 
+* [Git Branch Input](docs/Git.Branch.Input-Extension.md)
 
  
 * [Git Clone Input](docs/Git.Clone.Input-Extension.md)
