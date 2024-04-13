@@ -28,6 +28,11 @@ git config --global --list
 ```PowerShell
 git config --list --local
 ```
+> EXAMPLE 4
+
+```PowerShell
+git config --list --show-origin
+```
 
 ---
 
