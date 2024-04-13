@@ -15,12 +15,28 @@ param(
 [Parameter(ValueFromPipelineByPropertyName)]
 [Alias('FileFilters')]
 [string[]]
-$FileFilter
+$FileFilter,
+
+# The list of directory filters to use
+# If provided with a file filter, the directory filter will be used as a parent directory filter.
+[Parameter(ValueFromPipelineByPropertyName)]
+[Alias('DirectoryFilters')]
+[string[]]
+$DirectoryFilter
 )
 
 if ($FileFilter) {
     "set"
     "--no-cone"
     $FileFilter -replace '^\*{0,1}\.', '**.'
+    if ($DirectoryFilter) {
+        $DirectoryFilter -replace '^[\\/]{0,1}', '/' -replace '\*{0,1}$', '**'     
+    }
 }
+elseif ($DirectoryFilter) {
+    "set"
+    "--cone"
+    $DirectoryFilter -replace '^[\\/]{0,1}', '/' 
+}
+
 
