@@ -224,6 +224,13 @@ You might want to try giving some of these a try.
     git archive -o My.zip
 ~~~
 
+### Git.Format.Json Example 1
+
+
+~~~PowerShell
+    git branch --format "{'ref':'%(refname:short)','parent':'%(parent)'}"
+~~~
+
 ### Git.Format.Simple Example 1
 
 
@@ -482,6 +489,9 @@ Most extensions handle output from a single git command.
 
  
 * [Git FileName](Git.FileName-Extension.md)
+
+ 
+* [Git Format Json](Git.Format.Json-Extension.md)
 
  
 * [Git Format Simple](Git.Format.Simple-Extension.md)
