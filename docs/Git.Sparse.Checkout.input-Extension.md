@@ -30,9 +30,17 @@ Filters that start with * or *. will be converted to **.
 |------------|--------|--------|---------------------|-----------|
 |`[String[]]`|false   |named   |true (ByPropertyName)|FileFilters|
 
+#### **DirectoryFilter**
+The list of directory filters to use
+If provided with a file filter, the directory filter will be used as a parent directory filter.
+
+|Type        |Required|Position|PipelineInput        |Aliases         |
+|------------|--------|--------|---------------------|----------------|
+|`[String[]]`|false   |named   |true (ByPropertyName)|DirectoryFilters|
+
 ---
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Sparse.Checkout.input.ugit.extension.ps1 [-FileFilter <String[]>] [<CommonParameters>]
+Extensions/Git.Sparse.Checkout.input.ugit.extension.ps1 [-FileFilter <String[]>] [-DirectoryFilter <String[]>] [<CommonParameters>]
 ```
