@@ -182,6 +182,27 @@ You might want to try giving some of these a try.
     $commitMessage.Amend("Committing stuff") # that's better
 ~~~
 
+### Git.Config.List Example 1
+
+
+~~~PowerShell
+    git config --list
+~~~
+
+### Git.Config.List Example 2
+
+
+~~~PowerShell
+    git config --global --list
+~~~
+
+### Git.Config.List Example 3
+
+
+~~~PowerShell
+    git config --list --local
+~~~
+
 ### Git.FileName Example 1
 
 
@@ -445,6 +466,9 @@ Most extensions handle output from a single git command.
 
  
 * [Git Commit](Git.Commit-Extension.md)
+
+ 
+* [Git Config List](Git.Config.List-Extension.md)
 
  
 * [Git Diff](Git.Diff-Extension.md)
