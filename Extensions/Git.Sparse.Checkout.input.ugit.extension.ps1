@@ -30,7 +30,7 @@ if ($FileFilter) {
     "--no-cone"
     $FileFilter -replace '^\*{0,1}\.', '**.'
     if ($DirectoryFilter) {
-        $DirectoryFilter -replace '^[\\/]{0,1}', '/' -replace '\*{0,1}$', '**'     
+        $DirectoryFilter -replace '^[\\/]{0,1}', '/' -replace '[\\/]?\*?$', '/**'
     }
 }
 elseif ($DirectoryFilter) {
