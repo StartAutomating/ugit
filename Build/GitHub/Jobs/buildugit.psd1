@@ -30,7 +30,7 @@
             id = 'PSA'
         },
         @{
-            'name'='Log in to the Container registry'
+            'name'='Log in to the Container registry (on branch)'            
             'uses'='docker/login-action@master'
             'with'=@{
                 'registry'='${{ env.REGISTRY }}'
@@ -39,11 +39,22 @@
             }
         },
         @{
-            'name'='Extract metadata (tags, labels) for Docker'
+            name = 'Extract Docker Metadata (for branch)'
+            if   = '${{github.ref_name != ''main'' && github.ref_name != ''master'' && github.ref_name != ''latest''}}'
             'id'='meta'
             'uses'='docker/metadata-action@master'
             'with'=@{
+                'images'='${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}'                
+            }
+        },
+        @{
+            name = 'Extract Docker Metadata (for main)'
+            if   = '${{github.ref_name == ''main'' || github.ref_name == ''master'' || github.ref_name == ''latest''}}'
+            'id'='metaMain'
+            'uses'='docker/metadata-action@master'
+            'with'=@{
                 'images'='${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}'
+                'flavor'='latest=true'
             }
         },
         @{
@@ -53,8 +64,8 @@
             'with'=@{
                 'context'='.'
                 'push'='true'
-                'tags'='latest'
-                'labels'='${{ steps.meta.outputs.labels }}'
+                'tags'='${{ steps.metaMain.outputs.tags }}'
+                'labels'='${{ steps.metaMain.outputs.labels }}'
             }
         },
         @{
