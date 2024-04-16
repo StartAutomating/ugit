@@ -31,11 +31,19 @@ $NewBranchName,
 
 # The name of a branch to reset.
 [Parameter(ValueFromPipelineByPropertyName)]
-[Alias('Reset','ResetBranch')]
+[Alias('ResetBranch')]
 [string]
 $ResetBranchName,
 
+# One or more specific paths to reset.
+# This will overwrite the contents of the files with the contents of the index.
+[Parameter(ValueFromPipelineByPropertyName)]
+[Alias('Reset')]
+[string[]]
+$ResetPath,
+
 # If set, will checkout a branch in a detached state.
+[Parameter(ValueFromPipelineByPropertyName)]
 [switch]
 $Detach
 )
@@ -67,4 +75,11 @@ elseif ($ResetBranchName) {
 }
 elseif ($BranchName) {    
     $BranchName
+}
+
+if ($ResetPath) {
+    "HEAD"
+    foreach ($pathToReset in $ResetPath) {
+        $pathToReset
+    }
 }
