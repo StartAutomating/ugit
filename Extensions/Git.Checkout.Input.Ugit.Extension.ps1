@@ -19,8 +19,15 @@ $BranchName,
 
 # The number of the pull request.
 # If no Branch Name is provided, the branch will be `PR-$PullRequest`.
+[Parameter(ValueFromPipelineByPropertyName)]
 [int]
-$PullRequest
+$PullRequest,
+
+# The name of a new branch
+[Parameter(ValueFromPipelineByPropertyName)]
+[Alias('New','NewBranch')]
+[string]
+$NewBranchName
 )
 
 if ($PullRequest) {
@@ -33,6 +40,11 @@ if ($PullRequest) {
         return $BranchName
     }
     $BranchName
-} elseif ($BranchName) {    
+} 
+elseif ($NewBranchName) {
+    "-b"
+    $NewBranchName
+}
+elseif ($BranchName) {    
     $BranchName
 }
