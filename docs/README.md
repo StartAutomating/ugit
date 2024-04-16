@@ -572,6 +572,9 @@ ugit also allows you to extend the input for git.
 * [Git Branch Input](Git.Branch.Input-Extension.md)
 
  
+* [Git Checkout Input](Git.Checkout.Input-Extension.md)
+
+ 
 * [Git Clone Input](Git.Clone.Input-Extension.md)
 
  
