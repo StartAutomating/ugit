@@ -27,7 +27,13 @@ $PullRequest,
 [Parameter(ValueFromPipelineByPropertyName)]
 [Alias('New','NewBranch')]
 [string]
-$NewBranchName
+$NewBranchName,
+
+# The name of a branch to reset.
+[Parameter(ValueFromPipelineByPropertyName)]
+[Alias('Reset','ResetBranch')]
+[string]
+$ResetBranchName
 )
 
 if ($PullRequest) {
@@ -44,6 +50,12 @@ if ($PullRequest) {
 elseif ($NewBranchName) {
     "-b"
     $NewBranchName
+}
+elseif ($ResetBranchName) {
+    if ($PSCmdlet -and $PSCmdlet.ShouldProcess("Reset branch $ResetBranchName")) {
+        "-B" # Beware of capital B in git
+        $ResetBranchName    
+    }    
 }
 elseif ($BranchName) {    
     $BranchName
