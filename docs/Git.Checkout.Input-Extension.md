@@ -42,20 +42,28 @@ The name of a new branch
 #### **ResetBranchName**
 The name of a branch to reset.
 
-|Type      |Required|Position|PipelineInput        |Aliases              |
-|----------|--------|--------|---------------------|---------------------|
-|`[String]`|false   |named   |true (ByPropertyName)|Reset<br/>ResetBranch|
+|Type      |Required|Position|PipelineInput        |Aliases    |
+|----------|--------|--------|---------------------|-----------|
+|`[String]`|false   |named   |true (ByPropertyName)|ResetBranch|
+
+#### **ResetPath**
+One or more specific paths to reset.
+This will overwrite the contents of the files with the contents of the index.
+
+|Type        |Required|Position|PipelineInput        |Aliases|
+|------------|--------|--------|---------------------|-------|
+|`[String[]]`|false   |named   |true (ByPropertyName)|Reset  |
 
 #### **Detach**
 If set, will checkout a branch in a detached state.
 
-|Type      |Required|Position|PipelineInput|
-|----------|--------|--------|-------------|
-|`[Switch]`|false   |named   |false        |
+|Type      |Required|Position|PipelineInput        |
+|----------|--------|--------|---------------------|
+|`[Switch]`|false   |named   |true (ByPropertyName)|
 
 ---
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Checkout.Input.Ugit.Extension.ps1 [-BranchName <String>] [-PullRequest <Int32>] [-NewBranchName <String>] [-ResetBranchName <String>] [-Detach] [<CommonParameters>]
+Extensions/Git.Checkout.Input.Ugit.Extension.ps1 [-BranchName <String>] [-PullRequest <Int32>] [-NewBranchName <String>] [-ResetBranchName <String>] [-ResetPath <String[]>] [-Detach] [<CommonParameters>]
 ```
