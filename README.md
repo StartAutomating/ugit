@@ -80,6 +80,13 @@ You might want to try giving some of these a try.
     git blame ugit.psd1
 ~~~
 
+### Git.Branch.Input Example 1
+
+
+~~~PowerShell
+    git branch -Remote
+~~~
+
 ### Git.Branch Example 1
 
 
@@ -182,6 +189,34 @@ You might want to try giving some of these a try.
     $commitMessage.Amend("Committing stuff") # that's better
 ~~~
 
+### Git.Config.List Example 1
+
+
+~~~PowerShell
+    git config --list
+~~~
+
+### Git.Config.List Example 2
+
+
+~~~PowerShell
+    git config --global --list
+~~~
+
+### Git.Config.List Example 3
+
+
+~~~PowerShell
+    git config --list --local
+~~~
+
+### Git.Config.List Example 4
+
+
+~~~PowerShell
+    git config --list --show-origin
+~~~
+
 ### Git.FileName Example 1
 
 
@@ -194,6 +229,13 @@ You might want to try giving some of these a try.
 
 ~~~PowerShell
     git archive -o My.zip
+~~~
+
+### Git.Format.Json Example 1
+
+
+~~~PowerShell
+    git branch --format "{'ref':'%(refname:short)','parent':'%(parent)'}"
 ~~~
 
 ### Git.Format.Simple Example 1
@@ -390,6 +432,13 @@ You might want to try giving some of these a try.
     git shortlog --sumary --email # Get a shortlog summary, with email.
 ~~~
 
+### Git.Sparse.Checkout.input Example 1
+
+
+~~~PowerShell
+    git sparse-checkout -FileFilters *.ps1,*.psm1
+~~~
+
 ### Git.Stash Example 1
 
 
@@ -440,10 +489,16 @@ Most extensions handle output from a single git command.
 * [Git Commit](docs/Git.Commit-Extension.md)
 
  
+* [Git Config List](docs/Git.Config.List-Extension.md)
+
+ 
 * [Git Diff](docs/Git.Diff-Extension.md)
 
  
 * [Git FileName](docs/Git.FileName-Extension.md)
+
+ 
+* [Git Format Json](docs/Git.Format.Json-Extension.md)
 
  
 * [Git Format Simple](docs/Git.Format.Simple-Extension.md)
@@ -514,6 +569,12 @@ ugit also allows you to extend the input for git.
 * [Git Blame Input](docs/Git.Blame.Input-Extension.md)
 
  
+* [Git Branch Input](docs/Git.Branch.Input-Extension.md)
+
+ 
+* [Git Checkout Input](docs/Git.Checkout.Input-Extension.md)
+
+ 
 * [Git Clone Input](docs/Git.Clone.Input-Extension.md)
 
  
@@ -521,6 +582,9 @@ ugit also allows you to extend the input for git.
 
  
 * [Git Log Input](docs/Git.Log.Input-Extension.md)
+
+ 
+* [Git Sparse Checkout input](docs/Git.Sparse.Checkout.input-Extension.md)
 
 
 

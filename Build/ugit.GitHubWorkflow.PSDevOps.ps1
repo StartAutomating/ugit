@@ -8,10 +8,12 @@ Push-Location ($PSScriptRoot | Split-Path)
 New-GitHubWorkflow -Name "Analyze, Test, Tag, and Publish" -On Push, PullRequest, Demand -Job PowerShellStaticAnalysis, 
     TestPowerShellOnLinux, 
     TagReleaseAndPublish, 
-    buildugit -OutputPath .\.github\workflows\TestAndPublish.yml -Env @{
+    buildugit -OutputPath .\.github\workflows\TestAndPublish.yml -Env ([Ordered]@{
         "AT_PROTOCOL_HANDLE" = "mrpowershell.bsky.social"
         "AT_PROTOCOL_APP_PASSWORD" = '${{ secrets.AT_PROTOCOL_APP_PASSWORD }}'
-    }
+        "REGISTRY" = "ghcr.io"
+        "IMAGE_NAME" = '${{ github.repository }}'
+    })
 
 New-GitHubWorkflow -On Issue, 
     Demand -Job RunGitPub -Name OnIssueChanged -OutputPath .\.github\workflows\OnIssue.yml
