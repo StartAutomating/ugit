@@ -46,9 +46,16 @@ The name of a branch to reset.
 |----------|--------|--------|---------------------|---------------------|
 |`[String]`|false   |named   |true (ByPropertyName)|Reset<br/>ResetBranch|
 
+#### **Detach**
+If set, will checkout a branch in a detached state.
+
+|Type      |Required|Position|PipelineInput|
+|----------|--------|--------|-------------|
+|`[Switch]`|false   |named   |false        |
+
 ---
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Checkout.Input.Ugit.Extension.ps1 [-BranchName <String>] [-PullRequest <Int32>] [-NewBranchName <String>] [-ResetBranchName <String>] [<CommonParameters>]
+Extensions/Git.Checkout.Input.Ugit.Extension.ps1 [-BranchName <String>] [-PullRequest <Int32>] [-NewBranchName <String>] [-ResetBranchName <String>] [-Detach] [<CommonParameters>]
 ```
