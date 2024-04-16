@@ -33,8 +33,16 @@ $NewBranchName,
 [Parameter(ValueFromPipelineByPropertyName)]
 [Alias('Reset','ResetBranch')]
 [string]
-$ResetBranchName
+$ResetBranchName,
+
+# If set, will checkout a branch in a detached state.
+[switch]
+$Detach
 )
+
+if ($Detach) {
+    "--detach"
+}
 
 if ($PullRequest) {
     $remoteName = git remote | Select-Object -ExpandProperty RemoteName | Select-Object -First 1
