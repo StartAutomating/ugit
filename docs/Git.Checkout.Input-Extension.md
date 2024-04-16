@@ -39,9 +39,16 @@ The name of a new branch
 |----------|--------|--------|---------------------|-----------------|
 |`[String]`|false   |named   |true (ByPropertyName)|New<br/>NewBranch|
 
+#### **ResetBranchName**
+The name of a branch to reset.
+
+|Type      |Required|Position|PipelineInput        |Aliases              |
+|----------|--------|--------|---------------------|---------------------|
+|`[String]`|false   |named   |true (ByPropertyName)|Reset<br/>ResetBranch|
+
 ---
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Checkout.Input.Ugit.Extension.ps1 [-BranchName <String>] [-PullRequest <Int32>] [-NewBranchName <String>] [<CommonParameters>]
+Extensions/Git.Checkout.Input.Ugit.Extension.ps1 [-BranchName <String>] [-PullRequest <Int32>] [-NewBranchName <String>] [-ResetBranchName <String>] [<CommonParameters>]
 ```
