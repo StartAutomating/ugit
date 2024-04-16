@@ -28,13 +28,20 @@ The branch name.
 The number of the pull request.
 If no Branch Name is provided, the branch will be `PR-$PullRequest`.
 
-|Type     |Required|Position|PipelineInput|
-|---------|--------|--------|-------------|
-|`[Int32]`|false   |named   |false        |
+|Type     |Required|Position|PipelineInput        |
+|---------|--------|--------|---------------------|
+|`[Int32]`|false   |named   |true (ByPropertyName)|
+
+#### **NewBranchName**
+The name of a new branch
+
+|Type      |Required|Position|PipelineInput        |Aliases          |
+|----------|--------|--------|---------------------|-----------------|
+|`[String]`|false   |named   |true (ByPropertyName)|New<br/>NewBranch|
 
 ---
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Checkout.Input.Ugit.Extension.ps1 [-BranchName <String>] [-PullRequest <Int32>] [<CommonParameters>]
+Extensions/Git.Checkout.Input.Ugit.Extension.ps1 [-BranchName <String>] [-PullRequest <Int32>] [-NewBranchName <String>] [<CommonParameters>]
 ```
