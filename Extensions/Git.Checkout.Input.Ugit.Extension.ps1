@@ -49,6 +49,22 @@ $ResetPath,
 [string]
 $FromBranch = 'HEAD',
 
+# The revision number to checkout.
+# This is only used when the -ResetPath parameter is provided.
+# If provided, this will checkout the Nth most recent parent.
+# Eg. HEAD~2
+[Parameter(ValueFromPipelineByPropertyName)]
+[int]
+$RevisionNumber,
+
+# The pattern number to checkout.
+# This is only used when the -ResetPath parameter is provided.
+# If provided, this will checkout the Nth most recent parent.
+# Eg. HEAD^2
+[Parameter(ValueFromPipelineByPropertyName)]
+[int]
+$ParentNumber,
+
 # If set, will checkout a branch in a detached state.
 [Parameter(ValueFromPipelineByPropertyName)]
 [switch]
@@ -85,7 +101,14 @@ elseif ($BranchName) {
 }
 
 if ($ResetPath) {
-    "$FromBranch"
+    if ($ParentNumber) {
+        "$FromBranch^$ParentNumber"
+    } elseif ($RevisionNumber) {
+        "$FromBranch~$RevisionNumber"
+    } else {
+        "$FromBranch"
+    }
+    
     foreach ($pathToReset in $ResetPath) {
         $pathToReset
     }
