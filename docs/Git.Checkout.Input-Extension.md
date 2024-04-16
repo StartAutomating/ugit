@@ -54,6 +54,15 @@ This will overwrite the contents of the files with the contents of the index.
 |------------|--------|--------|---------------------|-------|
 |`[String[]]`|false   |named   |true (ByPropertyName)|Reset  |
 
+#### **FromBranch**
+The name of the branch to checkout from.
+This is only used when the -ResetPath parameter is provided.
+It defaults to `HEAD`.
+
+|Type      |Required|Position|PipelineInput        |
+|----------|--------|--------|---------------------|
+|`[String]`|false   |named   |true (ByPropertyName)|
+
 #### **Detach**
 If set, will checkout a branch in a detached state.
 
@@ -65,5 +74,5 @@ If set, will checkout a branch in a detached state.
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Checkout.Input.Ugit.Extension.ps1 [-BranchName <String>] [-PullRequest <Int32>] [-NewBranchName <String>] [-ResetBranchName <String>] [-ResetPath <String[]>] [-Detach] [<CommonParameters>]
+Extensions/Git.Checkout.Input.Ugit.Extension.ps1 [-BranchName <String>] [-PullRequest <Int32>] [-NewBranchName <String>] [-ResetBranchName <String>] [-ResetPath <String[]>] [-FromBranch <String>] [-Detach] [<CommonParameters>]
 ```
