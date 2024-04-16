@@ -42,6 +42,13 @@ $ResetBranchName,
 [string[]]
 $ResetPath,
 
+# The name of the branch to checkout from.
+# This is only used when the -ResetPath parameter is provided.
+# It defaults to `HEAD`.
+[Parameter(ValueFromPipelineByPropertyName)]
+[string]
+$FromBranch = 'HEAD',
+
 # If set, will checkout a branch in a detached state.
 [Parameter(ValueFromPipelineByPropertyName)]
 [switch]
@@ -78,7 +85,7 @@ elseif ($BranchName) {
 }
 
 if ($ResetPath) {
-    "HEAD"
+    "$FromBranch"
     foreach ($pathToReset in $ResetPath) {
         $pathToReset
     }
