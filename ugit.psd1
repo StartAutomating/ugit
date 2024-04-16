@@ -1,5 +1,5 @@
 @{
-    ModuleVersion    = '0.4.3'
+    ModuleVersion    = '0.4.4'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -18,42 +18,31 @@ PrivateData   = @{
         LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
         BuildModule  = @('EZOut', 'Piecemeal', 'PipeScript', 'PSSVG')
         ReleaseNotes = @'
-## ugit 0.4.3:
+## ugit 0.4.4:
 
-* Cloning Improvements:
-    * git clone -Depth (#219)
-    * git clone -Sparse (#220)
-    * git clone -NoCheckout (#221)
-    * git clone -Since (#224)
-    * git clone -Nothing (#229)
-    * git clone now handles gitless urls (#223)
-* Commit Improvements:
-    * Conventional Commit Support
-    * Improving git commit -Type tab completion (#197)
-    * git commit -Title will become description if -Type is passed (#225)
-    * git.Conventional.Commit pseudotype (#250,#251,#252, #253, #254)  
-    * git commit -Fix (#226)
-    * git commit -Reference (#227)
-* Decorating errors and output for better experience (#228)
-* Adding some helpful script properties:
-    * git.output.NotGitCommand (#236)
-    * git.merge.error.Conflict (#235)  
-    * git.pull.error.Conflict (#234)
-    * git.error.UnknownRevision (#232)  
-* Fixes:
-    * Improving Use-Git dynamic alias support (#231)
-* Consolidating Repo structure (#240, #241, #242, #243)
-* Module Improvements:
-    * Exporting `$ugit` (#247)
-    * Mounting module to `ugit:` (#246)
-    * Mounting `$home/Myugit` to `Myugit:` (if present) (#246)
+> Like It? [Star It](https://github.com/StartAutomating/ugit)
+> Love It? [Support It](https://github.com/sponsors/StartAutomating)
+
+* ugit a container! (#262, #263, #264)
+  * `docker run --interactive --tty ghcr.io/startautomating/ugit`  
+* `git checkout` improvements
+  * `git checkout -PullRequest [int]` (#178)
+  * `git checkout -NewBranchName [string]` (#266)
+  * `git checkout -ResetBranchName [string]` (#267)
+  * `git checkout -Detach [switch]` (#268)
+  * `git checkout -ResetPath [string]` (#269)
+  * `git checkout -FromBranch [string]` (#270)
+  * `git checkout -RevisionNumber/-ParentNumber [int]` (#271)
+* `git sparse-checkout` improvements
+  * git sparse-checkout -FileFilter ( Fixes #257 )
+  * git sparse-checkout -DirectoryFilter ( Fixes #258 )
+* `git branch -Remote` (#185)
+* `git config --list` (#265)
+* `git --format json` (#239)
 
 ---
 
-Additional Changes in [Changelog](/CHANGELOG.md)
-Like It?  Start It.  Love It?  Support It.
-https://github.com/StartAutomating/ugit
-
+Additional Changes in [Changelog](https://github.com/StartAutomating/ugit/blob/main/CHANGELOG.md)
 '@
         Taglines = @(
             "I've got to admit it's gitting better, gitting better all the time:"
