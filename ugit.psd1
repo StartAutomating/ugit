@@ -34,11 +34,11 @@ PrivateData   = @{
   * `git checkout -FromBranch [string]` (#270)
   * `git checkout -RevisionNumber/-ParentNumber [int]` (#271)
 * `git sparse-checkout` improvements
-  * git sparse-checkout -FileFilter ( Fixes #257 )
-  * git sparse-checkout -DirectoryFilter ( Fixes #258 )
-* `git branch -Remote` (#185)
-* `git config --list` (#265)
-* `git --format json` (#239)
+  * `git sparse-checkout -FileFilter [string[]]` ( Fixes #257 )
+  * `git sparse-checkout -DirectoryFilter [string[]]` ( Fixes #258 )
+* `git branch -Remote [switch]` (#185)
+* `git config --list` outputs as objects (#265)
+* `git --format json` outputs as objects (#239)
 
 ---
 
