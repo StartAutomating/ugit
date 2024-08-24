@@ -133,9 +133,16 @@ This will add 'Re #...' to your commit message.
 |------------|--------|--------|---------------------|------------------------------------------------------|
 |`[String[]]`|false   |named   |true (ByPropertyName)|Re<br/>Regard<br/>Regards<br/>Regarding<br/>References|
 
+#### **CoAuthoredBy**
+If provided, will mark this commit as co-authored by one or more people.
+
+|Type        |Required|Position|PipelineInput        |Aliases               |
+|------------|--------|--------|---------------------|----------------------|
+|`[String[]]`|false   |named   |true (ByPropertyName)|CoAuthor<br/>CoAuthors|
+
 ---
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Commit.Input.UGit.Extension.ps1 [-Title <String>] [-Message <String>] [-Type <String>] [-Scope <String>] [-Description <String>] [-Footer <String>] [-Body <String>] [-Trailers <IDictionary>] [-Amend] [-CommitDate <DateTime>] [-Fix <String[]>] [-Close <String[]>] [-Resolve <String[]>] [-Reference <String[]>] [<CommonParameters>]
+Extensions/Git.Commit.Input.UGit.Extension.ps1 [-Title <String>] [-Message <String>] [-Type <String>] [-Scope <String>] [-Description <String>] [-Footer <String>] [-Body <String>] [-Trailers <IDictionary>] [-Amend] [-CommitDate <DateTime>] [-Fix <String[]>] [-Close <String[]>] [-Resolve <String[]>] [-Reference <String[]>] [-CoAuthoredBy <String[]>] [<CommonParameters>]
 ```
