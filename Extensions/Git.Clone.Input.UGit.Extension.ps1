@@ -40,7 +40,7 @@ $Depth,
 
 # Create a shallow clone with a history after the specified time.
 [Parameter(ValueFromPipelineByPropertyName)]
-[Datetime]
+[string]
 $Since,
 
 # One or more filters
@@ -73,7 +73,15 @@ if ($NoCheckout) {'--no-checkout'}
 
 if ($Sparse) {'--sparse'}
 
-if ($Since) {"--shallow-since=$($Since.ToString('o'))"}
+if ($Since) {
+    if ($since -is [DateTime]) {
+        "--shallow-since=$($Since.ToString('o'))"
+    } elseif ($since -match '^\d+') {
+        "--shallow-since=$since"
+    } else {
+        Write-Warning "-Since must be a date or a number followed by a date unit."
+    }
+}
 
 if ($filter) {
     foreach ($gitFilter in $filter) {
