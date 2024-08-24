@@ -112,7 +112,19 @@ $Reference,
     return $true
 })]
 [string[]]
-$CoAuthoredBy
+$CoAuthoredBy,
+
+# If provided, will mark this commit as on-behalf-of one or more people.
+[Parameter(ValueFromPipelineByPropertyName)]
+[Alias('OnBehalf')]
+[ValidateScript({
+    if ($_ -notmatch "(?<Author>[^\<\>]+)\<(?<Email>[^\<\>]+)\>") {
+        throw "On-Behalf-Of must be in the format 'Name <Email>'"
+    }
+    return $true
+})]
+[string[]]
+$OnBehalfOf
 )
 
 $MyParameters =  [Ordered]@{} + $PSBoundParameters
@@ -195,6 +207,14 @@ if ($CoAuthoredBy) {
         $Trailers['Co-authored-by'] = @()
     }
     $Trailers['Co-authored-by'] += $CoAuthoredBy
+}
+
+# If OnBehalfOf was provided, add it as a trailer.
+if ($OnBehalfOf) {
+    if (-not $trailers['on-behalf-of']) {
+        $Trailers['on-behalf-of'] = @()
+    }
+    $Trailers['on-behalf-of'] += $OnBehalfOf
 }
 
 if ($Trailers.Count) {    
