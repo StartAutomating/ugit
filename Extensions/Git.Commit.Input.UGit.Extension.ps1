@@ -62,7 +62,7 @@ $Body,
 # As this uses --trailer, this requires git version 2.33 or greater.
 [Alias('Trailer','CommitMetadata','GitMetadata')]
 [Collections.IDictionary]
-$Trailers,
+$Trailers = [Ordered]@{},
 
 # If set, will amend an existing commit.
 [switch]
@@ -100,7 +100,19 @@ $Resolve,
 [Parameter(ValueFromPipelineByPropertyName)]
 [Alias('Re','Regard','Regards','Regarding','References')]
 [string[]]
-$Reference
+$Reference,
+
+# If provided, will mark this commit as co-authored by one or more people.
+[Parameter(ValueFromPipelineByPropertyName)]
+[Alias('CoAuthor','CoAuthors')]
+[ValidateScript({
+    if ($_ -notmatch "(?<Author>[^\<\>]+)\<(?<Email>[^\<\>]+)\>") {
+        throw "Co-Authored-By must be in the format 'Name <Email>'"
+    }
+    return $true
+})]
+[string[]]
+$CoAuthoredBy
 )
 
 $MyParameters =  [Ordered]@{} + $PSBoundParameters
@@ -177,8 +189,15 @@ if ($Footer) {
     "-m";$Footer
 }
 
+# If CoAuthoredBy was provided, add it as a trailer.
+if ($CoAuthoredBy) {
+    if (-not $trailers['Co-authored-by']) {
+        $Trailers['Co-authored-by'] = @()
+    }
+    $Trailers['Co-authored-by'] += $CoAuthoredBy
+}
 
-if ($Trailers) {    
+if ($Trailers.Count) {    
     foreach ($kv in $Trailers.GetEnumerator()) {
         foreach ($val in $kv.Value) {
             "--trailer=$($kv.Key -replace ':','_colon_' -replace '\s', '-')=$val"
