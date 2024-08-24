@@ -140,9 +140,16 @@ If provided, will mark this commit as co-authored by one or more people.
 |------------|--------|--------|---------------------|----------------------|
 |`[String[]]`|false   |named   |true (ByPropertyName)|CoAuthor<br/>CoAuthors|
 
+#### **OnBehalfOf**
+If provided, will mark this commit as on-behalf-of one or more people.
+
+|Type        |Required|Position|PipelineInput        |Aliases |
+|------------|--------|--------|---------------------|--------|
+|`[String[]]`|false   |named   |true (ByPropertyName)|OnBehalf|
+
 ---
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Commit.Input.UGit.Extension.ps1 [-Title <String>] [-Message <String>] [-Type <String>] [-Scope <String>] [-Description <String>] [-Footer <String>] [-Body <String>] [-Trailers <IDictionary>] [-Amend] [-CommitDate <DateTime>] [-Fix <String[]>] [-Close <String[]>] [-Resolve <String[]>] [-Reference <String[]>] [-CoAuthoredBy <String[]>] [<CommonParameters>]
+Extensions/Git.Commit.Input.UGit.Extension.ps1 [-Title <String>] [-Message <String>] [-Type <String>] [-Scope <String>] [-Description <String>] [-Footer <String>] [-Body <String>] [-Trailers <IDictionary>] [-Amend] [-CommitDate <DateTime>] [-Fix <String[]>] [-Close <String[]>] [-Resolve <String[]>] [-Reference <String[]>] [-CoAuthoredBy <String[]>] [-OnBehalfOf <String[]>] [<CommonParameters>]
 ```
