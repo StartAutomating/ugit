@@ -127,6 +127,30 @@ $CoAuthoredBy,
 $OnBehalfOf
 )
 
+
+filter FixGitUserName {
+    $onBehalf = $_
+    if ($onBehalf -match '\<(?<Login>\D.+?)@github.com\>$') {
+        
+        if (-not $script:KnownGitHubUsers) {
+            $script:KnownGitHubUsers = @{}
+        }
+        $gitUserName = $matches.Login
+        if (-not $script:KnownGitHubUsers[$gitUserName]) {
+            $script:KnownGitHubUsers[$gitUserName] = Invoke-RestMethod "https://api.github.com/users/$gitUserName"
+        }
+        $gitUser = $script:KnownGitHubUsers[$gitUserName]
+        if (-not $gitUser) {
+            $onBehalf
+        } else {
+            $gitUser.name,
+                "<$($gitUser.id)+$($gitUser.login)@users.noreply.github.com>" -join ' '
+        }        
+    } else {
+        $onBehalf
+    }
+}
+
 $MyParameters =  [Ordered]@{} + $PSBoundParameters
 
 # git commit -m can accept multiple messages, but the first message is somewhat special.
@@ -206,7 +230,9 @@ if ($CoAuthoredBy) {
     if (-not $trailers['Co-authored-by']) {
         $Trailers['Co-authored-by'] = @()
     }
-    $Trailers['Co-authored-by'] += $CoAuthoredBy
+    $Trailers['Co-authored-by'] += foreach ($coAuthor in $CoAuthoredBy) {
+        $coAuthor | FixGitUserName
+    }
 }
 
 # If OnBehalfOf was provided, add it as a trailer.
@@ -214,7 +240,10 @@ if ($OnBehalfOf) {
     if (-not $trailers['on-behalf-of']) {
         $Trailers['on-behalf-of'] = @()
     }
-    $Trailers['on-behalf-of'] += $OnBehalfOf
+    
+    $Trailers['on-behalf-of'] += foreach ($onBehalf in $OnBehalfOf) {
+        $onBehalf | FixGitUserName
+    }
 }
 
 if ($Trailers.Count) {    
