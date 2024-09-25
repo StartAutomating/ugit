@@ -7,9 +7,9 @@
 if ($this.CommitMessage -match '^(?<Type>[^\r\n]+?):\s{0,}(?<Message>[^\r\n]+)') {
     $matchType = $Matches.Type    
     if ($matchType -match '\(') {
-        $this.Type -replace '\(.+$'
+        $matchType -replace '\(.+$'
     } else {
-        $this.Type
+        $matchType
     }
 } else {
     return ''
