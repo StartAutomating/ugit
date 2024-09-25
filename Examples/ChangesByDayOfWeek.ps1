@@ -6,6 +6,7 @@
 #>
 param()
 
+Write-Information "Graphing $($MyInvocation.MyCommand.Name) for $($currentBranch.BranchName) branch."
 $gitRemote = git remote
 $headBranch = git remote |
     Select-Object -First 1 |
@@ -13,16 +14,13 @@ $headBranch = git remote |
     Select-Object -ExpandProperty HeadBranch
 
 $currentBranch = git branch | ? IsCurrentBranch
-if ($currentBranchName -eq $headBranch) {
-    Write-Warning "Not graphing the main branch."
-    return
-}
+
 
 $commitList = 
-    if ($currentBranch -ne $headBranch) {
-        git log "$($gitRemote.RemoteName)/$headBranch..$CurrentBranch"
+    if ($currentBranch.BranchName -ne $headBranch) {
+        git log "$($gitRemote.RemoteName)/$headBranch..$($CurrentBranch.BranchName)"
     } else {
-        git log 
+        git log
     }
 
 $groupedChangedSet = $commitList |     
@@ -34,7 +32,7 @@ if ($env:GITHUB_STEP_SUMMARY) {
 $(
 @(
 "pie title Changes by Day Of Week"
-foreach ($changeSet in $groupedChangedSet ) {
+foreach ($changeSet in $groupedChangedSet) {
     (' ' * 4) + '"' + $($changeSet.Name) + '"' + ' : ' + ($changeSet.Count)
 }
 ) -join [Environment]::NewLine)
