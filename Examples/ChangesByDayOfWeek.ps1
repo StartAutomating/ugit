@@ -25,7 +25,7 @@ $commitList =
         git log 
     }
 
-$groupedChangedSet = $currentBranchCommits |     
+$groupedChangedSet = $commitList |     
     Group-Object { $_.CommitDate.DayOfWeek } -NoElement
 
 if ($env:GITHUB_STEP_SUMMARY) { 
@@ -34,7 +34,7 @@ if ($env:GITHUB_STEP_SUMMARY) {
 $(
 @(
 "pie title Changes by Day Of Week"
-foreach ($changeSet in $groupedChangedSet) {
+foreach ($changeSet in $groupedChangedSet ) {
     (' ' * 4) + '"' + $($changeSet.Name) + '"' + ' : ' + ($changeSet.Count)
 }
 ) -join [Environment]::NewLine)
