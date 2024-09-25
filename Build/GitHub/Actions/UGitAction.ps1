@@ -144,7 +144,7 @@ function InvokeActionModule {
                 $myScriptCount++
                 $scriptFile = $_
                 if ($env:GITHUB_STEP_SUMMARY) {
-                    "### $($scriptFile.Fullname)" |
+                    "### $($scriptFile.Fullname -replace [Regex]::Escape($env:GITHUB_WORKSPACE))" |
                         Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
                 }
                 $scriptCmd = $ExecutionContext.SessionState.InvokeCommand.GetCommand($scriptFile.FullName, 'ExternalScript')                
