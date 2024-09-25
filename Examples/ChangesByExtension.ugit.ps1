@@ -19,7 +19,9 @@ if ($currentBranchName -eq $headBranch) {
 }
 
 $currentBranchCommits = git log "$($gitRemote.RemoteName)/$headBranch..$CurrentBranch" -Statistics
-$changesByExtension = $currentBranchCommits.Changes | Group-Object { ($_.FilePath -split '\.')[-1]}
+$changesByExtension = $currentBranchCommits | 
+    Foreach-Object { $_.Changes } | 
+    Group-Object { ($_.FilePath -split '\.')[-1] -replace '\p{P}+$'}
 
 if ($env:GITHUB_STEP_SUMMARY) { 
 "
@@ -30,8 +32,7 @@ $(
 foreach ($changeSet in $changesByExtension) {
     "    $($changeSet.Name): $(($changeSet.Group.LinesChanged | Measure-Object -Sum).Sum)"
 }
-) -join [Environment]::NewLine
-)
+) -join [Environment]::NewLine)
 ~~~
 
 " |
