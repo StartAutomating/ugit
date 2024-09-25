@@ -61,7 +61,7 @@ Get-ChildItem -Path $PSScriptRoot |
 # If we have packages to install
 if ($InstallPackages) {
     # install the packages
-    apt-get update && apt-get install -y "$($InstallPackages -join ' ')" && apt-get clean | Out-Host
+    apt-get update && apt-get install -y @installPackages && apt-get clean | Out-Host
 }
 
 # Create a new profile
