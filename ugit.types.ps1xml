@@ -281,9 +281,9 @@ Pop-Location
 if ($this.CommitMessage -match '^(?&lt;Type&gt;[^\r\n]+?):\s{0,}(?&lt;Message&gt;[^\r\n]+)') {
     $matchType = $Matches.Type    
     if ($matchType -match '\(') {
-        $this.Type -replace '\(.+$'
+        $matchType -replace '\(.+$'
     } else {
-        $this.Type
+        $matchType
     }
 } else {
     return ''
