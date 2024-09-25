@@ -28,11 +28,12 @@ $(
 @(
 "pie title Changes by Extension"
 foreach ($changeSet in $changesByExtension) {
-    "    $($changeSet.Name): $($changeSet.LinesChanged | Measure-Object -Sum).Sum"
+    "    $($changeSet.Name): $(($changeSet.Group.LinesChanged | Measure-Object -Sum).Sum)"
 }
 ) -join [Environment]::NewLine
 )
 ~~~
+
 " |
         Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
 }
