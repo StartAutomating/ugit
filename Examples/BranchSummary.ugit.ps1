@@ -6,6 +6,7 @@
 #>
 param()
 
+$gitFetch = git fetch
 $currentBranchName = git branch | ? IsCurrentBranch
 if ($currentBranchName -in 'master','main') {
     Write-Warning "Not summarizing the main branch."    
