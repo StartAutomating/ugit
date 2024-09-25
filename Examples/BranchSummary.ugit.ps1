@@ -6,14 +6,19 @@
 #>
 param()
 
-$gitPullFirst = git pull
-$currentBranchName = git branch | ? IsCurrentBranch
-if ($currentBranchName -in 'master','main') {
+$gitRemote = git remote
+$headBranch = git remote |
+    Select-Object -First 1 |
+    git remote show |
+    Select-Object -ExpandProperty HeadBranch
+
+$currentBranch = git branch | ? IsCurrentBranch
+if ($currentBranchName -eq $headBranch) {
     Write-Warning "Not summarizing the main branch."    
     return
 }
 
-$currentBranchCommits = git log -CurrentBranch -Statistics 
+$currentBranchCommits = git log "$($gitRemote.RemoteName)/$headBranch..$CurrentBranch" -Statistics
 $currentBranchCommits | Out-Host
 $markdownTable = '|GitUserName|CommitDate|CommitMessage|'
 '|-|:-:|-|'
@@ -28,7 +33,7 @@ foreach ($gitlog in $currentBranchCommits) {
 if ($env:GITHUB_STEP_SUMMARY) {
     $remoteUrl = git remote | git remote get-url
     "
-## branch summary
+## Branch summary
 
 $markdownTable
 " |
