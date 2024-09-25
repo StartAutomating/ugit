@@ -270,6 +270,27 @@ Pop-Location
                     </Script>
       </ScriptMethod>
       <ScriptProperty>
+        <Name>CommitType</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets the type of a conventional commit
+.DESCRIPTION
+    Gets the type of a conventional commit, based on the commit message.
+#&gt;
+if ($this.CommitMessage -match '^(?&lt;Type&gt;[^\r\n]+?):\s{0,}(?&lt;Message&gt;[^\r\n]+)') {
+    $matchType = $Matches.Type    
+    if ($matchType -match '\(') {
+        $this.Type -replace '\(.+$'
+    } else {
+        $this.Type
+    }
+} else {
+    return ''
+}
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
         <Name>Note</Name>
         <GetScriptBlock>
                         &lt;#
