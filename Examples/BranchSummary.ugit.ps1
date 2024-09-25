@@ -14,25 +14,26 @@ $headBranch = git remote |
 
 $currentBranch = git branch | ? IsCurrentBranch
 if ($currentBranchName -eq $headBranch) {
-    Write-Warning "Not summarizing the main branch."    
+    Write-Warning "Not summarizing the main branch."
     return
 }
 
 $currentBranchCommits = git log "$($gitRemote.RemoteName)/$headBranch..$CurrentBranch" -Statistics
 $currentBranchCommits | Out-Host
-$markdownTable = '|GitUserName|CommitDate|CommitMessage|'
-'|-|:-:|-|'
-foreach ($gitlog in $currentBranchCommits) {    
-    '|' + $(
-        $gitLog.GitUserName, 
-        $gitLog.CommitDate.ToString(), 
-        ($gitLog.CommitMessage -replace '(?>\r\n|\n)', '<br/>') -join '|'
-    ) + '|'
-}
+$markdownTable = @(
+    '|GitUserName|CommitDate|CommitMessage|'
+    '|-|:-:|-|'
+    foreach ($gitlog in $currentBranchCommits) {    
+        '|' + $(
+            $gitLog.GitUserName, 
+            $gitLog.CommitDate.ToString(), 
+            ($gitLog.CommitMessage -replace '(?>\r\n|\n)', '<br/>') -join '|'
+        ) + '|'
+    }
+) -join [Environment]::NewLine
 
-if ($env:GITHUB_STEP_SUMMARY) {
-    $remoteUrl = git remote | git remote get-url
-    "
+if ($env:GITHUB_STEP_SUMMARY) { 
+"
 ## Branch summary
 
 $markdownTable
