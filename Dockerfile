@@ -6,3 +6,5 @@ SHELL ["/bin/pwsh", "-nologo", "-command"]
 
 # Run the initialization script
 RUN --mount=type=bind,src=./,target=/Initialize ./Initialize/Container.init.ps1
+
+ENTRYPOINT [ "/bin/pwsh", "-nologo", "-noexit","-file", "./Container.start.ps1" ]
