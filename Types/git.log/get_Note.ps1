@@ -4,6 +4,19 @@
 .DESCRIPTION
     Gets git notes associated with a commit.    
 #>
-Push-Location $this.GitRoot
-git notes show $this.CommitHash
-Pop-Location
+$pushed = 
+    if ($this.GitRoot -ne $pwd) {
+        Push-Location $this.GitRoot
+        $true
+    } else {
+        $false
+    }
+$showNotes = git notes show $this.CommitHash *>&1
+if ($showNotes -isnot [Management.Automation.ErrorRecord]) {
+    $showNotes
+} else {
+    $error.RemoveAt(0)
+}
+if ($pushed) {
+    Pop-Location
+}
