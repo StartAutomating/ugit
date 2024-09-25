@@ -25,7 +25,7 @@ $markdownTable = '|GitUserName|CommitDate|CommitMessage|'
 foreach ($gitlog in $currentBranchCommits) {    
     '|' + $(
         $gitLog.GitUserName, 
-        $gitLog.GitCommitDate.ToString(), 
+        $gitLog.CommitDate.ToString(), 
         ($gitLog.CommitMessage -replace '(?>\r\n|\n)', '<br/>') -join '|'
     ) + '|'
 }
