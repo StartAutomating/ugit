@@ -16,6 +16,18 @@
             uses = 'StartAutomating/PSSVG@main'
             id = 'PSSVG'
         },
+        @{
+            name = 'Run ugit (from main)'
+            if   = '${{github.ref_name == ''main''}}'
+            uses = 'StartAutomating/ugit@main'
+            id = 'ugitMain'
+        },
+        @{
+            name = 'Run ugit (on branch)'
+            if   = '${{github.ref_name != ''main''}}'
+            uses = './'
+            id = 'ugitBranch'
+        }
         'RunPipeScript',
         'RunPiecemeal',
         'RunEZOut',
