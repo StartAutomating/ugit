@@ -30,7 +30,7 @@ $(
 @(
 "pie title Changes by Extension"
 foreach ($changeSet in $changesByExtension) {
-    "    $($changeSet.Name): $(($changeSet.Group.LinesChanged | Measure-Object -Sum).Sum)"
+    (' ' * 4) + '"' + $($changeSet.Name) + '"' + ' : ' + ($changeSet.Group.LinesChanged | Measure-Object -Sum).Sum
 }
 ) -join [Environment]::NewLine)
 ~~~
