@@ -19,8 +19,8 @@ if ($currentBranchName -eq $headBranch) {
 }
 
 $currentBranchCommits = git log "$($gitRemote.RemoteName)/$headBranch..$CurrentBranch"
-$changesByUserName = $currentBranchCommits |     
-    Group-Object GitUserName -NoElement    
+$changesByUserName = $currentBranchCommits| ?  { $_.ReferenceNumbers } |Select-Object -ExpandProperty ReferenceNumbers |     
+    Group-Object -NoElement    
 
 if ($env:GITHUB_STEP_SUMMARY) { 
 "
