@@ -29,7 +29,7 @@ $(
 @(
 "pie title Changes by UserName"
 foreach ($changeSet in $changesByUserName) {
-    (' ' * 4) + '"' + $($changeSet.Name) + '"' + ' : ' + ($changeSet.Group.Count)
+    (' ' * 4) + '"' + $($changeSet.Name) + '"' + ' : ' + ($changeSet.Count)
 }
 ) -join [Environment]::NewLine)
 ~~~
