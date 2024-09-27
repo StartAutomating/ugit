@@ -6,3 +6,4 @@
 
 * [get_CommitType](get_CommitType.md)
 * [get_Note](get_Note.md)
+* [get_Scope](get_Scope.md)
