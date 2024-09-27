@@ -291,6 +291,26 @@ if ($this.CommitMessage -match '^(?&lt;Type&gt;[^\r\n]+?):\s{0,}(?&lt;Message&gt
                     </GetScriptBlock>
       </ScriptProperty>
       <ScriptProperty>
+        <Name>Description</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets the description of a commit
+.DESCRIPTION
+    Gets the description of a conventional commit, or the first line of the commit message.
+.LINK
+    https://www.conventionalcommits.org/en/v1.0.0/#summary
+#&gt;
+if ($this.CommitMessage -match '^(?&lt;Type&gt;[^\r\n]+?):\s{0,}(?&lt;Message&gt;[^\r\n]+)') {
+    return $Matches.Message    
+} else {
+    $firstLine, $null = $this.CommitMessage -split '(?&gt;\r\n|\n)'
+    return $firstLine
+}
+
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
         <Name>Note</Name>
         <GetScriptBlock>
                         &lt;#
