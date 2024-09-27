@@ -324,6 +324,29 @@ if ($pushed) {
                         [Regex]::new("#(?&lt;n&gt;\d+)").Matches($this.CommitMessage) -replace '#' -as [int[]]
                     </GetScriptBlock>
       </ScriptProperty>
+      <ScriptProperty>
+        <Name>Scope</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets the scope of a conventional commit
+.DESCRIPTION
+    Gets the scope of a conventional commit, based on the commit message.
+.LINK
+    https://www.conventionalcommits.org/en/v1.0.0/#summary
+#&gt;
+if ($this.CommitMessage -match '^(?&lt;Type&gt;[^\r\n]+?):\s{0,}(?&lt;Message&gt;[^\r\n]+)') {
+    $matchType = $Matches.Type    
+    if ($matchType -match '\(') {
+        $matchType -replace '.+?\(' -replace '\)\s{0,}$'
+    } else {
+        return ''
+    }
+} else {
+    return ''
+}
+                    </GetScriptBlock>
+      </ScriptProperty>
     </Members>
   </Type>
   <Type>
