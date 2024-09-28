@@ -207,6 +207,10 @@ if ($this -match "'(?&lt;n&gt;.+?)'\: unknown revision or path not in the workin
     <Name>git.log</Name>
     <Members>
       <AliasProperty>
+        <Name>Changes</Name>
+        <ReferencedMemberName>Change</ReferencedMemberName>
+      </AliasProperty>
+      <AliasProperty>
         <Name>Notes</Name>
         <ReferencedMemberName>Note</ReferencedMemberName>
       </AliasProperty>
