@@ -66,6 +66,13 @@ begin {
 '@, 'IgnoreCase,IgnorePatternWhitespace', '00:00:05')
 
     $lines = [Collections.Generic.List[string]]::new()
+    $StartsWithCommit = [Regex]::new('^commit', 'IgnoreCase')
+    $gitLogTypeName = 
+        if ($gitCommand -match '--merges') {
+            'git.merge.log'
+        } else {
+            'git.log'
+        }
 
     function OutGitLog {
         param([string[]]$OutputLines)
@@ -73,21 +80,19 @@ begin {
         $gitLogMatch = $Git_Log.Match($OutputLines -join [Environment]::NewLine)
         if (-not $gitLogMatch.Success) { return }
 
-        $gitLogOut = [Ordered]@{PSTypeName='git.log';GitCommand=$gitCommand}
-        if ($gitCommand -like '*--merges*') {
-            $gitLogOut.PSTypeName = 'git.merge.log'
-        }
+        $gitLogOut = [Ordered]@{PSTypeName=$gitLogTypeName;GitCommand=$gitCommand}        
         foreach ($group in $gitLogMatch.Groups) {
             if ($group.Name -as [int] -ne $null) { continue }
             if (-not $gitLogOut.Contains($group.Name)) {
-                $gitLogOut[$group.Name]  = $group.Value
+                $gitLogOut[$group.Name] = $group.Value
             } else {
-                $gitLogOut[$group.Name]  = @( $gitLogOut[$group.Name] ) + $group.Value
+                $gitLogOut[$group.Name] = @( $gitLogOut[$group.Name] ) + $group.Value
             }
         }
         $gitLogOut.Remove("HexDigits")
         if ($gitLogOut.CommitDate) {
-            $gitLogOut.CommitDate = [datetime]::ParseExact($gitLogOut.CommitDate.Trim(), "ddd MMM d HH:mm:ss yyyy K", [cultureinfo]::InvariantCulture)
+            $gitLogOut.CommitDateString = $gitLogOut.CommitDate
+            $gitLogOut.Remove("CommitDate")            
         }
         if ($gitLogOut.CommitMessage) {
             $gitLogOut.CommitMessage = $gitLogOut.CommitMessage.Trim()
@@ -136,47 +141,30 @@ begin {
             if (-not $gitLogOut.Insertions) {
                 $gitLogOut.Insertions = 0
             }
-        }
-
-        if ($gitArgument -contains '--stat') {
-            $gitLogOut.Changes = @()    
-            foreach ($outLine in $OutputLines) {
-                if ($outLine -notlike ' *|*') { continue }
-                $nameOfFile, $fileChanges =  $outLine -split '\|'
-                $nameOfFile = $nameOfFile -replace '^\s+' -replace '\s+$'
-                $match = [Regex]::Match($fileChanges, "(?<c>\d+)\s(?<i>\+{0,})(?<d>\-{0,})")
-                $linesChanged  = $match.Groups["c"].Value -as [int]
-                $linesInserted = $match.Groups["i"].Length
-                $linesDeleted  = $match.Groups["d"].Length
-                $gitLogOut.Changes +=
-                    [PSCustomObject][Ordered]@{
-                        FilePath      = $nameOfFile
-                        LinesChanged  = $linesChanged
-                        LinesInserted = $linesInserted
-                        LinesDeleted  = $linesDeleted
-                    }
-            }            
-        }
+        }        
 
         $gitLogOut.GitOutputLines = $OutputLines
         $gitLogOut.Merged = $script:LogChangesMerged
         $gitLogOut.GitRoot = $GitRoot
         [PSCustomObject]$gitLogOut
     }
+
+    $shouldSkip = $gitCommand -match '--(?>pretty|format)'
 }
 
 
 process {
-    if ($gitCommand -match '--(?>pretty|format)') {
+    if ($shouldSkip) {
         continue
-    }
+    }    
 
-    if ("$gitOut" -like 'Commit*' -and $lines) {
+    $gitOutString = "$gitOut"
+    if ($lines.Count -and $gitOutString -match $StartsWithCommit) {
         OutGitLog $lines
 
         $lines = [Collections.Generic.List[string]]::new()
     }
-    $lines.Add("$gitOut")
+    $lines.Add($gitOutString)
 }
 
 end {
