@@ -5,6 +5,7 @@
 
 
 * [get_Change](get_Change.md)
+* [get_CommitDate](get_CommitDate.md)
 * [get_CommitType](get_CommitType.md)
 * [get_Description](get_Description.md)
 * [get_Note](get_Note.md)
