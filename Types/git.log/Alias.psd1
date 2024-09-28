@@ -1,3 +1,4 @@
 @{
     Notes = 'Note'
+    Trailers = 'Trailer'
 }
