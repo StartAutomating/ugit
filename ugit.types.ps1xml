@@ -210,6 +210,10 @@ if ($this -match "'(?&lt;n&gt;.+?)'\: unknown revision or path not in the workin
         <Name>Notes</Name>
         <ReferencedMemberName>Note</ReferencedMemberName>
       </AliasProperty>
+      <AliasProperty>
+        <Name>Trailers</Name>
+        <ReferencedMemberName>Trailer</ReferencedMemberName>
+      </AliasProperty>
       <ScriptMethod>
         <Name>Archive</Name>
         <Script>
@@ -365,6 +369,34 @@ if ($this.CommitMessage -match '^(?&lt;Type&gt;[^\r\n]+?):\s{0,}(?&lt;Message&gt
 } else {
     return ''
 }
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>Trailer</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets the trailer of a commit
+.DESCRIPTION
+    Gets the trailers of a commit.  Git trailers are key-value pairs that are appended to the end of a commit message.
+.LINK
+    https://git-scm.com/docs/git-interpret-trailers
+#&gt;
+
+$lineNumber = 0
+$gitTrailers = [Ordered]@{}
+foreach ($commitMessageLine in $this.CommitMessage -split '(?&gt;\r\n|\n)') {
+    $lineNumber++
+    if ($commitMessageLine -notmatch '\s{0,}(?&lt;k&gt;\S+):\s(?&lt;v&gt;[\s\S]+$)' -or $lineNumber -eq 1) {
+        continue
+    }
+    if (-not $gitTrailers[$matches.k]) {
+        $gitTrailers[$matches.k] = $matches.v
+    } else {
+        $gitTrailers[$matches.k] = @($gitTrailers[$matches.k]) + $v
+    }                 
+}
+return $gitTrailers
                     </GetScriptBlock>
       </ScriptProperty>
     </Members>
