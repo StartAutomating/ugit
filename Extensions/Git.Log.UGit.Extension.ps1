@@ -40,8 +40,7 @@
 param(
 )
 
-begin {
-    # TODO: Support git log trailers (#112)
+begin {    
     $script:LogChangesMerged = $false
     $Git_Log = [Regex]::new(@'
 (?m)^commit                                                             # Commits start with 'commit'
@@ -150,25 +149,25 @@ begin {
     }
 
     $shouldSkip = $gitCommand -match '--(?>pretty|format)'
-}
-
-
-process {
     if ($shouldSkip) {
         continue
-    }    
-
-    $gitOutString = "$gitOut"
-    if ($lines.Count -and $gitOutString -match $StartsWithCommit) {
-        OutGitLog $lines
-
-        $lines = [Collections.Generic.List[string]]::new()
     }
-    $lines.Add($gitOutString)
 }
 
 end {
-    OutGitLog $lines
+    if ($shouldSkip) {
+        return
+    }
+    $allInput = @($input)
+    $commitStartLine = 0
+    for ($lineIndex = 0; $lineIndex -lt $allInput.Count; $lineIndex++) {
+        if ($allInput[$lineIndex] -match $StartsWithCommit) {
+            OutGitLog $allInput[$commitStartLine..($lineIndex - 1)]
+            $commitStartLine = $lineIndex
+        }
+    }
+    
+    OutGitLog $allInput[$commitStartIndex..($allInput.Count - 1)]
     $ExecutionContext.SessionState.PSVariable.Remove('script:LogChangesMerged')
 }
 
