@@ -26,8 +26,7 @@ $commitList =
 
 
 
-$groupedChangedSet = $commitList |
-    ? { $_.CommitType } |
+$groupedChangedSet = $commitList |    
     Group-Object { $_.CommitType }
 
 $releaseNoteBulletpoints = @(    
@@ -51,8 +50,12 @@ $releaseNoteBulletpoints = @(
 
 if ($env:GITHUB_STEP_SUMMARY) { 
 "
+~~~markdown
 $releaseNoteBulletpoints
+~~~
 " |
         Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
 }
+$releaseNoteBulletpoints
+
 
