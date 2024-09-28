@@ -156,12 +156,7 @@ function InvokeActionModule {
                         InstallActionModule $requiredModule.Name
                     }
                 }
-                $scriptFileOutputs = . $scriptCmd
-                if ($env:GITHUB_STEP_SUMMARY) {
-                    "$(@($scriptFileOutputs).Length) Outputs" |                    
-                        Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
-                    "$(@($scriptFileOutputs).Length) Outputs" | Out-Host
-                }
+                $scriptFileOutputs = . $scriptCmd                
                 $scriptFileOutputs |
                     . ProcessOutput  | 
                     Out-Host
