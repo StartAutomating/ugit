@@ -4,7 +4,7 @@
     steps = @(
         @{
             name = 'Check out repository'
-            uses = 'actions/checkout@v2'
+            uses = 'actions/checkout@v4'
         },
         @{
             name = 'GitLogger'
