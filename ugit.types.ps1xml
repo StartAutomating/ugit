@@ -211,6 +211,10 @@ if ($this -match "'(?&lt;n&gt;.+?)'\: unknown revision or path not in the workin
         <ReferencedMemberName>Change</ReferencedMemberName>
       </AliasProperty>
       <AliasProperty>
+        <Name>Date</Name>
+        <ReferencedMemberName>CommitDate</ReferencedMemberName>
+      </AliasProperty>
+      <AliasProperty>
         <Name>Notes</Name>
         <ReferencedMemberName>Note</ReferencedMemberName>
       </AliasProperty>
@@ -309,6 +313,19 @@ return @(foreach ($outLine in $this.GitOutputLines) {
         LinesDeleted  = $linesDeleted
     }
 })
+
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>CommitDate</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets the date of a git log
+.DESCRIPTION
+    Gets the commit date of a git log entry.
+#&gt;
+return [datetime]::ParseExact($this.CommitDateString.Trim(), "ddd MMM d HH:mm:ss yyyy K", [cultureinfo]::InvariantCulture)
 
                     </GetScriptBlock>
       </ScriptProperty>
