@@ -65,7 +65,7 @@ begin {
 
 '@, 'IgnoreCase,IgnorePatternWhitespace', '00:00:05')
 
-    $lines = @()
+    $lines = [Collections.Generic.List[string]]::new()
 
     function OutGitLog {
         param([string[]]$OutputLines)
@@ -174,9 +174,9 @@ process {
     if ("$gitOut" -like 'Commit*' -and $lines) {
         OutGitLog $lines
 
-        $lines = @()
+        $lines = [Collections.Generic.List[string]]::new()
     }
-    $lines += "$gitOut"
+    $lines.Add("$gitOut")
 }
 
 end {
