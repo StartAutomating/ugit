@@ -14,6 +14,7 @@ param()
 
 begin {
     $gitCheckoutLines = @()
+    $switchedToNewBranch = "^Switched to a new branch '(?<b>[^']+)'"
 }
 
 process {
@@ -22,12 +23,18 @@ process {
 
 end {
 
-    if ($($gitCheckoutLines) -match "^Switched to a new branch '(?<b>[^']+)'") {
-        [PSCustomObject]@{
-            BranchName = $matches.b
-            PSTypeName = 'git.checkout.newbranch'
-            GitRoot    = $GitRoot
-        }
+    
+    if ($($gitCheckoutLines) -match $switchedToNewBranch) {        
+        foreach ($line in $gitCheckoutLines) {
+            if ($line -match $switchedToNewBranch) {
+                [PSCustomObject]@{
+                    BranchName = $matches.b
+                    PSTypeName = 'git.checkout.newbranch'
+                    GitRoot    = $GitRoot
+                }        
+                break
+            }
+        }        
     }
     elseif ($gitCheckoutLines -match "Switched to branch '(?<b>[^']+)'")
     {
