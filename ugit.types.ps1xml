@@ -215,10 +215,6 @@ if ($this -match "'(?&lt;n&gt;.+?)'\: unknown revision or path not in the workin
         <ReferencedMemberName>CommitDate</ReferencedMemberName>
       </AliasProperty>
       <AliasProperty>
-        <Name>Notes</Name>
-        <ReferencedMemberName>Note</ReferencedMemberName>
-      </AliasProperty>
-      <AliasProperty>
         <Name>Trailers</Name>
         <ReferencedMemberName>Trailer</ReferencedMemberName>
       </AliasProperty>
@@ -263,6 +259,34 @@ if (-not $logPaths) {
     git diff $this.CommitHash @args
 }
 Pop-Location
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
+        <Name>GetNote</Name>
+        <Script>
+                        &lt;#
+.SYNOPSIS
+    Gets git commit notes
+.DESCRIPTION
+    Gets git notes associated with a commit.    
+#&gt;
+$pushed = 
+    if ($this.GitRoot -ne $pwd) {
+        Push-Location $this.GitRoot
+        $true
+    } else {
+        $false
+    }
+$showNotes = git notes show $this.CommitHash *&gt;&amp;1
+if ($showNotes -isnot [Management.Automation.ErrorRecord]) {
+    $showNotes
+} else {
+    $error.RemoveAt(0)
+}
+if ($pushed) {
+    Pop-Location
+}
+
                     </Script>
       </ScriptMethod>
       <ScriptMethod>
@@ -366,34 +390,6 @@ if ($this.CommitMessage -match '^(?&lt;Type&gt;[^\r\n]+?):\s{0,}(?&lt;Message&gt
 } else {
     $firstLine, $null = $this.CommitMessage -split '(?&gt;\r\n|\n)'
     return $firstLine
-}
-
-                    </GetScriptBlock>
-      </ScriptProperty>
-      <ScriptProperty>
-        <Name>Note</Name>
-        <GetScriptBlock>
-                        &lt;#
-.SYNOPSIS
-    Gets git commit notes
-.DESCRIPTION
-    Gets git notes associated with a commit.    
-#&gt;
-$pushed = 
-    if ($this.GitRoot -ne $pwd) {
-        Push-Location $this.GitRoot
-        $true
-    } else {
-        $false
-    }
-$showNotes = git notes show $this.CommitHash *&gt;&amp;1
-if ($showNotes -isnot [Management.Automation.ErrorRecord]) {
-    $showNotes
-} else {
-    $error.RemoveAt(0)
-}
-if ($pushed) {
-    Pop-Location
 }
 
                     </GetScriptBlock>
