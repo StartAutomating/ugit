@@ -80,7 +80,7 @@
                 $callingContext.CommandElements -join ' '
             }
             elseif ($myInv.Line) {                
-                $myInv.Line.Substring($myInv.OffsetInLine - 1)
+                $myInv.Line.Substring($myInv.OffsetInLine - 1) -replace '\|\s{0,}$'
             }
         
         # If there's nothing to validate, there are no dynamic parameters.
@@ -106,7 +106,12 @@
             # Therefore, when testing dynamic parameters, assign to a variable (because parenthesis and pipes may make this an invalid ScriptBlock)
             $callingContext = try {
                     [scriptblock]::Create($ToValidate).Ast.EndBlock.Statements[0].PipelineElements[0]
-            } catch { $null}
+            } catch { 
+                # If we failed to create the script block, the error is noise.
+                $err = $_
+                Write-Debug -Message "Failed to create script block from '$ToValidate' : $($err.Exception.Message)"
+                $Error.RemoveAt(0)
+            }
         }
         foreach ($commandElement in $callingContext.CommandElements) {
             if (-not $commandElement.parameterName) { continue } # that is a Powershell parameter
