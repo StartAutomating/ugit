@@ -69,9 +69,9 @@ If set, will get all changes between the upstream branch and the current branch.
 #### **IssueNumber**
 One or more issue numbers.  Providing an issue number of 0 will find all log entries that reference an issue.
 
-|Type       |Required|Position|PipelineInput        |Aliases                                                                             |
-|-----------|--------|--------|---------------------|------------------------------------------------------------------------------------|
-|`[Int32[]]`|false   |named   |true (ByPropertyName)|ReferenceNumbers<br/>ReferenceNumber<br/>IssueNumbers<br/>WorkItemID<br/>WorkItemIDs|
+|Type       |Required|Position|PipelineInput        |Aliases                                                                                                                |
+|-----------|--------|--------|---------------------|-----------------------------------------------------------------------------------------------------------------------|
+|`[Int32[]]`|false   |named   |true (ByPropertyName)|ReferenceNumbers<br/>ReferenceNumber<br/>IssueNumbers<br/>WorkItemID<br/>WorkItemIDs<br/>TicketNumber<br/>TicketNumbers|
 
 #### **Statistics**
 If set, will get statistics associated with each change
