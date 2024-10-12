@@ -222,6 +222,10 @@ if ($this -match "'(?&lt;n&gt;.+?)'\: unknown revision or path not in the workin
         <Name>Trailers</Name>
         <ReferencedMemberName>Trailer</ReferencedMemberName>
       </AliasProperty>
+      <AliasProperty>
+        <Name>UserName</Name>
+        <ReferencedMemberName>GitUserName</ReferencedMemberName>
+      </AliasProperty>
       <ScriptMethod>
         <Name>Archive</Name>
         <Script>
