@@ -46,7 +46,7 @@ $CurrentBranch,
 
 # One or more issue numbers.  Providing an issue number of 0 will find all log entries that reference an issue.
 [Parameter(ValueFromPipelineByPropertyName)]
-[Alias('ReferenceNumbers','ReferenceNumber','IssueNumbers','WorkItemID','WorkItemIDs')]
+[Alias('ReferenceNumbers','ReferenceNumber','IssueNumbers','WorkItemID','WorkItemIDs','TicketNumber','TicketNumbers')]
 [int[]]
 $IssueNumber,
 
@@ -83,7 +83,8 @@ foreach ($dashToDoubleDash in 'after', 'before', 'author') {
     }
 }
 
-if ($CurrentBranch) {        
+if ($CurrentBranch) {
+    # Now Better for Forking: (Forks have two remotes) (origin and upstream)    
     $headbranch        = git remote | git remote show | Select-Object -ExpandProperty HeadBranch -First 1
     $currentBranchName = git branch | Where-Object IsCurrentBranch
     if ($currentBranchName -ne $headbranch) {
@@ -98,9 +99,9 @@ if ($IssueNumber) {
     foreach ($IssueNum in $IssueNumber) {
         '--grep'
         if ($IssueNum -eq 0) {
-            '\#\d+\D'
+            '[\#-]\d+\D'
         } else {
-            "\#$IssueNum\D"
+            "[\#-]$IssueNum\D"
         }
     }    
 }
