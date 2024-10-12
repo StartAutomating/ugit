@@ -109,9 +109,9 @@
             } catch { 
                 # If we failed to create the script block, the error is noise.
                 $err = $_
-                Write-Debug -Message "Failed to create script block from '$ToValidate' : $($err.Exception.Message)"
-                $Error.RemoveAt(0)
+                Write-Debug -Message "Failed to create script block from '$ToValidate' : $($err.Exception.Message)"                
             }
+            if (-not $callingContext) { $error.RemoveAt(0)}
         }
         foreach ($commandElement in $callingContext.CommandElements) {
             if (-not $commandElement.parameterName) { continue } # that is a Powershell parameter
