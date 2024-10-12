@@ -4,10 +4,10 @@
 .Description
     GitHub Action for ugit.  This will:
 
-    * Import ugit and Connect-GitHub (giving easy access to every GitHub API)
-    * Run all *.ugit.ps1 files beneath the workflow directory
-    * Run a .ugitScript parameter.
-
+    * Import ugit
+    * If `-Run` is provided, run that script
+    * Otherwise, unless `-SkipPS1` is passed, run all *.ugit.ps1 files beneath the workflow directory
+      * If any `-ActionScript` was provided, run scripts from the action path that match a wildcard pattern. 
 
     If you will be making changes using the GitHubAPI, you should provide a -GitHubToken
     If none is provided, and ENV:GITHUB_TOKEN is set, this will be used instead.
@@ -21,7 +21,7 @@ param(
 # Any files outputted from the script will be added to the repository.
 # If those files have a .Message attached to them, they will be committed with that message.
 [string]
-$UGitScript,
+$Run,
 
 # If set, will not process any files named *.ugit.ps1
 [switch]
@@ -35,7 +35,11 @@ $InstallModule,
 [string]
 $CommitMessage,
 
-# The user email associated with a git commit.
+# The name of one or more scripts to run, from this action's path.
+[string[]]
+$ActionScript = '[\/]Examples[\/]*',
+
+# The user email associated with a git commit.  If this is not provided, it will be set to the username@noreply.github.com.
 [string]
 $UserEmail,
 
@@ -120,48 +124,67 @@ function InitializeAction {
 
 function InvokeActionModule {
     $myScriptStart = [DateTime]::Now
-    $myScript = $ExecutionContext.SessionState.PSVariable.Get("${ModuleName}Script").Value
+    $myScript = $ExecutionContext.SessionState.PSVariable.Get("Run").Value
     if ($myScript) {
         Invoke-Expression -Command $myScript |
             . ProcessOutput |
             Out-Host
+        return
     }
     $myScriptTook = [Datetime]::Now - $myScriptStart
     $MyScriptFilesStart = [DateTime]::Now
 
     $myScriptList  = @()
-    $shouldSkip = $ExecutionContext.SessionState.PSVariable.Get("Skip${ModuleName}PS1").Value
-    if (-not $shouldSkip) {
-        Get-ChildItem -Recurse -Path $env:GITHUB_WORKSPACE |
-            Where-Object Name -Match "\.$($moduleName)\.ps1$" |            
-            ForEach-Object -Begin {
-                if ($env:GITHUB_STEP_SUMMARY) {
-                    "## $ModuleName Scripts" |
-                        Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
-                } 
-            } -Process {
-                $myScriptList += $_.FullName.Replace($env:GITHUB_WORKSPACE, '').TrimStart('/')
-                $myScriptCount++
-                $scriptFile = $_
-                if ($env:GITHUB_STEP_SUMMARY) {
-                    "### $($scriptFile.Fullname -replace [Regex]::Escape($env:GITHUB_WORKSPACE))" |
-                        Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
-                }
-                $scriptCmd = $ExecutionContext.SessionState.InvokeCommand.GetCommand($scriptFile.FullName, 'ExternalScript')                
-                foreach ($requiredModule in $CommandInfo.ScriptBlock.Ast.ScriptRequirements.RequiredModules) {
-                    if ($requiredModule.Name -and 
-                        (-not $requiredModule.MaximumVersion) -and
-                        (-not $requiredModule.RequiredVersion)
-                    ) {
-                        InstallActionModule $requiredModule.Name
-                    }
-                }
-                $scriptFileOutputs = . $scriptCmd                
-                $scriptFileOutputs |
-                    . ProcessOutput  | 
-                    Out-Host
-            }
+    $shouldSkip = $ExecutionContext.SessionState.PSVariable.Get("SkipScript").Value
+    if ($shouldSkip) {
+        return 
     }
+    $scriptFiles = @(
+        Get-ChildItem -Recurse -Path $env:GITHUB_WORKSPACE |
+            Where-Object Name -Match "\.$($moduleName)\.ps1$"
+        if ($ActionScript) {
+            if ($ActionScript -match '^\s{0,}/' -and $ActionScript -match '/\s{0,}$') {
+                $ActionScriptPattern = $ActionScript.Trim('/').Trim() -as [regex]
+                if ($ActionScriptPattern) {
+                    $ActionScriptPattern = [regex]::new($ActionScript.Trim('/').Trim(), 'IgnoreCase,IgnorePatternWhitespace', [timespan]::FromSeconds(0.5))
+                    Get-ChildItem -Recurse -Path $env:GITHUB_ACTION_PATH |
+                        Where-Object { $_.Name -Match "\.$($moduleName)\.ps1$" -and $_.FullName -match $ActionScriptPattern }
+                }
+            } else {
+                Get-ChildItem -Recurse -Path $env:GITHUB_ACTION_PATH |
+                    Where-Object Name -Match "\.$($moduleName)\.ps1$" |
+                    Where-Object FullName -Like $ActionScript
+            }
+        }
+    ) | Select-Object -Unique
+    $scriptFiles |
+        ForEach-Object -Begin {
+            if ($env:GITHUB_STEP_SUMMARY) {
+                "## $ModuleName Scripts" |
+                    Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+            } 
+        } -Process {
+            $myScriptList += $_.FullName.Replace($env:GITHUB_WORKSPACE, '').TrimStart('/')
+            $myScriptCount++
+            $scriptFile = $_
+            if ($env:GITHUB_STEP_SUMMARY) {
+                "### $($scriptFile.Fullname -replace [Regex]::Escape($env:GITHUB_WORKSPACE))" |
+                    Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+            }
+            $scriptCmd = $ExecutionContext.SessionState.InvokeCommand.GetCommand($scriptFile.FullName, 'ExternalScript')                
+            foreach ($requiredModule in $CommandInfo.ScriptBlock.Ast.ScriptRequirements.RequiredModules) {
+                if ($requiredModule.Name -and 
+                    (-not $requiredModule.MaximumVersion) -and
+                    (-not $requiredModule.RequiredVersion)
+                ) {
+                    InstallActionModule $requiredModule.Name
+                }
+            }
+            $scriptFileOutputs = . $scriptCmd                
+            $scriptFileOutputs |
+                . ProcessOutput  | 
+                Out-Host
+        }    
     
     $MyScriptFilesTook = [Datetime]::Now - $MyScriptFilesStart
     $SummaryOfMyScripts = "$myScriptCount $moduleName scripts took $($MyScriptFilesTook.TotalSeconds) seconds" 
@@ -173,6 +196,39 @@ function InvokeActionModule {
     }
     #region Custom    
     #endregion Custom
+}
+
+function OutError {
+    $anyRuntimeExceptions = $false
+    foreach ($err in $error) {        
+        $errParts = @(
+            "::error "
+            @(
+                if ($err.InvocationInfo.ScriptName) {
+                "file=$($err.InvocationInfo.ScriptName)"
+            }
+            if ($err.InvocationInfo.ScriptLineNumber -ge 1) {
+                "line=$($err.InvocationInfo.ScriptLineNumber)"
+                if ($err.InvocationInfo.OffsetInLine -ge 1) {
+                    "col=$($err.InvocationInfo.OffsetInLine)"
+                }
+            }
+            if ($err.CategoryInfo.Activity) {
+                "title=$($err.CategoryInfo.Activity)"
+            }
+            ) -join ','
+            "::"
+            $err.Exception.Message
+            if ($err.CategoryInfo.Category -eq 'OperationStopped' -and 
+                $err.CategoryInfo.Reason -eq 'RuntimeException') {
+                $anyRuntimeExceptions = $true
+            }
+        ) -join ''
+        $errParts | Out-Host
+        if ($anyRuntimeExceptions) {
+            exit 1
+        }
+    }
 }
 
 function PushActionOutput {
@@ -240,3 +296,4 @@ filter ProcessOutput {
 . InitializeAction
 . InvokeActionModule
 . PushActionOutput
+. OutError
