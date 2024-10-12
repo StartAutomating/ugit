@@ -215,6 +215,10 @@ if ($this -match "'(?&lt;n&gt;.+?)'\: unknown revision or path not in the workin
         <ReferencedMemberName>CommitDate</ReferencedMemberName>
       </AliasProperty>
       <AliasProperty>
+        <Name>JiraTickets</Name>
+        <ReferencedMemberName>JiraTicket</ReferencedMemberName>
+      </AliasProperty>
+      <AliasProperty>
         <Name>Trailers</Name>
         <ReferencedMemberName>Trailer</ReferencedMemberName>
       </AliasProperty>
@@ -392,6 +396,28 @@ if ($this.CommitMessage -match '^(?&lt;Type&gt;[^\r\n]+?):\s{0,}(?&lt;Message&gt
     return $firstLine
 }
 
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>JiraTicket</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Extracts Jira ticket numbers from commit messages.
+.DESCRIPTION
+    Extracts Jira ticket numbers from commit messages.  
+    
+    Returns a list of objects with the ProjectName and TicketNumber properties.
+.EXAMPLE
+    # Get the Jira ticket information from the current branch.
+    git log -CurrentBranch | Where-Object JiraTicket
+#&gt;
+foreach ($match in [Regex]::new("(?&lt;ProjectName&gt;\S+)-(?&lt;TicketNumber&gt;\d+)").Matches($this.CommitMessage)) {
+    [PSCustomObject][Ordered]@{
+        ProjectName = $match.Groups['ProjectName'].Value
+        TicketNumber = [int]$match.Groups['TicketNumber'].Value
+    }
+}
                     </GetScriptBlock>
       </ScriptProperty>
       <ScriptProperty>
