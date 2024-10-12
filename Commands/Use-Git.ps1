@@ -111,7 +111,7 @@
                 $err = $_
                 Write-Debug -Message "Failed to create script block from '$ToValidate' : $($err.Exception.Message)"                
             }
-            if (-not $callingContext) { $error.RemoveAt(0)}
+            if ((-not $callingContext) -and $error.Count) { $error.RemoveAt(0)}
         }
         foreach ($commandElement in $callingContext.CommandElements) {
             if (-not $commandElement.parameterName) { continue } # that is a Powershell parameter
