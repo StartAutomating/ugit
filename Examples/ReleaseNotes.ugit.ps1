@@ -53,9 +53,11 @@ if ($env:GITHUB_STEP_SUMMARY) {
 ~~~markdown
 $releaseNoteBulletpoints
 ~~~
+
 " |
         Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
+} else {
+    $releaseNoteBulletpoints
 }
-$releaseNoteBulletpoints
 
 
