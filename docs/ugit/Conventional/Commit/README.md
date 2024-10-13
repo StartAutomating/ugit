@@ -15,4 +15,4 @@ You can tab thru any conventional commit types until you find the right one.
 ### Script Methods
 
 
-* [get_Type](get_Type.md)
+* [Type](Type.md)
