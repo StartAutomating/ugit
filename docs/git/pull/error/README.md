@@ -4,4 +4,4 @@
 ### Script Methods
 
 
-* [get_Conflict](get_Conflict.md)
+* [Conflict](Conflict.md)
