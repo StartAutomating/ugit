@@ -4,4 +4,4 @@
 ### Script Methods
 
 
-* [get_NotGitCommand](get_NotGitCommand.md)
+* [NotGitCommand](NotGitCommand.md)
