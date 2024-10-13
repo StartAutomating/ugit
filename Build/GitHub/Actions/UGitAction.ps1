@@ -6,14 +6,13 @@
 
     * Import ugit
     * If `-Run` is provided, run that script
-    * Otherwise, unless `-SkipPS1` is passed, run all *.ugit.ps1 files beneath the workflow directory
-      * If any `-ActionScript` was provided, run scripts from the action path that match a wildcard pattern. 
+    * Otherwise, unless `-SkipScriptFile` is passed, run all *.ugit.ps1 files beneath the workflow directory
+      * If any `-ActionScript` was provided, run scripts from the action path that match a wildcard pattern.
 
     If you will be making changes using the GitHubAPI, you should provide a -GitHubToken
     If none is provided, and ENV:GITHUB_TOKEN is set, this will be used instead.
     Any files changed can be outputted by the script, and those changes can be checked back into the repo.
     Make sure to use the "persistCredentials" option with checkout.
-
 #>
 
 param(
@@ -25,7 +24,7 @@ $Run,
 
 # If set, will not process any files named *.ugit.ps1
 [switch]
-$SkipUGitPS1,
+$SkipScriptFile,
 
 # A list of modules to be installed from the PowerShell gallery before scripts run.
 [string[]]
@@ -34,6 +33,11 @@ $InstallModule,
 # If provided, will commit any remaining changes made to the workspace with this commit message.
 [string]
 $CommitMessage,
+
+# If provided, will checkout a new branch before making the changes.
+# If not provided, will use the current branch.
+[string]
+$TargetBranch,
 
 # The name of one or more scripts to run, from this action's path.
 [string[]]
@@ -59,7 +63,7 @@ $gitHubEvent =
     } else { $null }
 
 $anyFilesChanged = $false
-$moduleName = 'ugit'
+$ActionModuleName = 'ugit'
 $actorInfo = $null
 
 "::group::Parameters" | Out-Host
@@ -90,19 +94,19 @@ function ImportActionModule {
     #endregion -InstallModule
 
     if ($env:GITHUB_ACTION_PATH) {
-        $LocalModulePath = Join-Path $env:GITHUB_ACTION_PATH "$moduleName.psd1"        
+        $LocalModulePath = Join-Path $env:GITHUB_ACTION_PATH "$ActionModuleName.psd1"        
         if (Test-path $LocalModulePath) {
             Import-Module $LocalModulePath -Force -PassThru | Out-String
         } else {
-            throw "Module '$moduleName' not found"
+            throw "Module '$ActionModuleName' not found"
         }
-    } elseif (-not (Get-Module $moduleName)) {    
-        throw "Module '$ModuleName' not found"
+    } elseif (-not (Get-Module $ActionModuleName)) {    
+        throw "Module '$ActionModuleName' not found"
     }
 
-    "::notice title=ModuleLoaded::$ModuleName Loaded from Path - $($LocalModulePath)" | Out-Host
+    "::notice title=ModuleLoaded::$ActionModuleName Loaded from Path - $($LocalModulePath)" | Out-Host
     if ($env:GITHUB_STEP_SUMMARY) {
-        "# $($moduleName)" |
+        "# $($ActionModuleName)" |
             Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
     }
 }
@@ -120,6 +124,14 @@ function InitializeAction {
 
     # Pull down any changes
     git pull | Out-Host
+
+    if ($TargetBranch) {
+        "::notice title=Expanding target branch string $targetBranch" | Out-Host
+        $TargetBranch = $ExecutionContext.SessionState.InvokeCommand.ExpandString($TargetBranch)
+        "::notice title=Checking out target branch::$targetBranch" | Out-Host
+        git checkout -b $TargetBranch | Out-Host    
+        git pull | Out-Host
+    }
 }
 
 function InvokeActionModule {
@@ -135,24 +147,24 @@ function InvokeActionModule {
     $MyScriptFilesStart = [DateTime]::Now
 
     $myScriptList  = @()
-    $shouldSkip = $ExecutionContext.SessionState.PSVariable.Get("SkipScript").Value
+    $shouldSkip = $ExecutionContext.SessionState.PSVariable.Get("SkipScriptFile").Value
     if ($shouldSkip) {
         return 
     }
     $scriptFiles = @(
         Get-ChildItem -Recurse -Path $env:GITHUB_WORKSPACE |
-            Where-Object Name -Match "\.$($moduleName)\.ps1$"
+            Where-Object Name -Match "\.$($ActionModuleName)\.ps1$"
         if ($ActionScript) {
             if ($ActionScript -match '^\s{0,}/' -and $ActionScript -match '/\s{0,}$') {
                 $ActionScriptPattern = $ActionScript.Trim('/').Trim() -as [regex]
                 if ($ActionScriptPattern) {
                     $ActionScriptPattern = [regex]::new($ActionScript.Trim('/').Trim(), 'IgnoreCase,IgnorePatternWhitespace', [timespan]::FromSeconds(0.5))
                     Get-ChildItem -Recurse -Path $env:GITHUB_ACTION_PATH |
-                        Where-Object { $_.Name -Match "\.$($moduleName)\.ps1$" -and $_.FullName -match $ActionScriptPattern }
+                        Where-Object { $_.Name -Match "\.$($ActionModuleName)\.ps1$" -and $_.FullName -match $ActionScriptPattern }
                 }
             } else {
                 Get-ChildItem -Recurse -Path $env:GITHUB_ACTION_PATH |
-                    Where-Object Name -Match "\.$($moduleName)\.ps1$" |
+                    Where-Object Name -Match "\.$($ActionModuleName)\.ps1$" |
                     Where-Object FullName -Like $ActionScript
             }
         }
@@ -160,7 +172,7 @@ function InvokeActionModule {
     $scriptFiles |
         ForEach-Object -Begin {
             if ($env:GITHUB_STEP_SUMMARY) {
-                "## $ModuleName Scripts" |
+                "## $ActionModuleName Scripts" |
                     Out-File -Append -FilePath $env:GITHUB_STEP_SUMMARY
             } 
         } -Process {
@@ -187,7 +199,7 @@ function InvokeActionModule {
         }    
     
     $MyScriptFilesTook = [Datetime]::Now - $MyScriptFilesStart
-    $SummaryOfMyScripts = "$myScriptCount $moduleName scripts took $($MyScriptFilesTook.TotalSeconds) seconds" 
+    $SummaryOfMyScripts = "$myScriptCount $ActionModuleName scripts took $($MyScriptFilesTook.TotalSeconds) seconds" 
     $SummaryOfMyScripts | 
         Out-Host
     if ($env:GITHUB_STEP_SUMMARY) {
@@ -249,9 +261,14 @@ function PushActionOutput {
         }
     
         $checkDetached = git symbolic-ref -q HEAD
-        if (-not $LASTEXITCODE) {
-            "::notice::Pushing Changes" | Out-Host
-            git push
+        if (-not $LASTEXITCODE) {            
+            if ($TargetBranch -and $anyFilesChanged) {
+                "::notice::Pushing Changes to $targetBranch" | Out-Host
+                git push --set-upstream origin $TargetBranch
+            } elseif ($anyFilesChanged) {
+                "::notice::Pushing Changes" | Out-Host
+                git push
+            }
             "Git Push Output: $($gitPushed  | Out-String)"
         } else {
             "::notice::Not pushing changes (on detached head)" | Out-Host
