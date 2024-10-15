@@ -53,7 +53,12 @@ $UserEmail,
 
 # The user name associated with a git commit.
 [string]
-$UserName
+$UserName,
+
+# If set, will not push any changes made to the repository.
+# (they will still be committed unless -NoCommit is passed)
+[switch]
+$NoPush
 )
 
 $ErrorActionPreference = 'continue'
@@ -271,7 +276,7 @@ function PushActionOutput {
         }
     
         $checkDetached = git symbolic-ref -q HEAD
-        if (-not $LASTEXITCODE) {            
+        if (-not $LASTEXITCODE -and -not $NoPush -and -not $noCommit) {            
             if ($TargetBranch -and $anyFilesChanged) {
                 "::notice::Pushing Changes to $targetBranch" | Out-Host
                 git push --set-upstream origin $TargetBranch

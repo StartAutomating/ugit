@@ -36,6 +36,11 @@ inputs:
   UserName: 
     required: false
     description: The user name associated with a git commit.
+  NoPush: 
+    required: false
+    description: |
+      If set, will not push any changes made to the repository.
+      (they will still be committed unless -NoCommit is passed)
 branding: 
   icon: git-merge
   color: blue
@@ -48,12 +53,13 @@ runs:
       env: 
         InstallModule: ${{inputs.InstallModule}}
         GitHubToken: ${{inputs.GitHubToken}}
-        SkipScriptFile: ${{inputs.SkipScriptFile}}
+        NoPush: ${{inputs.NoPush}}
         CommitMessage: ${{inputs.CommitMessage}}
-        UserEmail: ${{inputs.UserEmail}}
+        SkipScriptFile: ${{inputs.SkipScriptFile}}
         Run: ${{inputs.Run}}
-        TargetBranch: ${{inputs.TargetBranch}}
         ActionScript: ${{inputs.ActionScript}}
+        TargetBranch: ${{inputs.TargetBranch}}
+        UserEmail: ${{inputs.UserEmail}}
         UserName: ${{inputs.UserName}}
       run: |
         $Parameters = @{}
@@ -69,6 +75,8 @@ runs:
         $Parameters.GitHubToken = ${env:GitHubToken}
         $Parameters.UserEmail = ${env:UserEmail}
         $Parameters.UserName = ${env:UserName}
+        $Parameters.NoPush = ${env:NoPush}
+        $Parameters.NoPush = $parameters.NoPush -match 'true';
         foreach ($k in @($parameters.Keys)) {
             if ([String]::IsNullOrEmpty($parameters[$k])) {
                 $parameters.Remove($k)
@@ -130,7 +138,12 @@ runs:
         
         # The user name associated with a git commit.
         [string]
-        $UserName
+        $UserName,
+        
+        # If set, will not push any changes made to the repository.
+        # (they will still be committed unless -NoCommit is passed)
+        [switch]
+        $NoPush
         )
         
         $ErrorActionPreference = 'continue'
@@ -348,7 +361,7 @@ runs:
                 }
             
                 $checkDetached = git symbolic-ref -q HEAD
-                if (-not $LASTEXITCODE) {            
+                if (-not $LASTEXITCODE -and -not $NoPush -and -not $noCommit) {            
                     if ($TargetBranch -and $anyFilesChanged) {
                         "::notice::Pushing Changes to $targetBranch" | Out-Host
                         git push --set-upstream origin $TargetBranch
