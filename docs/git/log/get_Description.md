@@ -1,5 +1,5 @@
-git.log.get_Description()
--------------------------
+get_Description
+---------------
 
 ### Synopsis
 Gets the description of a commit
