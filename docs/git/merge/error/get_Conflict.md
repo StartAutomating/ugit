@@ -1,5 +1,5 @@
-git.merge.error.get_Conflict()
-------------------------------
+get_Conflict
+------------
 
 ### Synopsis
 Gets Conflicts
