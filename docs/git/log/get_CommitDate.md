@@ -1,5 +1,5 @@
-git.log.get_CommitDate()
-------------------------
+get_CommitDate
+--------------
 
 ### Synopsis
 Gets the date of a git log

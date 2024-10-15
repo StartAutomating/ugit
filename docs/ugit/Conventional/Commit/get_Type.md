@@ -1,5 +1,5 @@
-ugit.Conventional.Commit.get_Type()
------------------------------------
+get_Type
+--------
 
 ### Synopsis
 Gets Conventional Commit Types

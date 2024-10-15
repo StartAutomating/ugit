@@ -1,7 +1,7 @@
 ## git.error
 
 
-### Script Methods
+### Script Properties
 
 
-* [UnknownRevision](UnknownRevision.md)
+* [get_UnknownRevision](get_UnknownRevision.md)

@@ -1,5 +1,5 @@
-git.output.get_NotGitCommand()
-------------------------------
+get_NotGitCommand
+-----------------
 
 ### Synopsis
 Gets what was not a Git Command

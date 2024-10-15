@@ -12,7 +12,9 @@ ugit makes them a little easier to work with.
 In ugit, `git commit` supports a virtual parameter `-Type`.
 
 You can tab thru any conventional commit types until you find the right one.
-### Script Methods
 
 
-* [Type](Type.md)
+### Script Properties
+
+
+* [get_Type](get_Type.md)

@@ -1,5 +1,5 @@
-git.log.get_Change()
---------------------
+get_Change
+----------
 
 ### Synopsis
 Gets the changes in a git commit

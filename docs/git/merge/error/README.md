@@ -1,7 +1,7 @@
 ## git.merge.error
 
 
-### Script Methods
+### Script Properties
 
 
-* [Conflict](Conflict.md)
+* [get_Conflict](get_Conflict.md)

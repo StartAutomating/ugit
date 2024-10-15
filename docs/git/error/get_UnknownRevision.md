@@ -1,5 +1,5 @@
-git.error.get_UnknownRevision()
--------------------------------
+get_UnknownRevision
+-------------------
 
 ### Synopsis
 Gets Unknown Revisions
