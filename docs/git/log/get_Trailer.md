@@ -1,5 +1,5 @@
-git.log.get_Trailer()
----------------------
+get_Trailer
+-----------
 
 ### Synopsis
 Gets the trailer of a commit
