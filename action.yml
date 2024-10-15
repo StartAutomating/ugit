@@ -185,8 +185,13 @@ runs:
                     $(Get-Content $_.FullName -Raw) -match 'ModuleVersion'
                 }
             if (-not $moduleInWorkspace) {
-                Install-Module $moduleToInstall -Scope CurrentUser -Force
+                $availableModules = Get-Module -ListAvailable
+                if ($availableModules.Name -notcontains $moduleToInstall) {
+                    Install-Module $moduleToInstall -Scope CurrentUser -Force -AcceptLicense -AllowClobber
+                }
                 Import-Module $moduleToInstall -Force -PassThru | Out-Host
+            } else {
+                Import-Module $moduleInWorkspace.FullName -Force -PassThru | Out-Host
             }
         }
         function ImportActionModule {
