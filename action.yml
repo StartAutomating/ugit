@@ -40,7 +40,12 @@ inputs:
     required: false
     description: |
       If set, will not push any changes made to the repository.
-      (they will still be committed unless -NoCommit is passed)
+      (they will still be committed unless `-NoCommit` is passed)
+  NoCommit: 
+    required: false
+    description: |
+      If set, will not commit any changes made to the repository.
+      (this also implies `-NoPush`)
 branding: 
   icon: git-merge
   color: blue
@@ -60,6 +65,7 @@ runs:
         ActionScript: ${{inputs.ActionScript}}
         TargetBranch: ${{inputs.TargetBranch}}
         UserEmail: ${{inputs.UserEmail}}
+        NoCommit: ${{inputs.NoCommit}}
         UserName: ${{inputs.UserName}}
       run: |
         $Parameters = @{}
@@ -77,6 +83,8 @@ runs:
         $Parameters.UserName = ${env:UserName}
         $Parameters.NoPush = ${env:NoPush}
         $Parameters.NoPush = $parameters.NoPush -match 'true';
+        $Parameters.NoCommit = ${env:NoCommit}
+        $Parameters.NoCommit = $parameters.NoCommit -match 'true';
         foreach ($k in @($parameters.Keys)) {
             if ([String]::IsNullOrEmpty($parameters[$k])) {
                 $parameters.Remove($k)
@@ -141,9 +149,14 @@ runs:
         $UserName,
         
         # If set, will not push any changes made to the repository.
-        # (they will still be committed unless -NoCommit is passed)
+        # (they will still be committed unless `-NoCommit` is passed)
         [switch]
-        $NoPush
+        $NoPush,
+        
+        # If set, will not commit any changes made to the repository.
+        # (this also implies `-NoPush`)
+        [switch]
+        $NoCommit
         )
         
         $ErrorActionPreference = 'continue'
@@ -394,7 +407,7 @@ runs:
                 } elseif ($outItem) {
                     $outItem.FullName, (git status $outItem.Fullname -s)
                 }
-            if ($shouldCommit) {
+            if ($shouldCommit -and -not $NoCommit) {
                 "$fullName has changed, and should be committed" | Out-Host
                 git add $fullName
                 if ($out.Message) {

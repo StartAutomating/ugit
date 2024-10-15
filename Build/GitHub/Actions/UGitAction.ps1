@@ -56,9 +56,14 @@ $UserEmail,
 $UserName,
 
 # If set, will not push any changes made to the repository.
-# (they will still be committed unless -NoCommit is passed)
+# (they will still be committed unless `-NoCommit` is passed)
 [switch]
-$NoPush
+$NoPush,
+
+# If set, will not commit any changes made to the repository.
+# (this also implies `-NoPush`)
+[switch]
+$NoCommit
 )
 
 $ErrorActionPreference = 'continue'
@@ -309,7 +314,7 @@ filter ProcessOutput {
         } elseif ($outItem) {
             $outItem.FullName, (git status $outItem.Fullname -s)
         }
-    if ($shouldCommit) {
+    if ($shouldCommit -and -not $NoCommit) {
         "$fullName has changed, and should be committed" | Out-Host
         git add $fullName
         if ($out.Message) {
