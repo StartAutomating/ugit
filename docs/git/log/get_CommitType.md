@@ -1,5 +1,5 @@
-git.log.get_CommitType()
-------------------------
+get_CommitType
+--------------
 
 ### Synopsis
 Gets the type of a conventional commit
