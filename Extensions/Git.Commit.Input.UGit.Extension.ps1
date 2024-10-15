@@ -124,7 +124,14 @@ $CoAuthoredBy,
     return $true
 })]
 [string[]]
-$OnBehalfOf
+$OnBehalfOf,
+
+# If set, will add `[skip ci]` to the commit message.
+# This will usually prevent a CI/CD system from running a build.
+# This is supported by GitHub Workflows, Azure DevOps Pipelines, and GitLab (to name a few).
+[Alias('CISkip','NoCI','SkipActions','ActionSkip')]
+[switch]
+$SkipCI
 )
 
 
@@ -194,15 +201,29 @@ if ($type) #  (if -Type was provided)
     }
     "-m"
     # construct a conventional commit message.
-    "${type}$(if ($scope) { "($scope)" }): $Description$(if ($Fixes) { " ( $fixes )"})" 
+    "${type}$(if ($scope) { "($scope)" }): $Description$(
+        if ($Fixes) { " ( $fixes )"}
+    )$(
+        if ($SkipCI) {
+            " [skip ci]"
+        }
+    )" 
 }
 
 # If title was provided, pass it as a message
 elseif ($Title) {
     if ($Fix) {
-        if ($Title) {"-m";"$title$(if ($Fixes) { " ( $fixes )"})"}
+        if ($Title) {"-m";"$title$(if ($Fixes) { " ( $fixes )"})$(
+            if ($SkipCI) {
+                " [skip ci] "
+            }
+        )"}
     } else {
-        if ($Title) {"-m";$title}
+        if ($Title) {"-m";"$title$(
+            if ($SkipCI) {
+                " [skip ci] "
+            }
+        )"}
     }
 }
 
