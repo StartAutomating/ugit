@@ -1,5 +1,5 @@
-git.pull.error.get_Conflict()
------------------------------
+get_Conflict
+------------
 
 ### Synopsis
 Gets Conflicts
