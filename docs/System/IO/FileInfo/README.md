@@ -4,4 +4,4 @@
 ### Script Methods
 
 
-* [GitChanges](GitChanges.md)
+* [GitChanges()](GitChanges.md)
