@@ -147,9 +147,18 @@ If provided, will mark this commit as on-behalf-of one or more people.
 |------------|--------|--------|---------------------|--------|
 |`[String[]]`|false   |named   |true (ByPropertyName)|OnBehalf|
 
+#### **SkipCI**
+If set, will add `[skip ci]` to the commit message.
+This will usually prevent a CI/CD system from running a build.
+This is supported by GitHub Workflows, Azure DevOps Pipelines, and GitLab (to name a few).
+
+|Type      |Required|Position|PipelineInput|Aliases                                       |
+|----------|--------|--------|-------------|----------------------------------------------|
+|`[Switch]`|false   |named   |false        |CISkip<br/>NoCI<br/>SkipActions<br/>ActionSkip|
+
 ---
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Commit.Input.UGit.Extension.ps1 [-Title <String>] [-Message <String>] [-Type <String>] [-Scope <String>] [-Description <String>] [-Footer <String>] [-Body <String>] [-Trailers <IDictionary>] [-Amend] [-CommitDate <DateTime>] [-Fix <String[]>] [-Close <String[]>] [-Resolve <String[]>] [-Reference <String[]>] [-CoAuthoredBy <String[]>] [-OnBehalfOf <String[]>] [<CommonParameters>]
+Extensions/Git.Commit.Input.UGit.Extension.ps1 [-Title <String>] [-Message <String>] [-Type <String>] [-Scope <String>] [-Description <String>] [-Footer <String>] [-Body <String>] [-Trailers <IDictionary>] [-Amend] [-CommitDate <DateTime>] [-Fix <String[]>] [-Close <String[]>] [-Resolve <String[]>] [-Reference <String[]>] [-CoAuthoredBy <String[]>] [-OnBehalfOf <String[]>] [-SkipCI] [<CommonParameters>]
 ```
