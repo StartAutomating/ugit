@@ -1,5 +1,5 @@
-git.log.get_JiraTicket()
-------------------------
+get_JiraTicket
+--------------
 
 ### Synopsis
 Extracts Jira ticket numbers from commit messages.
