@@ -43,6 +43,10 @@ $TargetBranch,
 [string[]]
 $ActionScript = '[\/]Examples[\/]*',
 
+# The github token to use for requests.
+[string]
+$GitHubToken = '{{ secrets.GITHUB_TOKEN }}',
+
 # The user email associated with a git commit.  If this is not provided, it will be set to the username@noreply.github.com.
 [string]
 $UserEmail,
@@ -117,7 +121,13 @@ function InitializeAction {
     # Configure git based on the $env:GITHUB_ACTOR
     if (-not $UserName) { $UserName = $env:GITHUB_ACTOR }
     if (-not $actorID)  { $actorID = $env:GITHUB_ACTOR_ID }
-    $actorInfo = Invoke-RestMethod -Uri "https://api.github.com/user/$actorID"
+    $actorInfo = 
+        if ($GitHubToken -notmatch '^\{{2}' -and $GitHubToken -notmatch '\}{2}$') {
+            Invoke-RestMethod -Uri "https://api.github.com/user/$actorID" -Headers @{ Authorization = "token $GitHubToken" }
+        } else {
+            Invoke-RestMethod -Uri "https://api.github.com/user/$actorID"
+        }
+    
     if (-not $UserEmail) { $UserEmail = "$UserName@noreply.github.com" }
     git config --global user.email $UserEmail
     git config --global user.name  $actorInfo.name

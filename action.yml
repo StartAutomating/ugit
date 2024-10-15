@@ -26,6 +26,10 @@ inputs:
     required: false
     default: '''[\/]Examples[\/]*'''
     description: The name of one or more scripts to run, from this action's path.
+  GitHubToken: 
+    required: false
+    default: '{{ secrets.GITHUB_TOKEN }}'
+    description: The github token to use for requests.
   UserEmail: 
     required: false
     description: The user email associated with a git commit.  If this is not provided, it will be set to the username@noreply.github.com.
@@ -43,6 +47,7 @@ runs:
       shell: pwsh
       env: 
         InstallModule: ${{inputs.InstallModule}}
+        GitHubToken: ${{inputs.GitHubToken}}
         SkipScriptFile: ${{inputs.SkipScriptFile}}
         CommitMessage: ${{inputs.CommitMessage}}
         UserEmail: ${{inputs.UserEmail}}
@@ -61,6 +66,7 @@ runs:
         $Parameters.TargetBranch = ${env:TargetBranch}
         $Parameters.ActionScript = ${env:ActionScript}
         $Parameters.ActionScript = $parameters.ActionScript -split ';' -replace '^[''"]' -replace  '[''"]$'
+        $Parameters.GitHubToken = ${env:GitHubToken}
         $Parameters.UserEmail = ${env:UserEmail}
         $Parameters.UserName = ${env:UserName}
         foreach ($k in @($parameters.Keys)) {
@@ -113,6 +119,10 @@ runs:
         # The name of one or more scripts to run, from this action's path.
         [string[]]
         $ActionScript = '[\/]Examples[\/]*',
+        
+        # The github token to use for requests.
+        [string]
+        $GitHubToken = '{{ secrets.GITHUB_TOKEN }}',
         
         # The user email associated with a git commit.  If this is not provided, it will be set to the username@noreply.github.com.
         [string]
@@ -188,7 +198,13 @@ runs:
             # Configure git based on the $env:GITHUB_ACTOR
             if (-not $UserName) { $UserName = $env:GITHUB_ACTOR }
             if (-not $actorID)  { $actorID = $env:GITHUB_ACTOR_ID }
-            $actorInfo = Invoke-RestMethod -Uri "https://api.github.com/user/$actorID"
+            $actorInfo = 
+                if ($GitHubToken -notmatch '^\{{2}' -and $GitHubToken -notmatch '\}{2}$') {
+                    Invoke-RestMethod -Uri "https://api.github.com/user/$actorID" -Headers @{ Authorization = "token $GitHubToken" }
+                } else {
+                    Invoke-RestMethod -Uri "https://api.github.com/user/$actorID"
+                }
+            
             if (-not $UserEmail) { $UserEmail = "$UserName@noreply.github.com" }
             git config --global user.email $UserEmail
             git config --global user.name  $actorInfo.name
