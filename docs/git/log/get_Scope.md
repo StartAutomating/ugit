@@ -1,5 +1,5 @@
-git.log.get_Scope()
--------------------
+get_Scope
+---------
 
 ### Synopsis
 Gets the scope of a conventional commit
