@@ -1,7 +1,56 @@
-## ugit 0.4.4:
+## ugit 0.4.5:
 
 > Like It? [Star It](https://github.com/StartAutomating/ugit)
 > Love It? [Support It](https://github.com/sponsors/StartAutomating)
+
+* git improvements
+  * `git clone`
+    * git clone -Since improvements (#276)
+    * git clone -Since time period (#277)
+  * `git log`
+    * git.log.Trailer (#305)  
+    * git.log.Description (#304)
+    * git.log.Scope (#303)
+    * git.log.CommitType (#301)
+    * git.log.CommitDate (#309)
+    * git.log.Change(s) (#306)
+    * git.log.note(s) (#296)
+    * git log accumulation improvement (#308)
+    * git log parsing improvement (#306,#308,#309)
+    * git.log.JiraTicket(s) (#313)
+    * git log -TicketNumber(s) (#315)
+  * `git commit`
+    * git commit -OnBehalfOf (#275)
+    * git commit -CoAuthoredBy (#274)
+    * git commit -SkipCI (#320)
+* Container improvements
+  * Container.init.ps1 (#279,#280)
+  * Container.start.ps1 (#281)
+  * Container.stop.ps1 (#282)
+* Action improvements
+  * Refactoring ugit action (#289,#290)
+  * Testing action in branch (#288)
+  * New Parameters:
+    * `ActionScript` (#311)
+    * `GitHubToken` (#317)
+    * `NoCommit` (#318)
+    * `NoPush` (#319)
+    * `TargetBranch` (#316)
+* Workflow improvements
+  * Fixing ugit workflow PublishTestResults (#287)
+  * GitPub cleanup (#310)
+* New Examples:
+  * ChangesByCommitType example (#302, #301)
+  * ChangesByDayOfWeek example (#295)
+  * ChangesByIssueNumber example (#294)
+  * ChangesByUserName example (#293)
+  * ChangesByExtension example (#292)
+  * ReleaseNotes Example (#307)  
+  * TableOfCurrentBranch example (#291)  
+
+---
+
+## ugit 0.4.4:
 
 * ugit a container! (#262, #263, #264)
   * `docker run --interactive --tty ghcr.io/startautomating/ugit`  
@@ -14,8 +63,8 @@
   * `git checkout -FromBranch [string]` (#270)
   * `git checkout -RevisionNumber/-ParentNumber [int]` (#271)
 * `git sparse-checkout` improvements
-  * `git sparse-checkout -FileFilter [string[]]` ( Fixes #257 )
-  * `git sparse-checkout -DirectoryFilter [string[]]` ( Fixes #258 )
+  * `git sparse-checkout -FileFilter [string[]]` (#257)
+  * `git sparse-checkout -DirectoryFilter [string[]]` (#258)
 * `git branch -Remote [switch]` (#185)
 * `git config --list` outputs as objects (#265)
 * `git --format json` outputs as objects (#239)
@@ -272,7 +321,7 @@ Also, some improvements to the GitHub Action:
 
 ## ugit 0.1.8:
 * Adding Support for git checkout (#38)
-* Use-Git:  Avoiding unwanted confirmation ( Fixing #39 )
+* Use-Git:  Avoiding unwanted confirmation ( Fixing #39)
 
 ---
 
