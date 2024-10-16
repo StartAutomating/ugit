@@ -84,6 +84,12 @@ $actorInfo = $null
 [PSCustomObject]$PSBoundParameters | Format-List | Out-Host
 "::endgroup::" | Out-Host
 
+$checkDetached = git symbolic-ref -q HEAD
+if ($LASTEXITCODE) {
+    "::warning::On detached head, skipping action" | Out-Host
+    exit 0
+}
+
 function InstallActionModule {
     param([string]$ModuleToInstall)
     $moduleInWorkspace = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Recurse -File |
@@ -113,7 +119,7 @@ function ImportActionModule {
     #endregion -InstallModule
 
     if ($env:GITHUB_ACTION_PATH) {
-        $LocalModulePath = Join-Path $env:GITHUB_ACTION_PATH "$ActionModuleName.psd1"        
+        $LocalModulePath = Join-Path $env:GITHUB_ACTION_PATH "$ActionModuleName.psd1"
         if (Test-path $LocalModulePath) {
             Import-Module $LocalModulePath -Force -PassThru | Out-String
         } else {
