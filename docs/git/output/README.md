@@ -1,7 +1,7 @@
 ## git.output
 
 
-### Script Methods
+### Script Properties
 
 
 * [get_NotGitCommand](get_NotGitCommand.md)

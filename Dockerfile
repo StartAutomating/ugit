@@ -1,9 +1,10 @@
+# Thank you Microsoft!  Thank you PowerShell!  Thank you Docker!
 FROM mcr.microsoft.com/powershell
 
-RUN apt-get update && apt-get install -y git curl ca-certificates libc6 libgcc1
+# Set the shell to PowerShell
+SHELL ["/bin/pwsh", "-nologo", "-command"]
 
-ENV PSModulePath ./Modules
+# Run the initialization script
+RUN --mount=type=bind,src=./,target=/Initialize ./Initialize/Container.init.ps1
 
-COPY . ./Modules/ugit
-
-RUN pwsh -c "New-Item -ItemType File -Path \$Profile -Force -Value 'Import-Module ugit'"
+ENTRYPOINT [ "/bin/pwsh", "-nologo", "-noexit","-file", "./Container.start.ps1" ]

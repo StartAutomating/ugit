@@ -63,9 +63,9 @@ Create a shallow clone with a history truncated to the specified number of commi
 #### **Since**
 Create a shallow clone with a history after the specified time.
 
-|Type        |Required|Position|PipelineInput        |
-|------------|--------|--------|---------------------|
-|`[DateTime]`|false   |named   |true (ByPropertyName)|
+|Type      |Required|Position|PipelineInput        |
+|----------|--------|--------|---------------------|
+|`[String]`|false   |named   |true (ByPropertyName)|
 
 #### **Filter**
 One or more filters
@@ -86,5 +86,5 @@ This means not checking out, filtering everything from the tree, and using spars
 
 ### Syntax
 ```PowerShell
-Extensions/Git.Clone.Input.UGit.Extension.ps1 [-NoCheckout] [-Sparse] [-Depth <UInt32>] [-Since <DateTime>] [-Filter <String[]>] [-Nothing] [<CommonParameters>]
+Extensions/Git.Clone.Input.UGit.Extension.ps1 [-NoCheckout] [-Sparse] [-Depth <UInt32>] [-Since <String>] [-Filter <String[]>] [-Nothing] [<CommonParameters>]
 ```

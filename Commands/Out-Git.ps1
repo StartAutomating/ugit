@@ -192,6 +192,11 @@
             # If the output started with "error" or "fatal"
             if ("$out" -match "^(?:error|fatal):") {
                 $exception = [Exception]::new($("$out" -replace '^(?:error|fatal):')) # Create an exception
+                # Clean up --shallow-since exceptions, since git gives less than obvious error messages in this scenario.
+                # Hat tip @ninmonkey for the scenario! (see #276)
+                if ($exception -match 'shallow info: \d+\s{0,}$' -and $gitCommand -match '--shallow-since=(?<shallowdate>\S+)') {
+                    $exception = [Exception]::new("No commits found -Since $($matches.shallowdate)")
+                }
                 $errorRecord = [Management.Automation.ErrorRecord]::new($exception,"$GitCommand", 'NotSpecified',$gitOut)
                 $errorTypeNames = @($gitOut.pstypenames -replace 'output','error')
                 foreach ($typename in $errorTypeNames) {

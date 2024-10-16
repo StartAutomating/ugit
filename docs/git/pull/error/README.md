@@ -1,7 +1,7 @@
 ## git.pull.error
 
 
-### Script Methods
+### Script Properties
 
 
 * [get_Conflict](get_Conflict.md)

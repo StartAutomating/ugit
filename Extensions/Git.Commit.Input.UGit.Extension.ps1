@@ -62,7 +62,7 @@ $Body,
 # As this uses --trailer, this requires git version 2.33 or greater.
 [Alias('Trailer','CommitMetadata','GitMetadata')]
 [Collections.IDictionary]
-$Trailers,
+$Trailers = [Ordered]@{},
 
 # If set, will amend an existing commit.
 [switch]
@@ -100,8 +100,63 @@ $Resolve,
 [Parameter(ValueFromPipelineByPropertyName)]
 [Alias('Re','Regard','Regards','Regarding','References')]
 [string[]]
-$Reference
+$Reference,
+
+# If provided, will mark this commit as co-authored by one or more people.
+[Parameter(ValueFromPipelineByPropertyName)]
+[Alias('CoAuthor','CoAuthors')]
+[ValidateScript({
+    if ($_ -notmatch "(?<Author>[^\<\>]+)\<(?<Email>[^\<\>]+)\>") {
+        throw "Co-Authored-By must be in the format 'Name <Email>'"
+    }
+    return $true
+})]
+[string[]]
+$CoAuthoredBy,
+
+# If provided, will mark this commit as on-behalf-of one or more people.
+[Parameter(ValueFromPipelineByPropertyName)]
+[Alias('OnBehalf')]
+[ValidateScript({
+    if ($_ -notmatch "(?<Author>[^\<\>]+)\<(?<Email>[^\<\>]+)\>") {
+        throw "On-Behalf-Of must be in the format 'Name <Email>'"
+    }
+    return $true
+})]
+[string[]]
+$OnBehalfOf,
+
+# If set, will add `[skip ci]` to the commit message.
+# This will usually prevent a CI/CD system from running a build.
+# This is supported by GitHub Workflows, Azure DevOps Pipelines, and GitLab (to name a few).
+[Alias('CISkip','NoCI','SkipActions','ActionSkip')]
+[switch]
+$SkipCI
 )
+
+
+filter FixGitUserName {
+    $onBehalf = $_
+    if ($onBehalf -match '\<(?<Login>\D.+?)@github.com\>$') {
+        
+        if (-not $script:KnownGitHubUsers) {
+            $script:KnownGitHubUsers = @{}
+        }
+        $gitUserName = $matches.Login
+        if (-not $script:KnownGitHubUsers[$gitUserName]) {
+            $script:KnownGitHubUsers[$gitUserName] = Invoke-RestMethod "https://api.github.com/users/$gitUserName"
+        }
+        $gitUser = $script:KnownGitHubUsers[$gitUserName]
+        if (-not $gitUser) {
+            $onBehalf
+        } else {
+            $gitUser.name,
+                "<$($gitUser.id)+$($gitUser.login)@users.noreply.github.com>" -join ' '
+        }        
+    } else {
+        $onBehalf
+    }
+}
 
 $MyParameters =  [Ordered]@{} + $PSBoundParameters
 
@@ -146,15 +201,29 @@ if ($type) #  (if -Type was provided)
     }
     "-m"
     # construct a conventional commit message.
-    "${type}$(if ($scope) { "($scope)" }): $Description$(if ($Fixes) { " ( $fixes )"})" 
+    "${type}$(if ($scope) { "($scope)" }): $Description$(
+        if ($Fixes) { " ( $fixes )"}
+    )$(
+        if ($SkipCI) {
+            " [skip ci]"
+        }
+    )" 
 }
 
 # If title was provided, pass it as a message
 elseif ($Title) {
     if ($Fix) {
-        if ($Title) {"-m";"$title$(if ($Fixes) { " ( $fixes )"})"}
+        if ($Title) {"-m";"$title$(if ($Fixes) { " ( $fixes )"})$(
+            if ($SkipCI) {
+                " [skip ci] "
+            }
+        )"}
     } else {
-        if ($Title) {"-m";$title}
+        if ($Title) {"-m";"$title$(
+            if ($SkipCI) {
+                " [skip ci] "
+            }
+        )"}
     }
 }
 
@@ -177,8 +246,28 @@ if ($Footer) {
     "-m";$Footer
 }
 
+# If CoAuthoredBy was provided, add it as a trailer.
+if ($CoAuthoredBy) {
+    if (-not $trailers['Co-authored-by']) {
+        $Trailers['Co-authored-by'] = @()
+    }
+    $Trailers['Co-authored-by'] += foreach ($coAuthor in $CoAuthoredBy) {
+        $coAuthor | FixGitUserName
+    }
+}
 
-if ($Trailers) {    
+# If OnBehalfOf was provided, add it as a trailer.
+if ($OnBehalfOf) {
+    if (-not $trailers['on-behalf-of']) {
+        $Trailers['on-behalf-of'] = @()
+    }
+    
+    $Trailers['on-behalf-of'] += foreach ($onBehalf in $OnBehalfOf) {
+        $onBehalf | FixGitUserName
+    }
+}
+
+if ($Trailers.Count) {    
     foreach ($kv in $Trailers.GetEnumerator()) {
         foreach ($val in $kv.Value) {
             "--trailer=$($kv.Key -replace ':','_colon_' -replace '\s', '-')=$val"

@@ -15,8 +15,7 @@ New-GitHubWorkflow -Name "Analyze, Test, Tag, and Publish" -On Push, PullRequest
         "IMAGE_NAME" = '${{ github.repository }}'
     })
 
-New-GitHubWorkflow -On Issue, 
-    Demand -Job RunGitPub -Name OnIssueChanged -OutputPath .\.github\workflows\OnIssue.yml
+New-GitHubWorkflow -On Demand -Job RunGitPub -Name GitPub -OutputPath .\.github\workflows\GitPub.yml
 
 New-GitHubWorkflow -On Demand -Name ugit-psa -Job SendPSA -OutputPath .\.github\workflows\SendPSA.yml  -Env @{
     "AT_PROTOCOL_HANDLE" = "mrpowershell.bsky.social"

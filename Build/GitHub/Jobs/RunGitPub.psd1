@@ -11,7 +11,7 @@
             uses = 'StartAutomating/GitPub@main'
             id  = 'GitPub'
             with = @{
-                TargetBranch = 'edits-$([DateTime]::Now.ToString("r").Replace(":","-").Replace(" ", ""))'
+                TargetBranch = 'edits-$([DateTime]::Now.ToString("o") -replace "T.+$")'
                 CommitMessage = 'Posting with GitPub [skip ci]'
                 PublishParameters = @'
 {

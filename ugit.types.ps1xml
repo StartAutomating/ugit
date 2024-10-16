@@ -206,6 +206,26 @@ if ($this -match "'(?&lt;n&gt;.+?)'\: unknown revision or path not in the workin
   <Type>
     <Name>git.log</Name>
     <Members>
+      <AliasProperty>
+        <Name>Changes</Name>
+        <ReferencedMemberName>Change</ReferencedMemberName>
+      </AliasProperty>
+      <AliasProperty>
+        <Name>Date</Name>
+        <ReferencedMemberName>CommitDate</ReferencedMemberName>
+      </AliasProperty>
+      <AliasProperty>
+        <Name>JiraTickets</Name>
+        <ReferencedMemberName>JiraTicket</ReferencedMemberName>
+      </AliasProperty>
+      <AliasProperty>
+        <Name>Trailers</Name>
+        <ReferencedMemberName>Trailer</ReferencedMemberName>
+      </AliasProperty>
+      <AliasProperty>
+        <Name>UserName</Name>
+        <ReferencedMemberName>GitUserName</ReferencedMemberName>
+      </AliasProperty>
       <ScriptMethod>
         <Name>Archive</Name>
         <Script>
@@ -250,6 +270,34 @@ Pop-Location
                     </Script>
       </ScriptMethod>
       <ScriptMethod>
+        <Name>GetNote</Name>
+        <Script>
+                        &lt;#
+.SYNOPSIS
+    Gets git commit notes
+.DESCRIPTION
+    Gets git notes associated with a commit.    
+#&gt;
+$pushed = 
+    if ($this.GitRoot -ne $pwd) {
+        Push-Location $this.GitRoot
+        $true
+    } else {
+        $false
+    }
+$showNotes = git notes show $this.CommitHash *&gt;&amp;1
+if ($showNotes -isnot [Management.Automation.ErrorRecord]) {
+    $showNotes
+} else {
+    $error.RemoveAt(0)
+}
+if ($pushed) {
+    Pop-Location
+}
+
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
         <Name>Reset</Name>
         <Script>
                         Push-Location $this.GitRoot
@@ -266,9 +314,171 @@ Pop-Location
                     </Script>
       </ScriptMethod>
       <ScriptProperty>
+        <Name>Change</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets the changes in a git commit
+.DESCRIPTION
+    Gets the changes in a git commit.  This function is used to get the changes in a git commit.
+    
+    The changes are returned as a PSCustomObject with the following properties:
+    
+    - FilePath: The path of the file that was changed
+    - LinesChanged: The number of lines changed in the file
+    - LinesInserted: The number of lines inserted in the file
+    - LinesDeleted: The number of lines deleted in the file    
+#&gt;
+return @(foreach ($outLine in $this.GitOutputLines) {
+    if ($outLine -notlike ' *|*') { continue }
+    $nameOfFile, $fileChanges =  $outLine -split '\|'
+    $nameOfFile = $nameOfFile -replace '^\s+' -replace '\s+$'
+    $match = [Regex]::Match($fileChanges, "(?&lt;c&gt;\d+)\s(?&lt;i&gt;\+{0,})(?&lt;d&gt;\-{0,})")
+    $linesChanged  = $match.Groups["c"].Value -as [int]
+    $linesInserted = $match.Groups["i"].Length
+    $linesDeleted  = $match.Groups["d"].Length  
+    [PSCustomObject][Ordered]@{
+        PSTypeName = 'git.log.change'
+        FilePath      = $nameOfFile
+        LinesChanged  = $linesChanged
+        LinesInserted = $linesInserted
+        LinesDeleted  = $linesDeleted
+    }
+})
+
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>CommitDate</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets the date of a git log
+.DESCRIPTION
+    Gets the commit date of a git log entry.
+#&gt;
+return [datetime]::ParseExact($this.CommitDateString.Trim(), "ddd MMM d HH:mm:ss yyyy K", [cultureinfo]::InvariantCulture)
+
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>CommitType</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets the type of a conventional commit
+.DESCRIPTION
+    Gets the type of a conventional commit, based on the commit message.
+#&gt;
+if ($this.CommitMessage -match '^(?&lt;Type&gt;[^\r\n]+?):\s{0,}(?&lt;Message&gt;[^\r\n]+)') {
+    $matchType = $Matches.Type    
+    if ($matchType -match '\(') {
+        $matchType -replace '\(.+$'
+    } else {
+        $matchType
+    }
+} else {
+    return ''
+}
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>Description</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets the description of a commit
+.DESCRIPTION
+    Gets the description of a conventional commit, or the first line of the commit message.
+.LINK
+    https://www.conventionalcommits.org/en/v1.0.0/#summary
+#&gt;
+if ($this.CommitMessage -match '^(?&lt;Type&gt;[^\r\n]+?):\s{0,}(?&lt;Message&gt;[^\r\n]+)') {
+    return $Matches.Message    
+} else {
+    $firstLine, $null = $this.CommitMessage -split '(?&gt;\r\n|\n)'
+    return $firstLine
+}
+
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>JiraTicket</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Extracts Jira ticket numbers from commit messages.
+.DESCRIPTION
+    Extracts Jira ticket numbers from commit messages.  
+    
+    Returns a list of objects with the ProjectName and TicketNumber properties.
+.EXAMPLE
+    # Get the Jira ticket information from the current branch.
+    git log -CurrentBranch | Where-Object JiraTicket
+#&gt;
+foreach ($match in [Regex]::new("(?&lt;ProjectName&gt;\S+)-(?&lt;TicketNumber&gt;\d+)").Matches($this.CommitMessage)) {
+    [PSCustomObject][Ordered]@{
+        ProjectName = $match.Groups['ProjectName'].Value
+        TicketNumber = [int]$match.Groups['TicketNumber'].Value
+    }
+}
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
         <Name>ReferenceNumbers</Name>
         <GetScriptBlock>
                         [Regex]::new("#(?&lt;n&gt;\d+)").Matches($this.CommitMessage) -replace '#' -as [int[]]
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>Scope</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets the scope of a conventional commit
+.DESCRIPTION
+    Gets the scope of a conventional commit, based on the commit message.
+.LINK
+    https://www.conventionalcommits.org/en/v1.0.0/#summary
+#&gt;
+if ($this.CommitMessage -match '^(?&lt;Type&gt;[^\r\n]+?):\s{0,}(?&lt;Message&gt;[^\r\n]+)') {
+    $matchType = $Matches.Type    
+    if ($matchType -match '\(') {
+        $matchType -replace '.+?\(' -replace '\)\s{0,}$'
+    } else {
+        return ''
+    }
+} else {
+    return ''
+}
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>Trailer</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets the trailer of a commit
+.DESCRIPTION
+    Gets the trailers of a commit.  Git trailers are key-value pairs that are appended to the end of a commit message.
+.LINK
+    https://git-scm.com/docs/git-interpret-trailers
+#&gt;
+
+$lineNumber = 0
+$gitTrailers = [Ordered]@{}
+foreach ($commitMessageLine in $this.CommitMessage -split '(?&gt;\r\n|\n)') {
+    $lineNumber++
+    if ($commitMessageLine -notmatch '\s{0,}(?&lt;k&gt;\S+):\s(?&lt;v&gt;[\s\S]+$)' -or $lineNumber -eq 1) {
+        continue
+    }
+    if (-not $gitTrailers[$matches.k]) {
+        $gitTrailers[$matches.k] = $matches.v
+    } else {
+        $gitTrailers[$matches.k] = @($gitTrailers[$matches.k]) + $v
+    }                 
+}
+return $gitTrailers
                     </GetScriptBlock>
       </ScriptProperty>
     </Members>

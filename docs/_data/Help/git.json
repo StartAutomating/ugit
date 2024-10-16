@@ -1,0 +1,56 @@
+{
+  "Synopsis": "Use Git",
+  "Description": "Calls the git application, with whatever arguments are provided.\n\nArguments can be provided with -GitArgument, which will automatically be bound to all parameters provided without a name.\n\nInput can also be piped in.\n\nIf the input is a directory, Use-Git will Push-Location that directory.\nOtherwise, it will be passed as a positional argument (after any other arguments).\n\nUse-Git will combine errors and output, so that git output to standard error is handled without difficulty.",
+  "Parameters": [
+    {
+      "Name": null,
+      "Type": null,
+      "Description": "",
+      "Required": false,
+      "Position": 0,
+      "Aliases": null,
+      "DefaultValue": null,
+      "Globbing": false,
+      "PipelineInput": null,
+      "variableLength": false
+    }
+  ],
+  "Notes": [
+    "Use-Git will generate two events before git runs.  They will have the source identifiers of \"Use-Git\" and \"Use-Git $GitArgument\""
+  ],
+  "CommandType": "Function",
+  "Component": [
+    null
+  ],
+  "Inputs": [
+    null
+  ],
+  "Outputs": [
+    null
+  ],
+  "Links": [
+    null
+  ],
+  "Examples": [
+    {
+      "Title": "EXAMPLE 1",
+      "Markdown": "Log entries are returned as objects, with properties and methods.",
+      "Code": "git log -n 1 | Get-Member"
+    },
+    {
+      "Title": "EXAMPLE 2",
+      "Markdown": "Status entries are converted into objects.",
+      "Code": "git status"
+    },
+    {
+      "Title": "EXAMPLE 3",
+      "Markdown": "Display untracked files.",
+      "Code": "git status | Select-Object -ExpandProperty Untracked"
+    },
+    {
+      "Title": "EXAMPLE 4",
+      "Markdown": "Display the list of branches, as objects.",
+      "Code": "git branch"
+    }
+  ]
+}

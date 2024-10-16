@@ -1,0 +1,39 @@
+{
+  "Synopsis": "Gets Extensions",
+  "Description": "Gets Extensions.\n\nUGitExtension can be found in:\n\n* Any module that includes -UGitExtensionModuleName in it's tags.\n* The directory specified in -UGitExtensionPath\n* Commands that meet the naming criteria",
+  "Parameters": [
+    {
+      "Name": null,
+      "Type": null,
+      "Description": "",
+      "Required": false,
+      "Position": 0,
+      "Aliases": null,
+      "DefaultValue": null,
+      "Globbing": false,
+      "PipelineInput": null,
+      "variableLength": false
+    }
+  ],
+  "Notes": [
+    null
+  ],
+  "CommandType": "Function",
+  "Component": [
+    null
+  ],
+  "Inputs": [
+    null
+  ],
+  "Outputs": [
+    "Extension"
+  ],
+  "Links": [],
+  "Examples": [
+    {
+      "Title": "EXAMPLE 1",
+      "Markdown": "",
+      "Code": "Get-UGitExtension"
+    }
+  ]
+}
