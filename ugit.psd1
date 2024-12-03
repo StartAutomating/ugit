@@ -1,11 +1,11 @@
 @{
-    ModuleVersion    = '0.4.5'
+    ModuleVersion    = '0.4.5.1'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
     Guid             = '32323806-1d4a-485b-a64b-c502b0468847'
     Author           = 'James Brundage'
-    Copyright        = '2022-2024 Start-Automating'    
+    Copyright        = '2022-2024 Start-Automating'
     CompanyName      = 'Start-Automating'
     Description      = 'ugit: git, updated with PowerShell'
 PrivateData   = @{
@@ -25,7 +25,7 @@ PrivateData   = @{
     * git clone -Since improvements (#276)
     * git clone -Since time period (#277)
   * `git log`
-    * git.log.Trailer (#305)  
+    * git.log.Trailer (#305)
     * git.log.Description (#304)
     * git.log.Scope (#303)
     * git.log.CommitType (#301)
@@ -62,8 +62,8 @@ PrivateData   = @{
   * ChangesByIssueNumber example (#294)
   * ChangesByUserName example (#293)
   * ChangesByExtension example (#292)
-  * ReleaseNotes Example (#307)  
-  * TableOfCurrentBranch example (#291)  
+  * ReleaseNotes Example (#307)
+  * TableOfCurrentBranch example (#291)
 
 ---
 
