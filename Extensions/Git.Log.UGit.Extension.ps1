@@ -40,7 +40,7 @@
 param(
 )
 
-begin {    
+begin {
     $script:LogChangesMerged = $false
     $Git_Log = [Regex]::new(@'
 (?m)^commit                                                             # Commits start with 'commit'
@@ -66,7 +66,7 @@ begin {
 
     $lines = [Collections.Generic.List[string]]::new()
     $StartsWithCommit = [Regex]::new('^commit', 'IgnoreCase')
-    $gitLogTypeName = 
+    $gitLogTypeName =
         if ($gitCommand -match '--merges') {
             'git.merge.log'
         } else {
@@ -79,7 +79,7 @@ begin {
         $gitLogMatch = $Git_Log.Match($OutputLines -join [Environment]::NewLine)
         if (-not $gitLogMatch.Success) { return }
 
-        $gitLogOut = [Ordered]@{PSTypeName=$gitLogTypeName;GitCommand=$gitCommand}        
+        $gitLogOut = [Ordered]@{PSTypeName=$gitLogTypeName;GitCommand=$gitCommand}
         foreach ($group in $gitLogMatch.Groups) {
             if ($group.Name -as [int] -ne $null) { continue }
             if (-not $gitLogOut.Contains($group.Name)) {
@@ -91,7 +91,7 @@ begin {
         $gitLogOut.Remove("HexDigits")
         if ($gitLogOut.CommitDate) {
             $gitLogOut.CommitDateString = $gitLogOut.CommitDate
-            $gitLogOut.Remove("CommitDate")            
+            $gitLogOut.Remove("CommitDate")
         }
         if ($gitLogOut.CommitMessage) {
             $gitLogOut.CommitMessage = $gitLogOut.CommitMessage.Trim()
@@ -115,7 +115,7 @@ begin {
             if ($gitLogOut.CommitMessage -match 'into (?<Branch>.+)$') {
                 $gitLogOut.Destination = $matches.Branch
             }
-        }        
+        }
 
         if ($GitArgument -contains '--shortstat' -or $GitArgument -contains '--stat') {
             foreach ($linePart in $OutputLines[-2] -split ',' -replace '[\s\w\(\)-[\d]]') {
@@ -140,7 +140,7 @@ begin {
             if (-not $gitLogOut.Insertions) {
                 $gitLogOut.Insertions = 0
             }
-        }        
+        }
 
         $gitLogOut.GitOutputLines = $OutputLines
         $gitLogOut.Merged = $script:LogChangesMerged
@@ -166,8 +166,9 @@ end {
             $commitStartLine = $lineIndex
         }
     }
-    
-    OutGitLog $allInput[$commitStartIndex..($allInput.Count - 1)]
+
+    if ( $commitStartLine -lt $allInput.Count ) {
+        OutGitLog $allInput[$commitStartLine..($allInput.Count - 1)]
+    }
     $ExecutionContext.SessionState.PSVariable.Remove('script:LogChangesMerged')
 }
-
