@@ -166,6 +166,9 @@ end {
             $commitStartLine = $lineIndex
         }
     }
-    OutGitLog $allInput[$commitStartLine..($allInput.Count - 1)]
+
+    if ( $commitStartLine -lt $allInput.Count ) {
+        OutGitLog $allInput[$commitStartLine..($allInput.Count - 1)]
+    }
     $ExecutionContext.SessionState.PSVariable.Remove('script:LogChangesMerged')
 }

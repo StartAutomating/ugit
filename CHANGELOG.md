@@ -1,3 +1,13 @@
+## ugit 0.4.5.1:
+
+> Like It? [Star It](https://github.com/StartAutomating/ugit)
+> Love It? [Support It](https://github.com/sponsors/StartAutomating)
+
+* `git log` fix duplicate commit issue ( #334 )
+* Thanks @ninmonkey !
+
+--- 
+  
 ## ugit 0.4.5:
 
 > Like It? [Star It](https://github.com/StartAutomating/ugit)
