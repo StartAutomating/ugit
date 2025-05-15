@@ -41,4 +41,4 @@ Write-FormatView -TypeName Git.Status -Action {
         (-not $gitStatus.Untracked) -and (-not $gitStatus.Unstaged) -and (-not $gitStatus.Staged)
     } -Text "Nothing to commit, working tree clean"
 
-} -GroupByProperty GitRoot
+}
