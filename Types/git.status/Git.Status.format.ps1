@@ -38,7 +38,7 @@ Write-FormatView -TypeName Git.Status -Action {
 
     Write-FormatViewExpression -if {
         $gitStatus = $_
-        (-not $gitStatus.Untracked) -and (-not $gitStatus.Unstaged) -and (-not $gitStatus.Staged)
+        (-not $gitStatus.Untracked.Count) -and (-not $gitStatus.Unstaged.Count) -and (-not $gitStatus.Staged.Count)
     } -Text "Nothing to commit, working tree clean"
 
 }
