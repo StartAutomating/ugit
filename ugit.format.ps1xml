@@ -2894,6 +2894,7 @@ $BackgroundColor
                 </ItemSelectionCondition>
                 <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Warning' ) -join ''</ScriptBlock>
               </ExpressionBinding>
+              <NewLine />
               <ExpressionBinding>
                 <ItemSelectionCondition>
                   <ScriptBlock> $_.Status -notlike 'Nothing*' </ScriptBlock>
@@ -2904,7 +2905,7 @@ $BackgroundColor
                 <ItemSelectionCondition>
                   <ScriptBlock> $_.Staged </ScriptBlock>
                 </ItemSelectionCondition>
-                <ScriptBlock> 
+                <ScriptBlock>
         "Changes Staged For Commit:
   (use git commit -m to commit)" + [Environment]::NewLine
     </ScriptBlock>
