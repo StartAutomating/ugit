@@ -34,7 +34,7 @@ Write-FormatView -TypeName Git.Status -Action {
         @(foreach ($line in $($_.Untracked | Out-String -Width ($host.UI.RawUI.BufferSize.Width - 8)) -split '(?>\r\n|\n)') {
             (" " * 4) + $line
         }) -join [Environment]::NewLine
-    } -ForegroundColor Red
+    } -ForegroundColor Yellow
 
     Write-FormatViewExpression -ScriptBlock {
         if(($_.Untracked.Count + $_.Unstaged.Count + $_.Staged.Count) -eq 0)
