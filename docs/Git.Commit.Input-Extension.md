@@ -28,71 +28,71 @@ git commit -Title "Fixing Something"
 #### **Title**
 The title of the commit.  If -Message is also provided, this will become part of the -Body
 
-|Type      |Required|Position|PipelineInput|Aliases|
-|----------|--------|--------|-------------|-------|
-|`[String]`|false   |named   |false        |Subject|
+|Type      |Required|Position|PipelineInput        |Aliases|
+|----------|--------|--------|---------------------|-------|
+|`[String]`|false   |named   |true (ByPropertyName)|Subject|
 
 #### **Message**
 The commit message.
 
-|Type      |Required|Position|PipelineInput|
-|----------|--------|--------|-------------|
-|`[String]`|false   |named   |false        |
+|Type      |Required|Position|PipelineInput        |
+|----------|--------|--------|---------------------|
+|`[String]`|false   |named   |true (ByPropertyName)|
 
 #### **Type**
 The type of the commit.  This uses the conventional commits format.
 https://www.conventionalcommits.org/en/v1.0.0/#specification
 
-|Type      |Required|Position|PipelineInput|
-|----------|--------|--------|-------------|
-|`[String]`|false   |named   |false        |
+|Type      |Required|Position|PipelineInput        |
+|----------|--------|--------|---------------------|
+|`[String]`|false   |named   |true (ByPropertyName)|
 
 #### **Scope**
 The scope of the commit.  This uses the conventional commits format.
 https://www.conventionalcommits.org/en/v1.0.0/#specification
 
-|Type      |Required|Position|PipelineInput|
-|----------|--------|--------|-------------|
-|`[String]`|false   |named   |false        |
+|Type      |Required|Position|PipelineInput        |Aliases|
+|----------|--------|--------|---------------------|-------|
+|`[String]`|false   |named   |true (ByPropertyName)|SubType|
 
 #### **Description**
 A description of the commit.  This uses the conventional commits format.
 https://www.conventionalcommits.org/en/v1.0.0/#specification
 
-|Type      |Required|Position|PipelineInput|
-|----------|--------|--------|-------------|
-|`[String]`|false   |named   |false        |
+|Type      |Required|Position|PipelineInput        |
+|----------|--------|--------|---------------------|
+|`[String]`|false   |named   |true (ByPropertyName)|
 
 #### **Footer**
 The footer for the commit.  This uses the conventional commits format.
 https://www.conventionalcommits.org/en/v1.0.0/#specification
 
-|Type      |Required|Position|PipelineInput|
-|----------|--------|--------|-------------|
-|`[String]`|false   |named   |false        |
+|Type      |Required|Position|PipelineInput        |
+|----------|--------|--------|---------------------|
+|`[String]`|false   |named   |true (ByPropertyName)|
 
 #### **Body**
 The body of the commit.
 
-|Type      |Required|Position|PipelineInput|
-|----------|--------|--------|-------------|
-|`[String]`|false   |named   |false        |
+|Type      |Required|Position|PipelineInput        |
+|----------|--------|--------|---------------------|
+|`[String]`|false   |named   |true (ByPropertyName)|
 
 #### **Trailers**
 Any git trailers to add to the commit.
 git trailers are key-value pairs you can use to associate metadata with a commit.
 As this uses --trailer, this requires git version 2.33 or greater.
 
-|Type           |Required|Position|PipelineInput|Aliases                                   |
-|---------------|--------|--------|-------------|------------------------------------------|
-|`[IDictionary]`|false   |named   |false        |Trailer<br/>CommitMetadata<br/>GitMetadata|
+|Type           |Required|Position|PipelineInput        |Aliases                                   |
+|---------------|--------|--------|---------------------|------------------------------------------|
+|`[IDictionary]`|false   |named   |true (ByPropertyName)|Trailer<br/>CommitMetadata<br/>GitMetadata|
 
 #### **Amend**
 If set, will amend an existing commit.
 
-|Type      |Required|Position|PipelineInput|
-|----------|--------|--------|-------------|
-|`[Switch]`|false   |named   |false        |
+|Type      |Required|Position|PipelineInput        |
+|----------|--------|--------|---------------------|
+|`[Switch]`|false   |named   |true (ByPropertyName)|
 
 #### **CommitDate**
 The commit date.
