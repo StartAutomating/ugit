@@ -727,6 +727,60 @@ Pop-Location
     </Members>
   </Type>
   <Type>
+    <Name>git.worktree</Name>
+    <Members>
+      <MemberSet>
+        <Name>PSStandardMembers</Name>
+        <Members>
+          <PropertySet>
+            <Name>DefaultDisplayPropertySet</Name>
+            <ReferencedProperties>
+              <Name>CommitHash</Name>
+              <Name>Branch</Name>
+              <Name>Locked</Name>
+              <Name>WorktreePath</Name>
+            </ReferencedProperties>
+          </PropertySet>
+        </Members>
+      </MemberSet>
+      <AliasProperty>
+        <Name>Compare</Name>
+        <ReferencedMemberName>Diff</ReferencedMemberName>
+      </AliasProperty>
+      <ScriptMethod>
+        <Name>Diff</Name>
+        <Script>
+                        &lt;#
+.SYNOPSIS
+    Diffs a worktree
+.DESCRIPTION
+    Compares a worktree.
+.NOTES
+    This will move to the worktree path, run `git diff`, and move back.
+
+    Relative paths are not recommended.
+    
+    Tthey will refer to the worktree path, not the original path
+#&gt;
+param()
+
+if (-not $this.WorktreePath) { return }
+Push-Location $this.WorktreePath
+git diff @args
+Pop-Location
+                    </Script>
+      </ScriptMethod>
+      <NoteProperty>
+        <Name>DefaultDisplay</Name>
+        <Value>CommitHash
+Branch
+Locked
+WorktreePath
+</Value>
+      </NoteProperty>
+    </Members>
+  </Type>
+  <Type>
     <Name>System.IO.FileInfo</Name>
     <Members>
       <AliasProperty>
