@@ -1,0 +1,49 @@
+{
+  "Synopsis": "Gets Git Functions",
+  "Description": "Gets git functions.\n\nGets any functions or aliases named git.*",
+  "Parameters": [
+    {
+      "Name": null,
+      "Type": null,
+      "Description": "",
+      "Required": false,
+      "Position": 0,
+      "Aliases": null,
+      "DefaultValue": null,
+      "Globbing": false,
+      "PipelineInput": null,
+      "variableLength": false
+    }
+  ],
+  "Notes": [
+    "These functions may be called directly.\n\nThey will be called when ugit matches the longest valid name.\n\nThis returns an enumerable.\n\nNew commands can be found by iterating over the output."
+  ],
+  "CommandType": "Function",
+  "Component": [
+    null
+  ],
+  "Inputs": [
+    null
+  ],
+  "Outputs": [
+    null
+  ],
+  "Links": [],
+  "Examples": [
+    {
+      "Title": "EXAMPLE 1",
+      "Markdown": "",
+      "Code": "function git.hello.world {\n    \"hello world\"\n}\ngit hello world"
+    },
+    {
+      "Title": "EXAMPLE 2",
+      "Markdown": "",
+      "Code": "function git.last.time {\n    git log -n 1 | \n        Select-Object -ExpandProperty CommitDate\n}\ngit last time"
+    },
+    {
+      "Title": "EXAMPLE 3",
+      "Markdown": "",
+      "Code": "function git.last.year {\n    param(\n    $Then = [DateTime]::Now.AddYears(-1),\n    $Now = [DateTime]::Now,            \n    )\ngit log -Since $Then -Before $now\n}\ngit last year"
+    }
+  ]
+}
