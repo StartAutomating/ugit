@@ -33,11 +33,11 @@ process {
             $worktreePath, $commitHashAndBranch = $gitOut -split '\s{2,}', 2
             $commitHash, $branchNameAndStatus = $commitHashAndBranch -split '\s', 2
             
-            $branchStatus = ''            
+            $branchStatus = ''
             $branchName, $branchStatus = $branchNameAndStatus -split '\s', 2
             
-            [PSCustomObject]@{
-                PSTypeName='git.worktree.list'
+            [PSCustomObject][Ordered]@{
+                PSTypeName='git.worktree'
                 WorktreePath = $worktreePath
                 CommitHash = $commitHash
                 Branch = $branchName -replace '^\[' -replace '\]$'
@@ -48,5 +48,5 @@ process {
 }
 
 end {
-    if ($gitOut) {$gitout}   
+    if ($gitOut) {$gitout}
 }
