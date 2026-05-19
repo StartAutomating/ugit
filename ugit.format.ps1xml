@@ -2976,7 +2976,7 @@ $BackgroundColor
                 <ItemSelectionCondition>
                   <ScriptBlock> $_.Untracked</ScriptBlock>
                 </ItemSelectionCondition>
-                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Red' -NoClear) -join ''</ScriptBlock>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Yellow' -NoClear) -join ''</ScriptBlock>
               </ExpressionBinding>
               <ExpressionBinding>
                 <ItemSelectionCondition>
@@ -2992,7 +2992,7 @@ $BackgroundColor
                 <ItemSelectionCondition>
                   <ScriptBlock> $_.Untracked</ScriptBlock>
                 </ItemSelectionCondition>
-                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Red' ) -join ''</ScriptBlock>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Yellow' ) -join ''</ScriptBlock>
               </ExpressionBinding>
               <ExpressionBinding>
                 <ScriptBlock>
