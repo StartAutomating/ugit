@@ -13,16 +13,19 @@
 [CmdletBinding(PositionalBinding=$false)]
 param(
 # The title of the commit.  If -Message is also provided, this will become part of the -Body
+[Parameter(ValueFromPipelineByPropertyName)]
 [Alias('Subject')]
 [string]
 $Title,
 
 # The commit message.
+[Parameter(ValueFromPipelineByPropertyName)]
 [string]
 $Message,
 
 # The type of the commit.  This uses the conventional commits format.
 # https://www.conventionalcommits.org/en/v1.0.0/#specification
+[Parameter(ValueFromPipelineByPropertyName)]
 [ArgumentCompleter({
     param ( $commandName,
     $parameterName,
@@ -40,31 +43,38 @@ $Type,
 
 # The scope of the commit.  This uses the conventional commits format.
 # https://www.conventionalcommits.org/en/v1.0.0/#specification
+[Parameter(ValueFromPipelineByPropertyName)]
+[Alias('SubType')]
 [string]
 $Scope,
 
 # A description of the commit.  This uses the conventional commits format.
 # https://www.conventionalcommits.org/en/v1.0.0/#specification
+[Parameter(ValueFromPipelineByPropertyName)]
 [string]
 $Description,
 
 # The footer for the commit.  This uses the conventional commits format.
 # https://www.conventionalcommits.org/en/v1.0.0/#specification
+[Parameter(ValueFromPipelineByPropertyName)]
 [string]
 $Footer,
 
 # The body of the commit.
+[Parameter(ValueFromPipelineByPropertyName)]
 [string]
 $Body,
 
 # Any git trailers to add to the commit.
 # git trailers are key-value pairs you can use to associate metadata with a commit.
 # As this uses --trailer, this requires git version 2.33 or greater.
+[Parameter(ValueFromPipelineByPropertyName)]
 [Alias('Trailer','CommitMetadata','GitMetadata')]
 [Collections.IDictionary]
 $Trailers = [Ordered]@{},
 
 # If set, will amend an existing commit.
+[Parameter(ValueFromPipelineByPropertyName)]
 [switch]
 $Amend,
 
