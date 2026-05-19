@@ -16,13 +16,10 @@
     ~~~
     
     The scripts arguments can be provided with either an `ARG` or `ENV` instruction in the Dockerfile.
-.NOTES
-    Did you know that in PowerShell you can 'use' namespaces that do not really exist?
-    This seems like a nice way to describe a relationship to a container image.
-    That is why this file is using the namespace 'mcr.microsoft.com/powershell'.
-    (this does nothing, but most likely will be used in the future)
 #>
-using namespace 'mcr.microsoft.com/powershell'
+
+
+# using namespace 'mcr.microsoft.com/powershell'
 
 
 param(
