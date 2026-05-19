@@ -1,5 +1,5 @@
 # Thank you Microsoft!  Thank you PowerShell!  Thank you Docker!
-FROM mcr.microsoft.com/powershell
+FROM mcr.microsoft.com/dotnet/sdk:9.0
 
 # Set the shell to PowerShell
 SHELL ["/bin/pwsh", "-nologo", "-command"]
