@@ -2826,14 +2826,11 @@ $BackgroundColor
       <ViewSelectedBy>
         <TypeName>Git.Status</TypeName>
       </ViewSelectedBy>
-      <GroupBy>
-        <PropertyName>GitRoot</PropertyName>
-      </GroupBy>
       <CustomControl>
         <CustomEntries>
           <CustomEntry>
             <CustomItem>
-              <Text>On Branch: </Text>
+              <Text>On branch: </Text>
               <ExpressionBinding>
                 <ItemSelectionCondition>
                   <ScriptBlock> $_.BranchName -notin 'main', 'master' </ScriptBlock>
@@ -2908,10 +2905,16 @@ $BackgroundColor
                 <ItemSelectionCondition>
                   <ScriptBlock> $_.Staged </ScriptBlock>
                 </ItemSelectionCondition>
-                <ScriptBlock> 
+                <ScriptBlock>
         "Changes Staged For Commit:
   (use git commit -m to commit)" + [Environment]::NewLine
     </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Staged </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Green' -NoClear) -join ''</ScriptBlock>
               </ExpressionBinding>
               <ExpressionBinding>
                 <ItemSelectionCondition>
@@ -2925,12 +2928,24 @@ $BackgroundColor
               </ExpressionBinding>
               <ExpressionBinding>
                 <ItemSelectionCondition>
+                  <ScriptBlock> $_.Staged </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Green' ) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
                   <ScriptBlock> $_.Unstaged </ScriptBlock>
                 </ItemSelectionCondition>
-                <ScriptBlock> 
+                <ScriptBlock>
         "Changes Not Staged For Commit:
   (use git add &lt;file&gt; to add, git restore &lt;file&gt; to discard changes)" + [Environment]::NewLine
     </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Unstaged</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Red' -NoClear) -join ''</ScriptBlock>
               </ExpressionBinding>
               <ExpressionBinding>
                 <ItemSelectionCondition>
@@ -2941,6 +2956,12 @@ $BackgroundColor
             (" " * 4) + $line
         }) -join [Environment]::NewLine) + [Environment]::NewLine
     </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Unstaged</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Red' ) -join ''</ScriptBlock>
               </ExpressionBinding>
               <ExpressionBinding>
                 <ItemSelectionCondition>
@@ -2955,13 +2976,32 @@ $BackgroundColor
                 <ItemSelectionCondition>
                   <ScriptBlock> $_.Untracked</ScriptBlock>
                 </ItemSelectionCondition>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Red' -NoClear) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Untracked</ScriptBlock>
+                </ItemSelectionCondition>
                 <ScriptBlock>
         @(foreach ($line in $($_.Untracked | Out-String -Width ($host.UI.RawUI.BufferSize.Width - 8)) -split '(?&gt;\r\n|\n)') {
             (" " * 4) + $line
         }) -join [Environment]::NewLine
     </ScriptBlock>
               </ExpressionBinding>
-              <Text>Nothing to commit, working tree clean</Text>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Untracked</ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Red' ) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>
+        if(($_.Untracked.Count + $_.Unstaged.Count + $_.Staged.Count) -eq 0)
+        {
+            "Nothing to commit, working tree clean"
+        }
+    </ScriptBlock>
+              </ExpressionBinding>
             </CustomItem>
           </CustomEntry>
         </CustomEntries>
