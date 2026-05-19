@@ -467,6 +467,13 @@ You might want to try giving some of these a try.
     git submodule
 ~~~
 
+### Git.Worktree Example 1
+
+
+~~~PowerShell
+    git worktree list
+~~~
+
 ## Out-Git Extensions
 
 ### Git Commands
@@ -544,6 +551,9 @@ Most extensions handle output from a single git command.
 
  
 * [Git SubModule Status](Git.SubModule.Status-Extension.md)
+
+ 
+* [Git Worktree](Git.Worktree-Extension.md)
 
 
 
