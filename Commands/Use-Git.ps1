@@ -86,6 +86,83 @@
         # If there's nothing to validate, there are no dynamic parameters.
         if (-not $ToValidate) { return }
 
+        # Collect any git functions
+        $gitFunctions = [Ordered]@{}
+                
+        # (commands named git.*)
+        foreach ($gitFunction in $ExecutionContext.SessionState.InvokeCommand.GetCommands(
+            'git.*', 'Alias,Function', $true
+        )) {
+            $gitFunctions[$gitFunction.Name] = $gitFunction
+        }
+
+        # Split our validation string into words
+        $argsToValidate = $ToValidate -split '\s'
+        # and initialize gitfunction to null.
+        $gitFunction = $null
+        # Then walk backward thru the list of args
+        for ($argNumber = $argsToValidate.Length; $argNumber -gt 0; $argNumber--) {
+            # and see if a git function with this name exists
+            $gitFunctionName = $argsToValidate[0..$argNumber] -join '.'
+            if (-not $gitFunctions[$gitFunctionName]) { continue }
+            # If one does
+            $gitFunction = $gitFunctions[$gitFunctionName]
+            # we want to return it's parameters dynamically.
+            $dynamicParams = [Management.Automation.RuntimeDefinedParameterDictionary]::new()
+            # for the most part this is simply copying over each parameter
+            foreach ($parameter in ([Management.Automation.CommandMetadata]$gitFunction).Parameters.Values) {
+                $dynamicParams[$parameter.Name] =                    
+                    [Management.Automation.RuntimeDefinedParameter]::new(
+                        $parameter.Name,
+                        $parameter.ParameterType,
+                        @(
+                            # with one _slight_ exception:
+                            # We want to copy the parameter attribute
+                            # (failing to do would pollute the git function's parameter attribute)
+                            
+                            # We always need a parameter attribute anyways, so create it now
+                            $parameterAttribute = [Management.Automation.ParameterAttribute]::new()
+                            # and walk thru all attributes of the parameter
+                            foreach ($attribute in $parameter.Attributes) {
+                                # (non-parameter attributes are simply copied)
+                                if ($attribute -isnot [Management.Automation.ParameterAttribute]) {
+                                    $attribute
+                                    continue
+                                }
+                                
+                                # For parameter attributes, copy any of the three key booleans
+                                foreach ($booleanAttribute in 
+                                    'ValueFromPipeline',
+                                    'ValueFromPipelineByPropertyName',
+                                    'ValueFromRemainingArguments') {
+                                    if ($attribute.$booleanAttribute) {
+                                        $parameterAttribute.$booleanAttribute = $true
+                                    }
+                                }
+                                
+                                # and then nudge any possible position by the argument number
+                                if (
+                                    ($attribute.Position -ge 0) -and 
+                                    ($attribute.Position -lt 10kb)
+                                ) {
+                                    $parameterAttribute.Position = $attribute.Position + $argNumber
+                                }
+                            
+                            }
+                            
+                            # make sure we standardize the parameter set
+                            $parameterAttribute.ParameterSetName = '__AllParameterSets'
+                            # and emit the new parameter attribute
+                            $parameterAttribute
+                        )
+                    )
+            }
+            # Since we are directly mapping to a function at this point
+            # we can just return our dynamic parameters now.
+            return $dynamicParams
+        }
+        
+
         # Get dynamic parameters that are valid for this command
         $dynamicParameterSplat = [Ordered]@{
             CommandName='Use-Git'
@@ -93,7 +170,7 @@
             DynamicParameter=$true
             DynamicParameterSetName='__AllParameterSets'
             NoMandatoryDynamicParameter=$true
-        }        
+        }
         $myDynamicParameters = Get-UGitExtension @dynamicParameterSplat
         if (-not $myDynamicParameters) { return }
         
@@ -112,7 +189,8 @@
                 Write-Debug -Message "Failed to create script block from '$ToValidate' : $($err.Exception.Message)"                
             }
             if ((-not $callingContext) -and $error.Count) { $error.RemoveAt(0)}
-        }
+        }        
+        
         foreach ($commandElement in $callingContext.CommandElements) {
             if (-not $commandElement.parameterName) { continue } # that is a Powershell parameter
             foreach ($dynamicParam in @($myDynamicParameters.Values)) {
@@ -391,11 +469,49 @@
                         if ($xa.AfterInput) {
                             $xa
                         }
-                    }                    
+                    }
                 )
                 
                 $AllGitArgs = @($AllGitArgs -ne '')             # (skipping any empty arguments)
-                $OutGitParams = @{GitArgument=$AllGitArgs}      # and prepare a splat (to save precious space when reporting errors).
+                $OutGitParams = @{GitArgument=$AllGitArgs}      # and prepare a splat (to save precious space when reporting errors).                                                                
+
+                # We know if we are using a git function from our dynamic parameters.
+                # If we are using a git function
+                if ($gitFunction) {
+                    # call it 
+                    Write-Verbose "Calling git function $($gitFunction.Name) with $AllGitArgs"
+                    # but before we do, count how many spaces it should have
+                    $gitSpace = @($gitFunction.Name -replace '^git\.' -split '\.').Length
+                    $AllGitArgs = 
+                        @(for ($argNumber = 0;$argNumber -lt $AllGitArgs.Length;$argNumber++) {
+                            # and skip that many arguments.
+                            if ($argNumber -lt $gitSpace) { continue }
+                            $AllGitArgs[$argNumber]
+                        })                    
+
+                    # Collect any parameter names of the git function
+                    $gitFunctionParameterNames = @(
+                        foreach ($parameterName in $gitFunction.Parameters.Keys) {
+                            $gitFunctionParameter = $gitFunction.Parameters[$parameterName]
+                            $gitFunctionParameter.Name
+                            if ($gitFunctionParameter.Aliases) {
+                                $gitFunctionParameter.Aliases
+                            }
+                        }
+                    )
+                    # and copy any bound parameters that match
+                    $gitFunctionParameters = [Ordered]@{}
+                    foreach ($key in $PSBoundParameters.Keys) {
+                        if ($gitFunctionParameterNames -contains $key) {
+                            $gitFunctionParameters[$key] = $PSBoundParameters[$key]
+                        }
+                    }
+
+                    # Then call the git function with all of our positional and named parameters
+                    & $gitFunction @AllGitArgs @gitFunctionParameters
+                    # and continue to the next input.
+                    continue nextInput
+                }
 
                 $OutGitParams.GitRoot = "$($script:RepoRoots[$dir])"
                 Write-Verbose "Calling git with $AllGitArgs"

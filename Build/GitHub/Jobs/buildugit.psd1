@@ -35,12 +35,7 @@
             name = 'Run HelpOut'
             uses = 'StartAutomating/HelpOut@master'
             id = 'HelpOut'
-        },
-        @{
-            name = 'PSA'
-            uses = 'StartAutomating/PSA@main'
-            id = 'PSA'
-        },
+        },        
         @{
             'name'='Log in to the Container registry (on branch)'            
             'uses'='docker/login-action@master'

@@ -18,13 +18,8 @@
 
     ENTRYPOINT ["pwsh", "-nologo", "-file", "/Container.start.ps1"]
     ~~~
-.NOTES
-    Did you know that in PowerShell you can 'use' namespaces that do not really exist?
-    This seems like a nice way to describe a relationship to a container image.
-    That is why this file is using the namespace 'ghcr.io/startautomating/ugit'.
-    (this does nothing, but most likely will be used in the future)
 #>
-using namespace 'ghcr.io/startautomating/ugit'
+# using namespace 'ghcr.io/startautomating/ugit'
 
 param()
 
