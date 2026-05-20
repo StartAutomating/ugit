@@ -19,7 +19,7 @@ We welcome code changes!
 * Please file an issue first, or refer to an open issue.
 * Please use inline help.
 
-Here's how you can update ugit
+Here's how you can update ugit:
 
 ### Extending git
 
@@ -56,7 +56,9 @@ They are authored with the help of [EZOut](https://github.com/StartAutomating/EZ
   * `Alias.psd1` describes any aliase properties or methods
   * `DefaultDisplay.txt` describes the default display properties
 
+
 ### Commit Format
+
 Because this is a git project, we prefer to leverage it and have high standards for our git.
 
 1. Please use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
@@ -67,7 +69,6 @@ You can do this in ugit with the extended parameters of `git commit`
 ~~~PowerShell
 git commit -type feat -Scope area -Title "Short note" -Description "Longer note" -Fix 123
 ~~~
-
 
 FYI, `-Fix` can take a range of issues.
 
@@ -88,3 +89,5 @@ We have found that this easy error makes the commit history harder to follow, es
 We understand that we are all error prone, and do not expect perfect git structure.  
 
 Please try to keep our `git log` useful.
+
+Thank you for considering contributing.  Please help!
