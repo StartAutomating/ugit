@@ -107,8 +107,30 @@
             if (-not $gitFunctions[$gitFunctionName]) { continue }
             # If one does
             $gitFunction = $gitFunctions[$gitFunctionName]
+            $gitSpace = @($gitFunction.Name -replace '^git\.' -split '\.').Length
+
             # we want to return it's parameters dynamically.
             $dynamicParams = [Management.Automation.RuntimeDefinedParameterDictionary]::new()
+
+
+            IF ($gitSpace -ge 1) {
+                foreach ($wordNumber in 0..($gitSpace - 1)) {
+                    $gitWord = "Word$($wordNumber)"
+                    $dynamicParams[$gitWord] = 
+                        [Management.Automation.RuntimeDefinedParameter]::new(
+                            $gitWord,
+                            [PSObject],
+                            @(
+                                $parameterAttribute = [Management.Automation.ParameterAttribute]::new()
+                                $parameterAttribute.ParameterSetName = '__AllParameterSets'
+                                $parameterAttribute.Position = $wordNumber
+                                $parameterAttribute
+                            )
+                        )
+                }
+            }
+            
+
             # for the most part this is simply copying over each parameter
             foreach ($parameter in ([Management.Automation.CommandMetadata]$gitFunction).Parameters.Values) {
                 $dynamicParams[$parameter.Name] =                    
@@ -140,14 +162,12 @@
                                     }
                                 }
                                 
-                                # and then nudge any possible position by the argument number
-                                if (
-                                    ($attribute.Position -ge 0) -and 
-                                    ($attribute.Position -lt 10kb)
-                                ) {
-                                    $parameterAttribute.Position = $attribute.Position + $argNumber
+                                # and then nudge any possible position by the argument number                                
+                                if ($attribute.Position -ge 0 -and $attribute.Postion -lt 16kb) {
+                                    $parameterAttribute.Position = 
+                                        $gitSpace +  $attribute.Position
                                 }
-                            
+                                
                             }
                             
                             # make sure we standardize the parameter set
@@ -298,6 +318,7 @@
         # Next, we need to create a collection of input object from each directory.
         $InputDirectories = [Ordered]@{}
 
+        $paramCopy = ([Ordered]@{} + $PSBoundParameters)
 
         if (
             $AllInputObjects.Length -eq 0 -and # If we had no input objects and
@@ -357,7 +378,7 @@
         $ErrorActionPreference = 'continue'
 
         # Before we process each directory, make a copy of the bound parameters.
-        $paramCopy = ([Ordered]@{} + $PSBoundParameters)
+        
         if ($GitArgument -contains '-c' -or $GitArgument -contains '-C') {
             $paramCopy.Remove('Confirm')
         }
@@ -482,12 +503,9 @@
                     Write-Verbose "Calling git function $($gitFunction.Name) with $AllGitArgs"
                     # but before we do, count how many spaces it should have
                     $gitSpace = @($gitFunction.Name -replace '^git\.' -split '\.').Length
-                    $AllGitArgs = 
-                        @(for ($argNumber = 0;$argNumber -lt $AllGitArgs.Length;$argNumber++) {
-                            # and skip that many arguments.
-                            if ($argNumber -lt $gitSpace) { continue }
-                            $AllGitArgs[$argNumber]
-                        })                    
+                    $gitFunctionArgs = @($AllGitArgs[
+                        ($gitSpace + 1)..($AllGitArgs.Length)
+                    ])                    
 
                     # Collect any parameter names of the git function
                     $gitFunctionParameterNames = @(
@@ -507,8 +525,14 @@
                         }
                     }
 
-                    # Then call the git function with all of our positional and named parameters
-                    & $gitFunction @AllGitArgs @gitFunctionParameters
+                    if ($gitFunctionArgs) {
+                        # Then call the git function with all of our positional and named parameters
+                        & $gitFunction @gitFunctionParameters @gitFunctionArgs 
+                    } else {
+                        # Then call the git function with our named parameters
+                        & $gitFunction @gitFunctionParameters 
+                    }
+                    
                     # and continue to the next input.
                     continue nextInput
                 }
