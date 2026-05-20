@@ -1,5 +1,5 @@
 @{
-    ModuleVersion    = '0.4.5.1'
+    ModuleVersion    = '0.4.6'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -27,13 +27,34 @@
             LicenseURI = 'https://github.com/StartAutomating/ugit/blob/main/LICENSE'
             BuildModule  = @('EZOut', 'Piecemeal', 'PipeScript', 'PSSVG')
             ReleaseNotes = @'
-## ugit 0.4.5.1:
+# ugit
 
-> Like It? [Star It](https://github.com/StartAutomating/ugit)
-> Love It? [Support It](https://github.com/sponsors/StartAutomating)
+* [Repo](https://github.com/StartAutomating/ugit)
+* [Issues](https://github.com/StartAutomating/ugit/issues)
+* [Discussions](https://github.com/StartAutomating/ugit/discussions/)
+* [Website](https://ugit.start-automating.com/)
 
-* `git log` fix duplicate commit issue ( #334 )
-* Thanks @ninmonkey !
+## ugit 0.4.6:
+
+* Git Functions Support! (#259)
+  * Any function or alias named git.* will be considered a git function
+  * git functions can be run in ugit implicitly (i.e. `git functions`)
+  * git functions can have parameters, accept arguments, and bind from the pipeline.
+  * We can get git functions with `Get-GitFunction` (#352)  
+* `git worktree list` support (#347)
+* git status improvement (#341)
+  * Adding color ( Thanks @derekthecool !)
+  * Using Green for staged, Red for unstaged, Yellow for Untracked.
+* Container Changes
+  * Fixing requirements (#348)
+  * Using DotNet SDK as base (#349)
+* Workflow updates (#350)
+  * Updating upload-artifact
+  * Removing PSA from build
+* Minor Updates
+  * `ugit.Piecemeal.ps1` now #requires Piecemeal (#344, Thanks @ninmonkey !)
+  * Community Guides (#329,#330,#331)
+
 ---
 
 Additional Changes in [Changelog](https://github.com/StartAutomating/ugit/blob/main/CHANGELOG.md)
