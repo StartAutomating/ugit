@@ -525,12 +525,16 @@
                         }
                     }
 
+                    # If we had any positional arguments
                     if ($gitFunctionArgs) {
-                        # Then call the git function with all of our positional and named parameters
-                        & $gitFunction @gitFunctionParameters @gitFunctionArgs 
-                    } else {
-                        # Then call the git function with our named parameters
-                        & $gitFunction @gitFunctionParameters 
+                        # Call the git function with our arguments and named parameters
+                        & $gitFunction @gitFunctionParameters @gitFunctionArgs
+                    } 
+                    # Otherwise,
+                    else 
+                    {
+                        # call the git function with our named parameters
+                        & $gitFunction @gitFunctionParameters
                     }
                     
                     # and continue to the next input.
