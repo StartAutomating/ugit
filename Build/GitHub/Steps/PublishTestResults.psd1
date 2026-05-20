@@ -1,6 +1,6 @@
 @{
     name = 'PublishTestResults'
-    uses = 'actions/upload-artifact@v3'
+    uses = 'actions/upload-artifact@main'
     with = @{
         name = 'PesterResults'
         path = '**.TestResults.xml'

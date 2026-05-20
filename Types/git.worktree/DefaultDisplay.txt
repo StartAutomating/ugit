@@ -1,0 +1,4 @@
+CommitHash
+Branch
+Locked
+WorktreePath
