@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Gets deleted paths
+    Gets unstaged deleted paths
 .DESCRIPTION
     Gets unstaged deleted paths.
 #>
