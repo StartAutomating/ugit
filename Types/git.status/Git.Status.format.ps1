@@ -24,9 +24,10 @@ Write-FormatView -TypeName Git.Status -Action {
         @(
             if ($gitStatus.Ahead -gt 0) {
                 $PSStyle.Foreground.Green + $PSStyle.Bold
-            } elseif ($gitStatus.Behind -gt 0) {
+            } elseif ($gitStatus.Behind -gt 0 -or 
+                $gitStatus.Status -match 'diverged') {
                 $PSStyle.Formatting.Error
-            }
+            }        
             else {
                 $PSStyle.Foreground.Cyan
             }
