@@ -2832,8 +2832,122 @@ $BackgroundColor
             <CustomItem>
               <Text>On branch: </Text>
               <ExpressionBinding>
+                <ScriptBlock> 
+        $branchName = $_.BranchName
+        @(
+            if ($branchName -notin 'main', 'master', 'latest') {
+                $PSStyle.Foreground.Cyan
+                $PSStyle.Bold
+            } else {
+                $PSStyle.Formatting.Warning
+            }
+            $branchName
+            $PSStyle.Reset
+        ) -join ''                
+    </ScriptBlock>
+              </ExpressionBinding>
+              <NewLine />
+              <ExpressionBinding>
+                <ScriptBlock>
+        $gitStatus = $_
+        if ($gitStatus.Status -match 'nothing') {
+            return ''
+        }
+        @(
+            if ($gitStatus.Ahead -gt 0) {
+                $PSStyle.Foreground.Green + $PSStyle.Bold
+            } elseif ($gitStatus.Behind -gt 0 -or 
+                $gitStatus.Status -match 'diverged') {
+                $PSStyle.Formatting.Error
+            }        
+            else {
+                $PSStyle.Foreground.Cyan
+            }
+            $gitStatus.Status + [Environment]::NewLine
+            $PSStyle.Reset
+        ) -join ''        
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
                 <ItemSelectionCondition>
-                  <ScriptBlock> $_.BranchName -notin 'main', 'master' </ScriptBlock>
+                  <ScriptBlock> $_.Staged </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        "Changes Staged For Commit:
+  (use git commit -m to commit)" + [Environment]::NewLine
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Staged </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        (@(
+            foreach ($staged in $_.Staged) {                
+                "`t$($staged.ChangeType):`t$($staged.Path)"
+            }    
+        ) -join [Environment]::NewLine) + (
+            [Environment]::NewLine * 2
+        )
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Unstaged </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        (@(
+            "Changes $($PSStyle.Foreground.Cyan + $PSStyle.Bold)Not Staged$($PSStyle.Reset) for commit:"
+            '  (use "git add &lt;file&gt;..." to update what will be committed)'
+            '  (use "git restore &lt;file&gt;..." to discard changes in working directory)'
+        ) -join [Environment]::NewLine) + (
+            [Environment]::NewLine * 2
+        )
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Unstaged </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        (@(
+            foreach ($staged in $_.Unstaged) {                
+                "`t$(
+                    if ($staged.changetype -eq 'modified') {
+                        $PSStyle.Foreground.Cyan
+                    } 
+                    elseif ($PSStyle.changetype -eq 'newfile') {
+                        $PSStyle.Foreground.Green
+                    }
+                    elseif ($staged.changetype -eq 'deleted') {
+                        $PSStyle.Foreground.Red
+                    } else {
+                        $PSStyle.Foreground.White
+                    }
+                    $psStyle.Bold                    
+                )$($staged.ChangeType):`t$($staged.Path)$($PSStyle.Reset)"
+            }    
+        ) -join [Environment]::NewLine) + (
+            [Environment]::NewLine * 2
+        )
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Untracked </ScriptBlock>
+                </ItemSelectionCondition>
+                <ScriptBlock>
+        (@(
+            "$($PSStyle.Foreground.Magenta + $PSStyle.Bold)Untracked$($PSStyle.Reset) Files:"
+            '  (use "git add &lt;file&gt;..." to include in what will be committed)'
+        ) -join [Environment]::NewLine) + (
+            [Environment]::NewLine * 2
+        )
+    </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ItemSelectionCondition>
+                  <ScriptBlock> $_.Untracked</ScriptBlock>
                 </ItemSelectionCondition>
                 <ScriptBlock>$moduleName = 'ugit'
 
@@ -2862,137 +2976,32 @@ $BackgroundColor
             } while ($false)
             
         
-@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Verbose' -NoClear) -join ''</ScriptBlock>
-              </ExpressionBinding>
-              <ExpressionBinding>
-                <ItemSelectionCondition>
-                  <ScriptBlock> $_.BranchName -notin 'main', 'master' </ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock> $_.BranchName </ScriptBlock>
-              </ExpressionBinding>
-              <ExpressionBinding>
-                <ItemSelectionCondition>
-                  <ScriptBlock> $_.BranchName -notin 'main', 'master' </ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Verbose' ) -join ''</ScriptBlock>
-              </ExpressionBinding>
-              <ExpressionBinding>
-                <ItemSelectionCondition>
-                  <ScriptBlock> $_.BranchName -in 'main', 'master' </ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Warning' -NoClear) -join ''</ScriptBlock>
-              </ExpressionBinding>
-              <ExpressionBinding>
-                <ItemSelectionCondition>
-                  <ScriptBlock> $_.BranchName -in 'main', 'master' </ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock> $_.BranchName </ScriptBlock>
-              </ExpressionBinding>
-              <ExpressionBinding>
-                <ItemSelectionCondition>
-                  <ScriptBlock> $_.BranchName -in 'main', 'master' </ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Warning' ) -join ''</ScriptBlock>
-              </ExpressionBinding>
-              <NewLine />
-              <ExpressionBinding>
-                <ItemSelectionCondition>
-                  <ScriptBlock> $_.Status -notlike 'Nothing*' </ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock> $_.Status + [Environment]::NewLine </ScriptBlock>
-              </ExpressionBinding>
-              <ExpressionBinding>
-                <ItemSelectionCondition>
-                  <ScriptBlock> $_.Staged </ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock>
-        "Changes Staged For Commit:
-  (use git commit -m to commit)" + [Environment]::NewLine
-    </ScriptBlock>
-              </ExpressionBinding>
-              <ExpressionBinding>
-                <ItemSelectionCondition>
-                  <ScriptBlock> $_.Staged </ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Green' -NoClear) -join ''</ScriptBlock>
-              </ExpressionBinding>
-              <ExpressionBinding>
-                <ItemSelectionCondition>
-                  <ScriptBlock> $_.Staged </ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock>
-        (@(foreach ($line in $($_.Staged | Select-Object ChangeType, Path | Out-String -Width ($host.UI.RawUI.BufferSize.Width - 8)) -split '(?&gt;\r\n|\n)') {
-            (" " * 4) + $line
-        }) -join [Environment]::NewLine) + [Environment]::NewLine
-    </ScriptBlock>
-              </ExpressionBinding>
-              <ExpressionBinding>
-                <ItemSelectionCondition>
-                  <ScriptBlock> $_.Staged </ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Green' ) -join ''</ScriptBlock>
-              </ExpressionBinding>
-              <ExpressionBinding>
-                <ItemSelectionCondition>
-                  <ScriptBlock> $_.Unstaged </ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock>
-        "Changes Not Staged For Commit:
-  (use git add &lt;file&gt; to add, git restore &lt;file&gt; to discard changes)" + [Environment]::NewLine
-    </ScriptBlock>
-              </ExpressionBinding>
-              <ExpressionBinding>
-                <ItemSelectionCondition>
-                  <ScriptBlock> $_.Unstaged</ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Red' -NoClear) -join ''</ScriptBlock>
-              </ExpressionBinding>
-              <ExpressionBinding>
-                <ItemSelectionCondition>
-                  <ScriptBlock> $_.Unstaged</ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock>
-        (@(foreach ($line in $($_.Unstaged | Select-Object ChangeType, Path | Out-String -Width ($host.UI.RawUI.BufferSize.Width - 8)) -split '(?&gt;\r\n|\n)') {
-            (" " * 4) + $line
-        }) -join [Environment]::NewLine) + [Environment]::NewLine
-    </ScriptBlock>
-              </ExpressionBinding>
-              <ExpressionBinding>
-                <ItemSelectionCondition>
-                  <ScriptBlock> $_.Unstaged</ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Red' ) -join ''</ScriptBlock>
-              </ExpressionBinding>
-              <ExpressionBinding>
-                <ItemSelectionCondition>
-                  <ScriptBlock> $_.Untracked </ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock>
-        "Untracked Files:
-  (use git add &lt;file&gt; to include in commit)" + [Environment]::NewLine
-    </ScriptBlock>
-              </ExpressionBinding>
-              <ExpressionBinding>
-                <ItemSelectionCondition>
-                  <ScriptBlock> $_.Untracked</ScriptBlock>
-                </ItemSelectionCondition>
-                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Yellow' -NoClear) -join ''</ScriptBlock>
+@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Magenta' -NoClear) -join ''</ScriptBlock>
               </ExpressionBinding>
               <ExpressionBinding>
                 <ItemSelectionCondition>
                   <ScriptBlock> $_.Untracked</ScriptBlock>
                 </ItemSelectionCondition>
                 <ScriptBlock>
-        @(foreach ($line in $($_.Untracked | Out-String -Width ($host.UI.RawUI.BufferSize.Width - 8)) -split '(?&gt;\r\n|\n)') {
-            (" " * 4) + $line
-        }) -join [Environment]::NewLine
+        (@(
+            $gitRoot = $_.GitRoot
+            foreach ($untracked in $_.Untracked) {
+                "`t$(
+                    $untracked.FullName.Substring($gitRoot.Length + 1) -replace '[\\/]', '/'
+                )"
+            }            
+        ) -join [Environment]::NewLine) + 
+            [Environment]::NewLine + [Environment]::NewLine
     </ScriptBlock>
               </ExpressionBinding>
               <ExpressionBinding>
                 <ItemSelectionCondition>
                   <ScriptBlock> $_.Untracked</ScriptBlock>
                 </ItemSelectionCondition>
-                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Yellow' ) -join ''</ScriptBlock>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Magenta' ) -join ''</ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Success' -NoClear) -join ''</ScriptBlock>
               </ExpressionBinding>
               <ExpressionBinding>
                 <ScriptBlock>
@@ -3001,6 +3010,9 @@ $BackgroundColor
             "Nothing to commit, working tree clean"
         }
     </ScriptBlock>
+              </ExpressionBinding>
+              <ExpressionBinding>
+                <ScriptBlock>@(&amp; ${ugit_Format-RichText} -ForegroundColor 'Success' ) -join ''</ScriptBlock>
               </ExpressionBinding>
             </CustomItem>
           </CustomEntry>
