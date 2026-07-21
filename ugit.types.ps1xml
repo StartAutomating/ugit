@@ -707,6 +707,26 @@ Pop-Location
     <Name>git.status</Name>
     <Members>
       <ScriptMethod>
+        <Name>Diff</Name>
+        <Script>
+                        &lt;#
+.SYNOPSIS
+    Gets Status Difference
+.DESCRIPTION
+    Gets the diff of a status.  
+    
+    This will show any modifications to files.
+#&gt;
+param()
+
+Push-Location $this.WorkingDirectory
+git status . | 
+    Select-Object -ExpandProperty Modified |
+    git diff
+Pop-Location
+                    </Script>
+      </ScriptMethod>
+      <ScriptMethod>
         <Name>Push</Name>
         <Script>
                         Push-Location $this.GitRoot
@@ -773,7 +793,7 @@ if ($this.Status -match 'behind') {
         <GetScriptBlock>
                         &lt;#
 .SYNOPSIS
-    Gets unstaged deleted paths
+    Gets unstaged deleted paths.
 .DESCRIPTION
     Gets unstaged deleted paths.
 #&gt;
