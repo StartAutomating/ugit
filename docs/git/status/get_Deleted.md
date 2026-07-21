@@ -2,7 +2,7 @@ get_Deleted
 -----------
 
 ### Synopsis
-Gets unstaged deleted paths
+Gets unstaged deleted paths.
 
 ---
 
