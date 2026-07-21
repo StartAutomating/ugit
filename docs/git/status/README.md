@@ -10,3 +10,9 @@
 * [get_Deleted](get_Deleted.md)
 * [get_Modified](get_Modified.md)
 * [get_Removed](get_Removed.md)
+
+
+### Script Methods
+
+
+* [Diff()](Diff.md)
