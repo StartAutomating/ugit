@@ -744,8 +744,8 @@ Pop-Location
 .DESCRIPTION
     Gets the number of commits ahead of the remote branch.
 #&gt;
-if ($GitStatus.Status -match 'ahead') {
-    $gitStatus.Status -replace '\D' -as [int]
+if ($this.Status -match 'ahead') {
+    $this.Status -replace '\D' -as [int]
 } else {
     0
 }
@@ -760,8 +760,8 @@ if ($GitStatus.Status -match 'ahead') {
 .DESCRIPTION
     Gets the number of commits behind the remote branch.
 #&gt;
-if ($GitStatus.Status -match 'behind') {
-    @($gitStatus.Status -replace '[\D-[,]]','' -split ',',2)[0] -as [int]
+if ($this.Status -match 'behind') {
+    @($this.Status -replace '[\D-[,]]','' -split ',',2)[0] -as [int]
 } else {
     0
 }
