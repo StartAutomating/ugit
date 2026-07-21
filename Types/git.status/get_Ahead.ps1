@@ -4,8 +4,8 @@
 .DESCRIPTION
     Gets the number of commits ahead of the remote branch.
 #>
-if ($GitStatus.Status -match 'ahead') {
-    $gitStatus.Status -replace '\D' -as [int]
+if ($this.Status -match 'ahead') {
+    $this.Status -replace '\D' -as [int]
 } else {
     0
 }
