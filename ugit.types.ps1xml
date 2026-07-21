@@ -719,6 +719,105 @@ Pop-Location
 
                     </Script>
       </ScriptMethod>
+      <ScriptProperty>
+        <Name>Added</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets staged added files
+.DESCRIPTION
+    Gets staged added files.  These are all files that are new or modified.
+#&gt;
+@(foreach ($staged in $this.staged) {
+    if ($staged.ChangeType -in 'newfile','modified') {
+        $staged.File
+    }   
+})
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>Ahead</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets the commits ahead
+.DESCRIPTION
+    Gets the number of commits ahead of the remote branch.
+#&gt;
+if ($GitStatus.Status -match 'ahead') {
+    $gitStatus.Status -replace '\D' -as [int]
+} else {
+    0
+}
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>Behind</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets the commits behind
+.DESCRIPTION
+    Gets the number of commits behind the remote branch.
+#&gt;
+if ($GitStatus.Status -match 'behind') {
+    @($gitStatus.Status -replace '[\D-[,]]','' -split ',',2)[0] -as [int]
+} else {
+    0
+}
+
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>Deleted</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets unstaged deleted paths
+.DESCRIPTION
+    Gets unstaged deleted paths.
+#&gt;
+@(foreach ($unstaged in $this.Unstaged) {
+    if ($unstaged.ChangeType -eq 'deleted') {
+        $unstaged.Path
+    }
+})
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>Modified</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets modified files
+.DESCRIPTION
+    Gets unstaged modified files
+#&gt;
+@(foreach ($unstaged in $this.Unstaged) {
+    if ($unstaged.ChangeType -eq 'modified') {
+        $unstaged.File
+    }
+})
+                    </GetScriptBlock>
+      </ScriptProperty>
+      <ScriptProperty>
+        <Name>Removed</Name>
+        <GetScriptBlock>
+                        &lt;#
+.SYNOPSIS
+    Gets staged removed files
+.DESCRIPTION
+    Gets staged removed files.
+    
+    These are all files that are staged for removal.
+#&gt;
+@(foreach ($staged in $this.staged) {
+    if ($staged.ChangeType -in 'deleted') {
+        $staged.Path
+    }   
+})
+                    </GetScriptBlock>
+      </ScriptProperty>
     </Members>
   </Type>
   <Type>
