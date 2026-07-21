@@ -37,6 +37,11 @@ end {
         Unstaged   = @()
         Untracked  = @()
         GitRoot    = $GitRoot
+        WorkingDirectory = if ("$PWD".StartsWith($GitRoot)) {
+            $pwd
+        } else {
+            $gitRoot
+        }
     }
 
     $inPhase     = ''
