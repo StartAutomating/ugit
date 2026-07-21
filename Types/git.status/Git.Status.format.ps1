@@ -22,9 +22,9 @@ Write-FormatView -TypeName Git.Status -Action {
             return ''
         }
         @(
-            if ($gitStatus.Ahead) {
-                $PSStyle.Formatting.Success
-            } elseif ($gitStatus.Behind) {
+            if ($gitStatus.Ahead -gt 0) {
+                $PSStyle.Foreground.Green + $PSStyle.Bold
+            } elseif ($gitStatus.Behind -gt 0) {
                 $PSStyle.Formatting.Error
             }
             else {
