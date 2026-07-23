@@ -10,18 +10,37 @@ git status extension
 
 Returns git status as an object.
 
+git status provides a lot of useful information.
+
 ---
 
 ### Examples
-> EXAMPLE 1
+Get the status of the current repository
 
 ```PowerShell
 git status
 ```
-> EXAMPLE 2
+Get the untracked files
 
 ```PowerShell
-git status | Select-Object -ExpandProperty Untracked
+git status |
+    Select-Object -ExpandProperty Untracked
+```
+Get the status of the repo in the current directory
+
+```PowerShell
+git status .
+```
+Get untracked files in the current directory
+
+```PowerShell
+git status . |
+    Select-Object -ExpandProperty Untracked
+```
+See all git status can do
+
+```PowerShell
+git status | Get-Member
 ```
 
 ---
