@@ -841,6 +841,11 @@ if ($this.Status -match 'behind') {
     </Members>
   </Type>
   <Type>
+    <Name>git.status.short</Name>
+    <Members>
+    </Members>
+  </Type>
+  <Type>
     <Name>git.submodule</Name>
     <Members>
     </Members>
