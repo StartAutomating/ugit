@@ -3020,6 +3020,49 @@ $BackgroundColor
       </CustomControl>
     </View>
     <View>
+      <Name>Git.Status.Short</Name>
+      <ViewSelectedBy>
+        <TypeName>Git.Status.Short</TypeName>
+      </ViewSelectedBy>
+      <CustomControl>
+        <CustomEntries>
+          <CustomEntry>
+            <CustomItem>
+              <ExpressionBinding>
+                <ScriptBlock>
+    $in = $_
+    
+    @(
+        if ($in.Status) {
+            $in.Status
+        }
+        foreach ($short in $in.Short) {
+            @(
+                foreach ($letter in $short.Staged,$short.Unstaged) {
+                    switch ($letter) {
+                        M { $PSStyle.Foreground.Cyan; $_}
+                        R { $PSStyle.Foreground.Red;$_}
+                        N { $PSStyle.Foreground.Green;$_}
+                        ? { $PSStyle.Foreground.Magenta;$_}
+                        default { $_ }
+                    }
+                }
+                        
+                ' '
+                $short.Path
+                $PSStyle.Reset
+            ) -join ''
+        }        
+    ) -join [Environment]::NewLine
+    
+</ScriptBlock>
+              </ExpressionBinding>
+            </CustomItem>
+          </CustomEntry>
+        </CustomEntries>
+      </CustomControl>
+    </View>
+    <View>
       <Name>git.submodule.status</Name>
       <ViewSelectedBy>
         <TypeName>git.submodule.status</TypeName>
