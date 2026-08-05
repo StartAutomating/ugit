@@ -40,7 +40,23 @@ git status . |
 See all git status can do
 
 ```PowerShell
-git status | Get-Member
+git status |
+    Get-Member
+```
+We can also git status --short
+
+```PowerShell
+git status --short
+```
+We can also ask for short status with a branch summary
+
+```PowerShell
+git status --short --branch
+```
+We can use the shortform `-sb`
+
+```PowerShell
+git status -sb
 ```
 
 ---
