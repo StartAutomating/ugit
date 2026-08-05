@@ -485,7 +485,32 @@ You might want to try giving some of these a try.
 
 ~~~PowerShell
     # See all git status can do
-    git status | Get-Member
+    git status |
+        Get-Member
+~~~
+
+### Git.Status Example 6
+
+
+~~~PowerShell
+    # We can also git status --short
+    git status --short
+~~~
+
+### Git.Status Example 7
+
+
+~~~PowerShell
+    # We can also ask for short status with a branch summary
+    git status --short --branch
+~~~
+
+### Git.Status Example 8
+
+
+~~~PowerShell
+    # We can use the shortform `-sb`
+    git status -sb
 ~~~
 
 ### Git.SubModule.Status Example 1
