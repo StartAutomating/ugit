@@ -21,7 +21,17 @@
         Select-Object -ExpandProperty Untracked
 .EXAMPLE
     # See all git status can do
-    git status | Get-Member
+    git status |
+        Get-Member
+.EXAMPLE
+    # We can also git status --short
+    git status --short
+.EXAMPLE
+    # We can also ask for short status with a branch summary
+    git status --short --branch
+.EXAMPLE
+    # We can use the shortform `-sb`
+    git status -sb
 #>
 [Management.Automation.Cmdlet("Out","Git")]
 [ValidatePattern('^git status')]
@@ -34,7 +44,41 @@ begin {
     $SkipIf = 'porcelain' -join '|'
     if ($gitCommand -match "\s-(?>$SkipIf)") { break }
 
+    $shortStatus = $gitCommand -match '(?>-s|--short)'
+
     $statusLines = @()
+
+    filter gitOctal {
+        [Regex]::Replace(
+            # First we trim leading and trailing quotes.  Easy.
+            $_ -replace '^"|"$',
+            # Then we look for any sequence of slash + 3 digits [0-7]
+            "(?:\\[0-7]{3}){1,}",
+            # And replace them with this short script
+            {                        
+                param($match)
+                # We want them back as UTF8
+                [Text.Encoding]::UTF8.GetString(
+                    # But these bytes are encoded with                            
+                    # [ISO-8859-1](https://en.wikipedia.org/wiki/ISO/IEC_8859-1)
+                    [Text.Encoding]::GetEncoding('ISO-8859-1').GetBytes(
+                        # The match contains the sequence
+                        @(
+                            foreach (
+                                # so we split it up
+                                # (which removes the slash)
+                                $octalByte in $match -split '\\' -ne ''
+                            ) {
+                                # then we convert each byte in base 8
+                                [Convert]::ToByte($octalByte,8) -as
+                                    [char] # and make it a character
+                            }
+                        ) -join '' # then we join our characters,
+                    ) # get their bytes,
+                ) # and output the replaced string.
+            }
+        )
+    }
 }
 
 process {
@@ -42,7 +86,50 @@ process {
     $statusLines += "$gitOut"
 }
 
-end {
+end {    
+    # --short status does not have too much information
+    if ($shortStatus) {
+        # It's just a series of lines we will turn into objects
+        # and put into a summary object
+        $ShortStatusObject = [Ordered]@{
+            PSTypeName = 'Git.Status.Short'
+            Status = ''
+            StatusLines = $statusLines
+            Short = @()            
+            WorkingDirectory = if ("$PWD".StartsWith($GitRoot)) {
+                $pwd
+            } else {
+                $gitRoot
+            }
+        }        
+
+        foreach ($shortLine in $statusLines) {
+            # The first character is any `staged` status
+            $stagedStatus = $shortLine.Substring(0,1) 
+            # The second character is any `unstaged` status
+            $unstagedStatus = $shortline.Substring(1,1)
+
+            $filePath = $shortLine.Substring(3)
+
+            if ($stagedStatus -eq '#' -and $unstagedStatus -eq '#') {                
+                $ShortStatusObject.Status = $filePath
+                continue
+            }
+
+            $filePath = $filePath | gitOctal                        
+            
+            $fileStatus, $filePath = $shortLine -replace '^\s{0,}' -split '[\s\t]', 2            
+            $ShortStatusObject.Short += [PSCustomObject](                 
+                [Ordered]@{
+                    Staged = $stagedStatus
+                    Unstaged = $unstagedStatus
+                    Path = $filePath | gitOctal
+                }
+            )
+        }
+        return ([PSCustomObject]$ShortStatusObject)
+    }
+
     $gitStatusOut = [Ordered]@{
         PSTypeName = 'Git.Status'
         BranchName = ''
@@ -57,7 +144,7 @@ end {
         } else {
             $gitRoot
         }
-    }
+    }    
 
     $inPhase     = ''
 
@@ -103,35 +190,7 @@ end {
             # it means there are octal encoded characters in the path            
             if ($changePath -match '^"' -and $changePath -match '"$') {
                 # So we want to change our change path.
-                $changePath = [Regex]::Replace(
-                    # First we trim leading and trailing quotes.  Easy.
-                    $changePath -replace '^"|"$',
-                    # Then we look for any sequence of slash + 3 digits [0-7]
-                    "(?:\\[0-7]{3}){1,}",
-                    # And replace them with this short script
-                    {                        
-                        param($match)
-                        # We want them back as UTF8
-                        [Text.Encoding]::UTF8.GetString(
-                            # But these bytes are encoded with                            
-                            # [ISO-8859-1](https://en.wikipedia.org/wiki/ISO/IEC_8859-1)
-                            [Text.Encoding]::GetEncoding('ISO-8859-1').GetBytes(
-                                # The match contains the sequence
-                                @(
-                                    foreach (
-                                        # so we split it up
-                                        # (which removes the slash)
-                                        $octalByte in $match -split '\\' -ne ''
-                                    ) {
-                                        # then we convert each byte in base 8
-                                        [Convert]::ToByte($octalByte,8) -as
-                                            [char] # and make it a character
-                                    }
-                                ) -join '' # then we join our characters,
-                            ) # get their bytes,
-                        ) # and output the replaced string.
-                    }
-                )
+                $changePath = $changePath | gitOctal
             }
             $resolvedChangePath =
                 try {
