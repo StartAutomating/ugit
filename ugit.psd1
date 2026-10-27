@@ -1,5 +1,5 @@
 @{
-    ModuleVersion    = '0.4.6'
+    ModuleVersion    = '0.4.7'
     RootModule       = 'ugit.psm1'
     FormatsToProcess = 'ugit.format.ps1xml'
     TypesToProcess   = 'ugit.types.ps1xml'
@@ -10,14 +10,21 @@
     Description      = 'ugit: git, updated with PowerShell'
 
     FunctionsToExport = @(
-        'Get-UGitExtension','Use-Git','Out-Git','Get-GitFunction'
+        'Get-UGitExtension','Use-Git','Out-Git',
+        
+        'Get-GitFunction'
+
+        'Get-GitOctal'
+
+        'Get-GitPrompt'
     )
 
     AliasesToExport   = @(
         'git', 'gitreal', 'realgit', 
         
         'gitFunction', 'gitFunctions',
-            'git.func', 'git.function', 'git.functions'
+            'git.func', 'git.function', 'git.functions',
+            'git.octal', 'git.prompt'
     )
 
     PrivateData   = @{
@@ -34,26 +41,29 @@
 * [Discussions](https://github.com/StartAutomating/ugit/discussions/)
 * [Website](https://ugit.start-automating.com/)
 
-## ugit 0.4.6:
+## ugit 0.4.7
 
-* Git Functions Support! (#259)
-  * Any function or alias named git.* will be considered a git function
-  * git functions can be run in ugit implicitly (i.e. `git functions`)
-  * git functions can have parameters, accept arguments, and bind from the pipeline.
-  * We can get git functions with `Get-GitFunction` (#352)  
-* `git worktree list` support (#347)
-* git status improvement (#341)
-  * Adding color ( Thanks @derekthecool !)
-  * Using Green for staged, Red for unstaged, Yellow for Untracked.
-* Container Changes
-  * Fixing requirements (#348)
-  * Using DotNet SDK as base (#349)
-* Workflow updates (#350)
-  * Updating upload-artifact
-  * Removing PSA from build
-* Minor Updates
-  * `ugit.Piecemeal.ps1` now #requires Piecemeal (#344, Thanks @ninmonkey !)
-  * Community Guides (#329,#330,#331)
+* `git status` improvement
+  * `git.status.ahead` (#358)
+  * `git.status.behind` (#359)
+  * `git.status.modified` (#356)
+  * `git.status.deleted` (#357)
+  * `git.status.addded` (#361)
+  * `git.status` formatting improvement (#363)
+  * `git.status.WorkingDirectory` (#365)
+  * `git.status.Unmerged` (#367)
+  * `git.status.Diff` (#364)
+  * `git status --short` support (#343)
+  * Performance and fault tolerance (#366)
+* Removing IO.FileInfo extended properties (#369)
+* Internationalization support (#177)
+* New Functions:
+  * `Get-GitPrompt` (#368)
+  * `Get-GitOctal` (#370)
+
+To use the new prompt, you can simply:
+
+Set-Alias prompt git.prompt
 
 ---
 

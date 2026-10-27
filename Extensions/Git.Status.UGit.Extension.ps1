@@ -3,32 +3,133 @@
     git status extension
 .DESCRIPTION
     Returns git status as an object.
+
+    git status provides a lot of useful information.
 .EXAMPLE
+    # Get the status of the current repository
     git status
 .EXAMPLE
-    git status | Select-Object -ExpandProperty Untracked
+    # Get the untracked files
+    git status |
+        Select-Object -ExpandProperty Untracked
+.EXAMPLE
+    # Get the status of the repo in the current directory
+    git status .
+.EXAMPLE
+    # Get untracked files in the current directory
+    git status . |
+        Select-Object -ExpandProperty Untracked
+.EXAMPLE
+    # See all git status can do
+    git status |
+        Get-Member
+.EXAMPLE
+    # We can also git status --short
+    git status --short
+.EXAMPLE
+    # We can also ask for short status with a branch summary
+    git status --short --branch
+.EXAMPLE
+    # We can use the shortform `-sb`
+    git status -sb
 #>
 [Management.Automation.Cmdlet("Out","Git")]
 [ValidatePattern('^git status')]
-param(
-
-)
+param()
 
 begin {
     <#
     If any of these parameters are used, we will skip processing.
     #>
     $SkipIf = 'porcelain' -join '|'
-    if ($gitCommand -match "\s-(?>$SkipIf)")      { break }
+    if ($gitCommand -match "\s-(?>$SkipIf)") { break }
+
+    $shortStatus = $gitCommand -match '(?>-s|--short)'
 
     $statusLines = @()
+
+    filter gitOctal {
+        [Regex]::Replace(
+            # First we trim leading and trailing quotes.  Easy.
+            $_ -replace '^"|"$',
+            # Then we look for any sequence of slash + 3 digits [0-7]
+            "(?:\\[0-7]{3}){1,}",
+            # And replace them with this short script
+            {                        
+                param($match)
+                # We want them back as UTF8
+                [Text.Encoding]::UTF8.GetString(
+                    # But these bytes are encoded with                            
+                    # [ISO-8859-1](https://en.wikipedia.org/wiki/ISO/IEC_8859-1)
+                    [Text.Encoding]::GetEncoding('ISO-8859-1').GetBytes(
+                        # The match contains the sequence
+                        @(
+                            foreach (
+                                # so we split it up
+                                # (which removes the slash)
+                                $octalByte in $match -split '\\' -ne ''
+                            ) {
+                                # then we convert each byte in base 8
+                                [Convert]::ToByte($octalByte,8) -as
+                                    [char] # and make it a character
+                            }
+                        ) -join '' # then we join our characters,
+                    ) # get their bytes,
+                ) # and output the replaced string.
+            }
+        )
+    }
 }
 
 process {
+    # collect all the status lines
     $statusLines += "$gitOut"
 }
 
-end {
+end {    
+    # --short status does not have too much information
+    if ($shortStatus) {
+        # It's just a series of lines we will turn into objects
+        # and put into a summary object
+        $ShortStatusObject = [Ordered]@{
+            PSTypeName = 'Git.Status.Short'
+            Status = ''
+            StatusLines = $statusLines
+            Short = @()            
+            WorkingDirectory = if ("$PWD".StartsWith($GitRoot)) {
+                $pwd
+            } else {
+                $gitRoot
+            }
+        }        
+
+        foreach ($shortLine in $statusLines) {
+            # The first character is any `staged` status
+            $stagedStatus = $shortLine.Substring(0,1) 
+            # The second character is any `unstaged` status
+            $unstagedStatus = $shortline.Substring(1,1)
+
+            $filePath = $shortLine.Substring(3)
+
+            if ($stagedStatus -eq '#' -and $unstagedStatus -eq '#') {                
+                $ShortStatusObject.Status = $filePath
+                continue
+            }
+
+            $filePath = $filePath | gitOctal                        
+            
+            $fileStatus, $filePath = $shortLine -replace '^\s{0,}' -split '[\s\t]', 2            
+            $ShortStatusObject.Short += [PSCustomObject](                 
+                [Ordered]@{
+                    Staged = $stagedStatus
+                    Unstaged = $unstagedStatus
+                    Path = $filePath | gitOctal
+                }
+            )
+        }
+        return ([PSCustomObject]$ShortStatusObject)
+    }
+
     $gitStatusOut = [Ordered]@{
         PSTypeName = 'Git.Status'
         BranchName = ''
@@ -36,8 +137,14 @@ end {
         Staged     = @()
         Unstaged   = @()
         Untracked  = @()
+        Unmerged   = @()
         GitRoot    = $GitRoot
-    }
+        WorkingDirectory = if ("$PWD".StartsWith($GitRoot)) {
+            $pwd
+        } else {
+            $gitRoot
+        }
+    }    
 
     $inPhase     = ''
 
@@ -53,6 +160,10 @@ end {
         }
         if ($statusLines[$sln] -like "Changes to be committed:*") {
             $inPhase = 'Staged'
+        }
+        if ($statusLines[$sln] -like "Unmerged*:*") {
+            $inPhase = 'Unmerged'
+            continue
         }
         if ($statusLines[$sln] -like "Untracked files:*") {
             $inPhase = 'Untracked'
@@ -74,13 +185,34 @@ end {
                     ''
                 }
             $changePath = $trimmedLine -replace "^[\w\s]+:\s+"
-            if ($inPhase -eq 'untracked') {
-                $gitStatusOut.$inPhase += Get-Item -ErrorAction SilentlyContinue -Path $changePath
+
+            # If git quotes a status line, 
+            # it means there are octal encoded characters in the path            
+            if ($changePath -match '^"' -and $changePath -match '"$') {
+                # So we want to change our change path.
+                $changePath = $changePath | gitOctal
+            }
+            $resolvedChangePath =
+                try {
+                    $resolvedPath = $ExecutionContext.SessionState.Path.GetResolvedPSPathFromPSPath($changePath)
+                    $resolvedFile = [IO.FileInfo]"$resolvedPath"
+                    if ($resolvedFile.Length) {
+                        $resolvedFile
+                    } elseif (
+                        $resolvedDirectory = [IO.DirectoryInfo]"$resolvedPath"
+                    ) {
+                        $resolvedDirectory
+                    }                   
+                } catch {
+                    Write-Verbose "Could not resolve path '$changePath' : $_"
+                }
+            if ($inPhase -eq 'untracked') {                
+                $gitStatusOut.$inPhase += $resolvedChangePath
             } else {
                 $gitStatusOut.$inPhase += [PSCustomObject]@{
                     ChangeType = $changeType -replace '\s'
                     Path       = $changePath
-                    File       = Get-Item -ErrorAction SilentlyContinue -Path $changePath
+                    File       = $resolvedChangePath
                 }
             }
 

@@ -450,6 +450,7 @@ You might want to try giving some of these a try.
 
 
 ~~~PowerShell
+    # Get the status of the current repository
     git status
 ~~~
 
@@ -457,7 +458,59 @@ You might want to try giving some of these a try.
 
 
 ~~~PowerShell
-    git status | Select-Object -ExpandProperty Untracked
+    # Get the untracked files
+    git status |
+        Select-Object -ExpandProperty Untracked
+~~~
+
+### Git.Status Example 3
+
+
+~~~PowerShell
+    # Get the status of the repo in the current directory
+    git status .
+~~~
+
+### Git.Status Example 4
+
+
+~~~PowerShell
+    # Get untracked files in the current directory
+    git status . |
+        Select-Object -ExpandProperty Untracked
+~~~
+
+### Git.Status Example 5
+
+
+~~~PowerShell
+    # See all git status can do
+    git status |
+        Get-Member
+~~~
+
+### Git.Status Example 6
+
+
+~~~PowerShell
+    # We can also git status --short
+    git status --short
+~~~
+
+### Git.Status Example 7
+
+
+~~~PowerShell
+    # We can also ask for short status with a branch summary
+    git status --short --branch
+~~~
+
+### Git.Status Example 8
+
+
+~~~PowerShell
+    # We can use the shortform `-sb`
+    git status -sb
 ~~~
 
 ### Git.SubModule.Status Example 1
