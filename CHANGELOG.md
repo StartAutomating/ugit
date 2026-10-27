@@ -6,6 +6,31 @@
 
 > Love It? [Support It](https://github.com/sponsors/StartAutomating)
 
+## ugit 0.4.7
+
+* `git status` improvement
+  * `git.status.ahead` (#358)
+  * `git.status.behind` (#359)
+  * `git.status.modified` (#356)
+  * `git.status.deleted` (#357)
+  * `git.status.addded` (#361)
+  * `git.status` formatting improvement (#363)
+  * `git.status.WorkingDirectory` (#365)
+  * `git.status.Unmerged` (#367)
+  * `git.status.Diff` (#364)
+  * `git status --short` support (#343)
+  * Performance and fault tolerance (#366)
+* Removing IO.FileInfo extended properties (#369)
+* Internationalization support (#177)
+* New Functions:
+  * `Get-GitPrompt` (#368)
+  * `Get-GitOctal` (#370)
+
+To use the new prompt, you can simply:
+
+Set-Alias prompt git.prompt
+
+---
 
 ## ugit 0.4.6:
 
